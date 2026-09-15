@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import {
   ArrowRight,
   Check,
+  CheckCircle2,
+  FileCode,
+  RotateCcw,
 } from 'lucide-react';
 import { Button } from './ui/Button.jsx';
 import { Card3D } from './ui/Card3D.jsx';
