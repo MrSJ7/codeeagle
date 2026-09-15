@@ -108,12 +108,13 @@ export const projectController = {
         },
       });
     } catch (err) {
-      if (err.code) {
-        return res.status(err.status || 400).json({
-          error: { code: err.code, message: err.message },
-        });
-      }
-      next(err);
+      console.error("[ProjectImport] Error:", err.message);
+      return res.status(err.status || 400).json({
+        error: {
+          code: err.code || "IMPORT_ERROR",
+          message: err.message || "Failed to import project.",
+        },
+      });
     }
   },
 
