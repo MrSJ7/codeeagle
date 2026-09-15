@@ -15,7 +15,7 @@ export function Button({
   ...props
 }) {
   const baseStyles =
-    'inline-flex items-center justify-center font-sans select-none cursor-pointer transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]';
+    'inline-flex items-center justify-center font-sans select-none cursor-pointer transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]';
 
   const sizeStyles = {
     sm: 'px-2.5 py-1 text-xs gap-1.5 rounded-[6px]',
@@ -25,15 +25,15 @@ export function Button({
 
   const variantStyles = {
     primary:
-      'bg-brand-500 hover:bg-brand-400 text-graphite-950 font-semibold shadow-dev hover:shadow-glow-emerald border border-brand-400/50 active:bg-brand-600',
+      'bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-dev-sm hover:shadow-dev border border-brand-700/40 active:bg-brand-800',
     secondary:
-      'bg-graphite-800 hover:bg-graphite-750 text-graphite-100 font-medium border border-graphite-700 hover:border-graphite-600 shadow-dev-sm',
+      'bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-medium border border-slate-200 hover:border-slate-300 shadow-dev-sm',
     ghost:
-      'bg-transparent hover:bg-graphite-800 text-graphite-400 hover:text-graphite-100 border border-transparent',
+      'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent',
     danger:
-      'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 hover:border-red-500/50 shadow-dev-sm',
+      'bg-red-600 hover:bg-red-700 text-white font-semibold shadow-dev-sm border border-red-700/40',
     accent:
-      'bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 border border-teal-500/30 hover:border-teal-500/50',
+      'bg-teal-600 hover:bg-teal-700 text-white font-medium shadow-dev-sm border border-teal-700/40',
   };
 
   const chosenVariant = variantStyles[variant] || variantStyles.primary;

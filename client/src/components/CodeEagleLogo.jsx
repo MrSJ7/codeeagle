@@ -8,6 +8,7 @@ export function CodeEagleLogo({
   size = 24,
   withText = false,
   withSubtitle = false,
+  dark = false,
   className = '',
 }) {
   const pixelSize = typeof size === 'number' ? size : size === 'lg' ? 32 : size === 'sm' ? 18 : 24;
@@ -28,11 +29,11 @@ export function CodeEagleLogo({
       {withText && (
         <div className="flex flex-col leading-none">
           <div className="flex items-center text-sm font-semibold tracking-tight font-sans">
-            <span className="text-graphite-100">Code</span>
-            <span className="text-brand-500 font-bold ml-0.5">Eagle</span>
+            <span className={dark ? 'text-white' : 'text-slate-900'}>Code</span>
+            <span className="text-brand-600 font-bold ml-0.5">Eagle</span>
           </div>
           {withSubtitle && (
-            <span className="text-[10px] font-medium tracking-wider text-graphite-400 uppercase font-sans mt-0.5">
+            <span className={`text-[10px] font-medium tracking-wider uppercase font-sans mt-0.5 ${dark ? 'text-slate-400' : 'text-slate-500'}`}>
               AI Code Review
             </span>
           )}

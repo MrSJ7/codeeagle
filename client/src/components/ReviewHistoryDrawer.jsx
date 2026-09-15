@@ -100,26 +100,17 @@ export function ReviewHistoryDrawer({
     setIsDeleting(true);
     try {
       await deleteReviewApi(deletingId);
-
-      // Optimistically update list
-      const updated = reviews.filter((r) => r.reviewId !== deletingId);
-      setReviews(updated);
+      setReviews((prev) => prev.filter((r) => r.reviewId !== deletingId));
       setPagination((prev) => ({
         ...prev,
         total: Math.max(0, prev.total - 1),
-        pages: Math.max(1, Math.ceil((prev.total - 1) / prev.limit)),
       }));
-
-      // If page is now empty and not on first page, fetch previous
-      if (updated.length === 0 && pagination.page > 1) {
-        fetchHistory(pagination.page - 1);
-      }
+      setDeletingId(null);
     } catch (err) {
-      console.error('Failed to delete audit:', err);
-      alert(err.message || 'Could not delete this audit.');
+      console.error('Failed to delete review:', err);
+      setErrorMessage(err.message || 'Failed to delete audit.');
     } finally {
       setIsDeleting(false);
-      setDeletingId(null);
     }
   };
 
@@ -129,7 +120,7 @@ export function ReviewHistoryDrawer({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-graphite-950/80 backdrop-blur-xs z-40 transition-opacity"
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -139,17 +130,17 @@ export function ReviewHistoryDrawer({
         role="dialog"
         aria-label="Review History"
         aria-modal="true"
-        className="fixed top-0 right-0 bottom-0 w-full sm:w-96 bg-graphite-950 border-l border-graphite-800 z-50 flex flex-col shadow-dev-lg font-sans select-none"
+        className="fixed top-0 right-0 bottom-0 w-full sm:w-96 bg-white border-l border-slate-200 z-50 flex flex-col shadow-dev-lg font-sans select-none"
       >
         {/* Drawer Header */}
-        <div className="h-12 bg-graphite-900 border-b border-graphite-800 px-5 flex items-center justify-between shrink-0">
+        <div className="h-13 bg-slate-50 border-b border-slate-200 px-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <History className="w-4 h-4 text-brand-400" />
-            <h2 className="text-xs font-bold text-graphite-100 uppercase tracking-wider">
+            <History className="w-4 h-4 text-brand-600" />
+            <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               Review History
             </h2>
             {pagination.total > 0 && (
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-graphite-800 text-graphite-300 font-semibold border border-graphite-700">
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-200 text-slate-700 font-bold border border-slate-300">
                 {pagination.total}
               </span>
             )}
@@ -159,15 +150,15 @@ export function ReviewHistoryDrawer({
             {/* Persistence Indicator */}
             <div
               title={`Active storage: ${persistenceMode === 'mongodb' ? 'MongoDB Atlas persistent database' : 'In-memory ephemeral store'}`}
-              className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-graphite-850 text-graphite-300 border border-graphite-750"
+              className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200 shadow-dev-sm"
             >
-              <Database className="w-3 h-3 text-cyan-400" />
+              <Database className="w-3 h-3 text-brand-600" />
               <span>{persistenceMode === 'mongodb' ? 'MongoDB' : 'Memory'}</span>
             </div>
 
             <button
               onClick={onClose}
-              className="p-1 rounded text-graphite-400 hover:text-graphite-100 hover:bg-graphite-800 transition-colors cursor-pointer"
+              className="p-1 rounded text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-colors cursor-pointer"
               title="Close history drawer"
               aria-label="Close history drawer"
             >
@@ -179,14 +170,14 @@ export function ReviewHistoryDrawer({
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
           {isLoading && reviews.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-graphite-500">
-              <Loader2 className="w-6 h-6 animate-spin text-brand-400 mb-2" />
+            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
+              <Loader2 className="w-6 h-6 animate-spin text-brand-600 mb-2" />
               <p className="text-xs font-medium">Loading history...</p>
             </div>
           ) : errorMessage ? (
-            <div className="p-4 rounded-lg bg-red-950/40 border border-red-800/60 text-xs text-red-300 flex flex-col gap-2">
-              <div className="flex items-center gap-2 font-semibold">
-                <AlertTriangle className="w-4 h-4 text-red-400" />
+            <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-xs text-red-800 flex flex-col gap-2">
+              <div className="flex items-center gap-2 font-bold">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
                 <span>Failed to load history</span>
               </div>
               <p>{errorMessage}</p>
@@ -201,10 +192,10 @@ export function ReviewHistoryDrawer({
               </Button>
             </div>
           ) : reviews.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-graphite-500">
-              <FolderArchive className="w-8 h-8 text-graphite-700 mb-2" />
-              <p className="text-xs font-semibold text-graphite-300">No review audits yet</p>
-              <p className="text-xs text-graphite-500 mt-1 max-w-[220px]">
+            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
+              <FolderArchive className="w-8 h-8 text-slate-300 mb-2" />
+              <p className="text-xs font-bold text-slate-800">No review audits yet</p>
+              <p className="text-xs text-slate-500 mt-1 max-w-[220px]">
                 Run a code review or apply a verified fix to start building your audit history.
               </p>
             </div>
@@ -223,7 +214,7 @@ export function ReviewHistoryDrawer({
 
         {/* Pagination Footer */}
         {pagination.pages > 1 && (
-          <div className="p-3 bg-graphite-900 border-t border-graphite-800 flex items-center justify-between text-xs font-mono text-graphite-400 select-none">
+          <div className="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs font-mono text-slate-600 select-none">
             <span>
               Page {pagination.page} of {pagination.pages}
             </span>
@@ -248,24 +239,20 @@ export function ReviewHistoryDrawer({
           </div>
         )}
 
-        {/* Confirmation Modal: Restore when unsaved changes exist */}
+        {/* In-app Modal Confirmation for Unsaved Changes */}
         {pendingSelectId && (
-          <div
-            className="absolute inset-0 bg-graphite-950/90 flex items-center justify-center p-4 z-60"
-            role="alertdialog"
-            aria-labelledby="confirm-restore-title"
-          >
-            <div className="bg-graphite-900 border border-graphite-700 rounded-lg p-4 shadow-dev-lg max-w-xs text-xs">
-              <h3 id="confirm-restore-title" className="font-bold text-graphite-100 mb-1 flex items-center gap-1.5">
-                <AlertTriangle className="w-4 h-4 text-orange-400" />
-                <span>Discard current edits?</span>
-              </h3>
-              <p className="text-graphite-400 mb-4 leading-relaxed">
-                You have modified the code buffer. Loading this historical review will overwrite your active edits.
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs z-60 flex items-center justify-center p-4">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-dev-lg max-w-xs text-xs space-y-3 font-sans">
+              <div className="flex items-center gap-2 text-amber-600 font-bold text-sm">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Unsaved Code Changes</span>
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                Loading this historical audit will replace the current editor code. Are you sure you want to proceed?
               </p>
-              <div className="flex items-center justify-end gap-2">
+              <div className="flex items-center justify-end gap-2 pt-1">
                 <Button
-                  variant="secondary"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setPendingSelectId(null)}
                 >
@@ -283,24 +270,20 @@ export function ReviewHistoryDrawer({
           </div>
         )}
 
-        {/* Confirmation Modal: Delete audit item */}
+        {/* In-app Modal Confirmation for Audit Deletion */}
         {deletingId && (
-          <div
-            className="absolute inset-0 bg-graphite-950/90 flex items-center justify-center p-4 z-60"
-            role="alertdialog"
-            aria-labelledby="confirm-delete-title"
-          >
-            <div className="bg-graphite-900 border border-graphite-700 rounded-lg p-4 shadow-dev-lg max-w-xs text-xs">
-              <h3 id="confirm-delete-title" className="font-bold text-graphite-100 mb-1 flex items-center gap-1.5">
-                <AlertTriangle className="w-4 h-4 text-red-400" />
-                <span>Delete historical audit?</span>
-              </h3>
-              <p className="text-graphite-400 mb-4 leading-relaxed">
-                This will permanently delete this audit record from your history ledger.
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs z-60 flex items-center justify-center p-4">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-dev-lg max-w-xs text-xs space-y-3 font-sans">
+              <div className="flex items-center gap-2 text-red-600 font-bold text-sm">
+                <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>Delete Audit Record</span>
+              </div>
+              <p className="text-slate-600 leading-relaxed">
+                Permanently delete this review record from the ledger? This action cannot be undone.
               </p>
-              <div className="flex items-center justify-end gap-2">
+              <div className="flex items-center justify-end gap-2 pt-1">
                 <Button
-                  variant="secondary"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setDeletingId(null)}
                   disabled={isDeleting}

@@ -7,40 +7,37 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Outfit"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['"Outfit"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       colors: {
-        graphite: {
-          950: '#090C10', // Obsidian root
-          900: '#0D1117', // Surface 1 (panels, editor canvas)
-          850: '#161B22', // Surface 2 (headers, toolbars, elevated cards)
-          800: '#1F242C', // Surface 3 (raised items, active items)
-          750: '#262D38', // Hover highlight
-          700: '#30363D', // Structural borders
-          600: '#484F58', // Muted borders & dividers
-          500: '#6E7681', // Line numbers & micro-captions
-          400: '#8B949E', // Secondary text & descriptions
-          300: '#C9D1D9', // Labels & subheadings
-          100: '#F0F3F6', // Crisp high-contrast body & titles
+        slate: {
+          50: '#F8FAFC',
+          100: '#F1F5F9',
+          200: '#E2E8F0',
+          300: '#CBD5E1',
+          400: '#94A3B8',
+          500: '#64748B',
+          600: '#475569',
+          700: '#334155',
+          800: '#1E293B',
+          900: '#0F172A',
+          950: '#020617',
         },
         surface: {
-          app: '#090C10',
-          panel: '#0D1117',
-          elevated: '#161B22',
-          raised: '#1F242C',
-        },
-        border: {
-          subtle: '#21262D',
-          strong: '#30363D',
-          active: '#10B981',
+          app: '#F8FAFC',
+          card: '#FFFFFF',
+          subtle: '#F1F5F9',
+          border: '#E2E8F0',
+          dark: '#0D1117',
         },
         code: {
           DEFAULT: '#0D1117',
+          canvas: '#0D1117',
           gutter: '#090C10',
           text: '#E6EDF3',
           border: '#21262D',
-          highlight: '#1A202C',
+          highlight: '#1F242C',
           lineHover: '#161B22',
         },
         brand: {
@@ -49,42 +46,47 @@ export default {
           200: '#A7F3D0',
           300: '#6EE7B7',
           400: '#34D399',
-          500: '#10B981', // Vibrant Emerald primary brand
-          600: '#059669',
+          500: '#10B981', // Vibrant Emerald
+          600: '#059669', // Primary Dark Emerald
           700: '#047857',
           800: '#065F46',
           900: '#064E3B',
         },
         teal: {
+          50: '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
           400: '#2DD4BF',
           500: '#14B8A6',
           600: '#0D9488',
           700: '#0F766E',
         },
         blue: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
           400: '#60A5FA',
           500: '#3B82F6',
           600: '#2563EB',
+          700: '#1D4ED8',
         },
         cyan: {
+          50: '#ECFEFF',
           400: '#38BDF8',
           500: '#0EA5E9',
           600: '#0284C7',
         },
         severity: {
-          critical: '#EF4444',
-          high: '#F97316',
-          medium: '#F59E0B',
-          low: '#38BDF8',
+          critical: '#DC2626',
+          high: '#D97706',
+          medium: '#EAB308',
+          low: '#2563EB',
         },
       },
       boxShadow: {
-        'dev-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)',
-        'dev': '0 4px 12px 0 rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06)',
-        'dev-lg': '0 12px 32px -4px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08)',
-        'glow-emerald': '0 0 20px -3px rgba(16, 185, 129, 0.35)',
-        'glow-brand': '0 0 20px -3px rgba(16, 185, 129, 0.35)',
-        'glow-cyan': '0 0 20px -4px rgba(56, 189, 248, 0.25)',
+        'dev-sm': '0 1px 2px 0 rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.06)',
+        'dev': '0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.06)',
+        'dev-lg': '0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.06)',
+        'dev-xl': '0 20px 35px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.08)',
       },
     },
   },
