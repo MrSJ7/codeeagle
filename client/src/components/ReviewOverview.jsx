@@ -146,7 +146,7 @@ export function ReviewOverview({
                         </span>
                       </div>
 
-                      <div className="text-xs text-obsidian-400 truncate max-w-xl font-sans">
+                      <div className="text-sm text-obsidian-400 truncate max-w-xl font-sans">
                         {issue.description}
                       </div>
                     </div>
@@ -177,7 +177,7 @@ export function ReviewOverview({
         {/* 3. Review Signals (Quality Breakdown) */}
         <div>
           <h3 className="text-xs font-mono font-bold text-obsidian-300 mb-3">
-            Review Signals
+            Score breakdown
           </h3>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
@@ -235,11 +235,11 @@ export function ReviewOverview({
         {totalFindings > 0 && (
           <div className="pt-4 flex items-center justify-between gap-4 flex-wrap border-t border-obsidian-800">
             <div className="text-xs text-obsidian-400 font-sans">
-              Proceed to inspect line-anchored findings and apply verified fixes:
+              Proceed to inspect findings and apply verified fixes:
             </div>
             <Button
               variant="primary"
-              size="md"
+              size="lg"
               onClick={() => {
                 if (topBlocker && onSelectIssue) onSelectIssue(topBlocker.id);
                 if (onNavigateFindings) onNavigateFindings();

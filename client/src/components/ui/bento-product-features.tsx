@@ -145,7 +145,7 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
             <div className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-brand-500/10 border border-brand-500/20 text-brand-500">
               <Cpu className="h-5 w-5" />
             </div>
-            <span className="font-mono text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] text-[#A6A29B] border border-[#2A2A2A]">
+            <span className="font-mono text-[11px] tracking-wider uppercase px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] text-[#A6A29B] border border-[#2A2A2A]">
               Deterministic Engine
             </span>
           </div>
@@ -184,14 +184,14 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
             <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-[#181818] border border-[#282828] text-brand-400">
               <Sparkles className="h-4 w-4" />
             </div>
-            <span className="font-mono text-[10px] uppercase text-[#74716C]">
+            <span className="font-mono text-[11px] uppercase text-[#74716C]">
               Semantic Audit
             </span>
           </div>
-          <h3 className="text-sm font-bold text-[#F5F3EF] mb-1">
+          <h3 className="text-base font-bold text-[#F5F3EF] mb-1">
             Gemini Contextual AI
           </h3>
-          <p className="text-xs text-[#A6A29B] leading-relaxed">
+          <p className="text-sm text-[#A6A29B] leading-relaxed">
             Catches nuanced race conditions, missing input sanitization, and subtle business logic vulnerabilities beyond deterministic syntax rules.
           </p>
         </div>
@@ -207,14 +207,14 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
             <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-[#181818] border border-[#282828] text-[#38C793]">
               <Hash className="h-4 w-4" />
             </div>
-            <span className="font-mono text-[10px] uppercase text-[#38C793]">
+            <span className="font-mono text-[11px] uppercase text-[#38C793]">
               Cryptographic
             </span>
           </div>
-          <h3 className="text-sm font-bold text-[#F5F3EF] mb-1">
+          <h3 className="text-base font-bold text-[#F5F3EF] mb-1">
             SHA-256 Hash Guard
           </h3>
-          <p className="text-xs text-[#A6A29B] leading-relaxed">
+          <p className="text-sm text-[#A6A29B] leading-relaxed">
             Single-authority checksum calculated directly from raw source. Prevents stale mutations and duplicate patch conflicts.
           </p>
         </div>
@@ -230,14 +230,14 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
             <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-[#181818] border border-[#282828] text-brand-500">
               <ListTree className="h-4 w-4" />
             </div>
-            <span className="font-mono text-[10px] uppercase text-[#74716C]">
+            <span className="font-mono text-[11px] uppercase text-[#74716C]">
               Precision
             </span>
           </div>
-          <h3 className="text-sm font-bold text-[#F5F3EF] mb-1">
+          <h3 className="text-base font-bold text-[#F5F3EF] mb-1">
             Line-Grounded Findings
           </h3>
-          <p className="text-xs text-[#A6A29B] leading-relaxed">
+          <p className="text-sm text-[#A6A29B] leading-relaxed">
             Pinpoints exact start and end line ranges. Clicking any finding highlights the editor canvas and activates gutter severity markers.
           </p>
         </div>
@@ -254,14 +254,14 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
             <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-[#181818] border border-[#282828] text-brand-400">
               <RotateCcw className="h-4 w-4" />
             </div>
-            <span className="font-mono text-[10px] uppercase text-brand-500">
+            <span className="font-mono text-[11px] uppercase text-brand-500">
               Instant
             </span>
           </div>
-          <h3 className="text-sm font-bold text-[#F5F3EF] mb-1">
+          <h3 className="text-base font-bold text-[#F5F3EF] mb-1">
             Automated Re-Auditing
           </h3>
-          <p className="text-xs text-[#A6A29B] leading-relaxed">
+          <p className="text-sm text-[#A6A29B] leading-relaxed">
             Applying a fix immediately re-evaluates the code in memory, updating the security score from 50 to 100 without manual restarts.
           </p>
         </div>
@@ -279,14 +279,14 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
               <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-brand-500/10 border border-brand-500/20 text-brand-500">
                 <FileCode className="h-4 w-4" />
               </div>
-              <span className="font-mono text-[10px] tracking-wider uppercase text-brand-400 font-semibold">
+              <span className="font-mono text-[11px] tracking-wider uppercase text-brand-400 font-semibold">
                 Verified Executable Patches & History
               </span>
             </div>
             <h3 className="text-base font-bold text-[#F5F3EF]">
               Senior Staff PR Comments & Verified Unified Diffs
             </h3>
-            <p className="text-xs text-[#A6A29B] leading-relaxed">
+            <p className="text-sm text-[#A6A29B] leading-relaxed">
               Every finding includes rationale, remediation advice, and an executable unified diff. All audits are stored in review history with instant single-click state restoration.
             </p>
           </div>

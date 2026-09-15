@@ -61,7 +61,7 @@ export function ReviewHistoryItem({
             {score}
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-obsidian-100 truncate font-mono">
+            <div className="flex items-center gap-1.5 text-sm font-semibold text-obsidian-100 truncate font-mono">
               <FileCode className="w-3.5 h-3.5 text-brand-500 shrink-0" />
               <span className="truncate">{filename}</span>
             </div>
@@ -101,21 +101,11 @@ export function ReviewHistoryItem({
             </span>
           </span>
 
-          {/* Engine indicator */}
-          <span className="text-obsidian-600">•</span>
-          <span
-            className={`text-[9px] uppercase px-1.5 py-0.2 rounded-[3px] font-bold border ${
-              isHybrid
-                ? 'text-brand-400 bg-brand-500/10 border-brand-500/30'
-                : 'text-obsidian-300 bg-obsidian-800 border-obsidian-700'
-            }`}
-          >
-            {engine}
-          </span>
+
         </div>
 
         {/* Timestamp */}
-        <span className="text-[10px] text-obsidian-500">
+        <span className="text-[11px] text-obsidian-500">
           {formatDate(createdAt)}
         </span>
       </div>

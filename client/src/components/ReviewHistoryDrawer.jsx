@@ -147,14 +147,6 @@ export function ReviewHistoryDrawer({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Persistence Indicator */}
-            <div
-              title={`Active storage: ${persistenceMode === 'mongodb' ? 'MongoDB Atlas persistent database' : 'In-memory ephemeral store'}`}
-              className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-obsidian-950 text-obsidian-300 border border-obsidian-750 shadow-sm"
-            >
-              <Database className="w-3 h-3 text-brand-500" />
-              <span>{persistenceMode === 'mongodb' ? 'MongoDB' : 'Memory'}</span>
-            </div>
 
             <button
               onClick={onClose}
@@ -194,9 +186,9 @@ export function ReviewHistoryDrawer({
           ) : reviews.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-6 text-obsidian-400">
               <FolderArchive className="w-8 h-8 text-obsidian-600 mb-2" />
-              <p className="text-xs font-bold text-obsidian-200">No review audits yet</p>
+              <p className="text-xs font-bold text-obsidian-200">No reviews yet</p>
               <p className="text-xs text-obsidian-500 mt-1 max-w-[220px]">
-                Run a code review or apply a verified fix to start building your audit history.
+                Run a code review or apply a verified fix to start building your review history.
               </p>
             </div>
           ) : (
@@ -248,7 +240,7 @@ export function ReviewHistoryDrawer({
                 <span>Unsaved Code Changes</span>
               </div>
               <p className="text-obsidian-300 leading-relaxed">
-                Loading this historical audit will replace the current editor code. Are you sure you want to proceed?
+                Loading this historical review will replace the current editor code. Are you sure you want to proceed?
               </p>
               <div className="flex items-center justify-end gap-2 pt-1">
                 <Button
@@ -263,7 +255,7 @@ export function ReviewHistoryDrawer({
                   size="sm"
                   onClick={confirmSelectHistoricalAudit}
                 >
-                  Restore Audit
+                  Restore Review
                 </Button>
               </div>
             </div>
@@ -276,10 +268,10 @@ export function ReviewHistoryDrawer({
             <div className="bg-obsidian-900 border border-obsidian-750 rounded-[8px] p-5 shadow-2xl max-w-xs text-xs space-y-3 font-sans text-obsidian-200">
               <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
                 <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                <span>Delete Audit Record</span>
+                <span>Delete Review Record</span>
               </div>
               <p className="text-obsidian-300 leading-relaxed">
-                Permanently delete this review record from the ledger? This action cannot be undone.
+                Permanently delete this review record from your history? This action cannot be undone.
               </p>
               <div className="flex items-center justify-end gap-2 pt-1">
                 <Button

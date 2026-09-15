@@ -63,11 +63,11 @@ export function Navbar({
               className="flex items-center hover:opacity-90 transition-opacity cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[4px]"
               title="CodeEagle — AI Code Review"
             >
-              <CodeEagleLogo size={24} withText={true} withSubtitle={true} />
+              <CodeEagleLogo size={24} withText={true} withSubtitle={true} scrollCollapse={true} />
             </button>
 
             {/* Center / Primary Marketing Navigation */}
-            <nav className="hidden md:flex items-center gap-1 text-xs font-medium text-[#A6A29B]">
+            <nav className="hidden md:flex items-center gap-1 text-sm font-medium text-[#A6A29B]">
               <a
                 href="#workbench"
                 className="px-3 py-1.5 rounded-[5px] hover:text-[#F5F3EF] hover:bg-[#161616] transition-colors cursor-pointer"
@@ -101,7 +101,7 @@ export function Navbar({
           <div className="flex items-center gap-3">
             <Button
               variant="primary"
-              size="sm"
+              size="md"
               onClick={onNavigateReview}
               rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
             >
@@ -182,7 +182,7 @@ export function Navbar({
                 type="button"
                 onClick={() => onSelectLens(lens.id)}
                 className={cn(
-                  'px-2.5 py-1 rounded-[4px] text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer',
+                  'px-2.5 py-1 rounded-[4px] text-[13px] font-medium transition-colors flex items-center gap-1.5 cursor-pointer',
                   isActive
                     ? 'bg-[#1E1E1E] text-[#F5F3EF] font-semibold shadow-xs border border-[#2D2D2D]'
                     : 'text-[#A6A29B] hover:text-[#F5F3EF] hover:bg-[#181818]'

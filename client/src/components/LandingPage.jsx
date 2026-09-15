@@ -62,11 +62,7 @@ export function LandingPage({
       {/* 2. Hero Section: Editorial Developer Entry Point */}
       <section className="pt-12 sm:pt-20 pb-16 px-4 sm:px-8 max-w-7xl mx-auto w-full">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          {/* Technical Kicker */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px] bg-obsidian-900 border border-obsidian-750 text-xs font-mono text-obsidian-300 shadow-sm">
-            <Cpu className="w-3.5 h-3.5 text-brand-500 shrink-0" />
-            <span>Deterministic Babel AST + Gemini Contextual Reasoning</span>
-          </div>
+          {/* Hero headline — clean entry with no jargon kicker */}
 
           {/* Kinetic Editorial Headline */}
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-obsidian-50 leading-[1.12]">
@@ -91,11 +87,11 @@ export function LandingPage({
 
           {/* Precision Technical Subtitle */}
           <p className="text-base sm:text-lg text-obsidian-400 leading-relaxed max-w-2xl mx-auto font-normal">
-            CodeEagle combines compiler-grade Babel AST parsing with contextual Gemini reasoning. It detects vulnerabilities, grounds findings to exact line numbers, and executes verified 1-click patches with automated score re-auditing.
+            Paste your code. Get line-by-line findings with fixes you can apply in one click.
           </p>
 
           {/* High-Contrast CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <Button
               size="lg"
               variant="primary"
@@ -117,14 +113,14 @@ export function LandingPage({
           </div>
 
           {/* Instant Scenario Quick-Starts */}
-          <div className="pt-6 border-t border-obsidian-800/80 max-w-2xl mx-auto">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 mb-3">
-              Or run instant live review scenarios:
+          <div className="pt-8 border-t border-obsidian-800/80 max-w-2xl mx-auto">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 mb-3.5">
+              Try a live example:
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
               <button
                 onClick={() => onSelectScenarioAndStart('insecure-login')}
-                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
+                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
               >
                 <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-red-950/50 text-red-400 border border-red-800/50 font-bold">P0</span>
                 <span className="font-semibold text-obsidian-100">auth.js</span>
@@ -134,7 +130,7 @@ export function LandingPage({
 
               <button
                 onClick={() => onSelectScenarioAndStart('buggy-react')}
-                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
+                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
               >
                 <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-orange-950/50 text-orange-400 border border-orange-800/50 font-bold">P1</span>
                 <span className="font-semibold text-obsidian-100">ActivityFeed.jsx</span>
@@ -144,7 +140,7 @@ export function LandingPage({
 
               <button
                 onClick={() => onSelectScenarioAndStart('complex-function')}
-                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
+                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
               >
                 <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-amber-950/50 text-amber-400 border border-amber-800/50 font-bold">P2</span>
                 <span className="font-semibold text-obsidian-100">shippingFee.js</span>
@@ -162,10 +158,10 @@ export function LandingPage({
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
             <div>
               <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
-                Live Interactive Demonstration
+                Live Demo
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-obsidian-50">
-                The CodeEagle Review & Patch Loop
+                See a review in action
               </h2>
             </div>
             <div className="flex items-center gap-3">
@@ -351,8 +347,8 @@ export function LandingPage({
                     <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider">
                       Why This Matters
                     </div>
-                    <p className="text-xs text-[#A6A29B] leading-relaxed">
-                      Storing sensitive JWT secrets in source code allows anyone with repo access to forge authentication tokens and impersonate any user.
+                    <p className="text-sm text-[#A6A29B] leading-relaxed">
+                      Anyone with repo access could forge tokens and log in as any user.
                     </p>
                   </div>
 
@@ -361,8 +357,8 @@ export function LandingPage({
                     <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider">
                       Recommendation
                     </div>
-                    <p className="text-xs text-[#A6A29B] leading-relaxed">
-                      Read secret credentials exclusively from environment variables via{' '}
+                    <p className="text-sm text-[#A6A29B] leading-relaxed">
+                      Move the secret to an environment variable via{' '}
                       <code className="text-brand-400 font-mono bg-brand-500/10 px-1.5 py-0.5 rounded-[3px] border border-brand-500/20">
                         process.env.JWT_SECRET
                       </code>.
@@ -409,7 +405,7 @@ export function LandingPage({
                   ) : (
                     <Button
                       variant="primary"
-                      className="w-full h-11 text-xs font-bold tracking-tight shadow-[0_4px_20px_rgba(255,122,24,0.4),0_1px_0_rgba(255,255,255,0.3)_inset] hover:shadow-[0_6px_28px_rgba(255,122,24,0.55),0_1px_0_rgba(255,255,255,0.4)_inset] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
+                      className="w-full h-11 text-sm font-bold tracking-tight shadow-[0_4px_20px_rgba(255,122,24,0.4),0_1px_0_rgba(255,255,255,0.3)_inset] hover:shadow-[0_6px_28px_rgba(255,122,24,0.55),0_1px_0_rgba(255,255,255,0.4)_inset] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
                       size="md"
                       isLoading={isApplyingDemo}
                       onClick={handleApplyDemoFix}
@@ -425,44 +421,44 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* 4. Section 04: Product Storytelling — The 7-Step Review Flow */}
+      {/* 4. Section 04: Product Storytelling — How a Review Happens */}
       <section id="how-it-works" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
-            Product Storytelling
+            How It Works
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
-            How CodeEagle Evaluates Every Line
+            How a review happens
           </h2>
           <p className="text-sm text-obsidian-400 mt-2">
-            No vague AI hallucinations. CodeEagle adheres to a rigorous 7-step review cycle grounded directly in source code AST.
+            From paste to fix in four steps.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <FeatureCard
             icon={<Cpu className="w-5 h-5 text-brand-500" />}
-            kicker="01 / AST"
-            title="Babel AST Parsing"
-            description="Source code is parsed into an abstract syntax tree. Rules evaluate actual program nodes, preventing false positives from regex string matching."
+            kicker="Step 1"
+            title="Find real problems"
+            description="Your code is parsed into a syntax tree — not searched with regex. No false alarms."
           />
           <FeatureCard
             icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
-            kicker="02 / RULES"
-            title="Deterministic Rules"
-            description="13 static rules instantly flag hardcoded secrets, SQL injection, eval injection, prototype pollution, and React key index anti-patterns."
+            kicker="Step 2"
+            title="Know exactly what's wrong"
+            description="13 built-in rules catch secrets, injections, and React anti-patterns on the first pass."
           />
           <FeatureCard
             icon={<Sparkles className="w-5 h-5 text-brand-500" />}
-            kicker="03 / AI"
-            title="Gemini Contextual AI"
-            description="Gemini contextual reasoning inspects complex logic flows, evaluates boundary conditions, and generates human-readable senior PR review comments."
+            kicker="Step 3"
+            title="Understand why it matters"
+            description="AI reads your logic and explains findings the way a senior engineer would."
           />
           <FeatureCard
             icon={<Hash className="w-5 h-5 text-brand-500" />}
-            kicker="04 / PATCH"
-            title="SHA-256 Verified Fix"
-            description="Safe string mutations are guarded by single-authority SHA-256 hashes. Applying a patch instantly mutates the code and re-runs the full review suite."
+            kicker="Step 4"
+            title="Fix it safely"
+            description="Every fix is checksummed before it touches your code. Apply it in one click."
           />
         </div>
       </section>
@@ -471,7 +467,7 @@ export function LandingPage({
       <section id="philosophy" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
-            Core Philosophy
+            Why CodeEagle
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-obsidian-50">
             See. Understand. Fix. Verify.
@@ -487,12 +483,12 @@ export function LandingPage({
               <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
                 01 / SEE
               </span>
-              <h3 className="text-base font-bold text-[#F5F3EF]">
-                Grounded Line-Anchored Precision
+              <h3 className="text-lg font-bold text-[#F5F3EF]">
+                Find the exact line
               </h3>
             </div>
-            <p className="text-xs text-[#D4D0C8] leading-relaxed">
-              Every finding points directly to an exact start line and end line in your file. Clicking any finding in the triage queue auto-scrolls the code canvas and activates synchronized gutter severity pips.
+            <p className="text-sm text-[#D4D0C8] leading-relaxed">
+              Every finding links to a specific line in your file. Click it and the editor scrolls there instantly.
             </p>
             <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-[11px] text-[#A6A29B]">
               <span className="text-red-400 font-semibold">Line 6: </span>const JWT_SECRET = &quot;production_super_secret_key_12345&quot;;
@@ -504,12 +500,12 @@ export function LandingPage({
               <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
                 02 / UNDERSTAND
               </span>
-              <h3 className="text-base font-bold text-[#F5F3EF]">
-                Senior Staff PR Review Comments
+              <h3 className="text-lg font-bold text-[#F5F3EF]">
+                Read a clear explanation
               </h3>
             </div>
-            <p className="text-xs text-[#D4D0C8] leading-relaxed">
-              Findings are not cryptic compiler error codes. They are written as constructive, senior-level code review comments detailing the exact risk mechanism, exploit vector, and remediation advice.
+            <p className="text-sm text-[#D4D0C8] leading-relaxed">
+              Findings are written like a code review from a senior engineer — explaining why it matters and how to fix it, not just a compiler code.
             </p>
             <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] text-xs text-[#D4D0C8]">
               <span className="text-brand-400 font-semibold font-mono">Why this matters: </span>Token forging allows unauthenticated access across your entire API service.
@@ -521,12 +517,12 @@ export function LandingPage({
               <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
                 03 / FIX
               </span>
-              <h3 className="text-base font-bold text-[#F5F3EF]">
-                Executable Unified Diffs
+              <h3 className="text-lg font-bold text-[#F5F3EF]">
+                Apply a verified fix
               </h3>
             </div>
-            <p className="text-xs text-[#D4D0C8] leading-relaxed">
-              Review comments do not stop at theoretical advice. They provide concrete, syntactically verified unified diffs formatted for instant review and 1-click in-memory patch execution.
+            <p className="text-sm text-[#D4D0C8] leading-relaxed">
+              Each finding includes a diff you can apply in one click. The fix is verified before it touches your code.
             </p>
             <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-[11px] space-y-1">
               <div className="text-red-400">- const JWT_SECRET = &quot;...&quot;;</div>
@@ -539,12 +535,12 @@ export function LandingPage({
               <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
                 04 / VERIFY
               </span>
-              <h3 className="text-base font-bold text-[#F5F3EF]">
-                Automated Score Re-Auditing
+              <h3 className="text-lg font-bold text-[#F5F3EF]">
+                See your score improve
               </h3>
             </div>
-            <p className="text-xs text-[#D4D0C8] leading-relaxed">
-              Applying a patch automatically re-analyzes the modified code against the entire 13-rule AST catalog and recalculates your audit score in real time.
+            <p className="text-sm text-[#D4D0C8] leading-relaxed">
+              After you apply a fix, the code is re-analyzed automatically. Your score updates in real time.
             </p>
             <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-xs text-emerald-400 flex items-center justify-between">
               <span>Score: 50 → 75 (+25 pts)</span>
@@ -558,13 +554,13 @@ export function LandingPage({
       <section id="architecture" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
-            Technical Architecture
+            Under the hood
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
-            Engine Pipeline Schematic
+            How the engine works
           </h2>
           <p className="text-sm text-obsidian-400 mt-2">
-            Deterministic rules guarantee zero false-negatives on known vulnerabilities, while Gemini handles nuanced semantic logic.
+            Two engines run in parallel — static rules for known patterns, AI for everything else.
           </p>
         </div>
 
@@ -574,7 +570,7 @@ export function LandingPage({
             icon={<FileCode className="w-5 h-5 text-brand-500" />}
             kicker="01 / INPUT"
             title="Source Code"
-            description="JavaScript and JSX syntax streams ingested directly into memory without telemetry."
+            description="JavaScript and JSX syntax streams parsed directly in memory without telemetry."
             footer={
               <span className="font-mono text-[10px] text-obsidian-400">
                 Format: JS · JSX · ES2024
@@ -585,8 +581,8 @@ export function LandingPage({
           <FeatureCard
             icon={<Cpu className="w-5 h-5 text-brand-500" />}
             kicker="02 / PARSER"
-            title="Babel AST Traversal"
-            description="Deconstructs code into program nodes, eliminating regex string matching false positives."
+            title="Syntax Tree Traversal"
+            description="Breaks code into program nodes to eliminate false positives from text matching."
             footer={
               <span className="font-mono text-[10px] text-obsidian-400">
                 Engine: @babel/parser
@@ -597,12 +593,12 @@ export function LandingPage({
           <FeatureCard
             icon={<Sparkles className="w-5 h-5 text-brand-500" />}
             kicker="03 / ANALYZERS"
-            title="13 Rules + Gemini AI"
-            description="Deterministic rules evaluate AST nodes while Gemini models nuanced semantic control flow."
+            title="Rules + Contextual AI"
+            description="13 fast deterministic rules run first, then AI evaluates semantic logic and edge cases."
             className="border-brand-500/40 bg-brand-500/[0.03]"
             footer={
               <span className="font-mono text-[10px] text-brand-400">
-                Hybrid: Deterministic + AI
+                Hybrid: Static Rules + AI
               </span>
             }
           />
@@ -610,8 +606,8 @@ export function LandingPage({
           <FeatureCard
             icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
             kicker="04 / OUTPUT"
-            title="Verified Unified Diff"
-            description="Cryptographic SHA-256 single-authority hashes validate edits before patch execution."
+            title="Verified Diff"
+            description="Cryptographic SHA-256 hashes ensure fixes match your code before applying."
             footer={
               <span className="font-mono text-[10px] text-obsidian-400">
                 Guard: SHA-256 Checksum
@@ -628,13 +624,13 @@ export function LandingPage({
       <section id="prioritization" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
-            Prioritization
+            Severity levels
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
-            Prioritized Findings Spectrum
+            Not all issues are equal
           </h2>
           <p className="text-sm text-obsidian-400 mt-2">
-            Not all code issues are created equal. CodeEagle classifies findings into 4 distinct severity tiers so developers fix blockers first.
+            Findings are ranked by risk so you fix the dangerous ones first.
           </p>
         </div>
 
@@ -644,7 +640,7 @@ export function LandingPage({
             badge={<SeverityBadge severity="CRITICAL" />}
             kicker="P0 Blocker"
             title="Security Flaws"
-            description="Hardcoded secrets, unescaped SQL injections, eval() execution, and unverified token validations that immediately block deployment."
+            description="Hardcoded credentials, SQL injection, and token vulnerabilities that immediately put users at risk."
             className="border-severity-critical/30 hover:border-severity-critical/60"
             footer={
               <span className="text-[11px] font-mono text-severity-critical font-semibold">
@@ -658,7 +654,7 @@ export function LandingPage({
             badge={<SeverityBadge severity="HIGH" />}
             kicker="P1 High"
             title="Runtime Defects"
-            description="Unhandled asynchronous rejections, mutable global state side-effects, and React array-index key mutations causing state corruption."
+            description="Unhandled promise rejections, mutable global state, and React key errors that cause runtime crashes."
             className="border-severity-high/30 hover:border-severity-high/60"
             footer={
               <span className="text-[11px] font-mono text-severity-high font-semibold">
@@ -672,7 +668,7 @@ export function LandingPage({
             badge={<SeverityBadge severity="MEDIUM" />}
             kicker="P2 Quality"
             title="Complexity & Smells"
-            description="Cyclomatic complexity exceeding thresholds, deeply nested branching logic, and unoptimized resource allocations."
+            description="Functions that are too complex or deeply nested to maintain safely."
             className="border-severity-medium/30 hover:border-severity-medium/60"
             footer={
               <span className="text-[11px] font-mono text-severity-medium font-semibold">
@@ -685,8 +681,8 @@ export function LandingPage({
             icon={<FileCode className="w-5 h-5 text-obsidian-400" />}
             badge={<SeverityBadge severity="LOW" />}
             kicker="P3 Style"
-            title="Hygiene & Conventions"
-            description="Unused identifier bindings, dead code paths, missing type annotations, and minor readability opportunities."
+            title="Hygiene & Style"
+            description="Unused variables, dead code paths, and opportunities to simplify."
             className="border-obsidian-750 hover:border-obsidian-600"
             footer={
               <span className="text-[11px] font-mono text-obsidian-400 font-semibold">
@@ -701,13 +697,13 @@ export function LandingPage({
       <section id="integrity" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
-            Technical Integrity
+            What makes it different
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
-            Built on Concrete Engineering Principles
+            Built on real engineering
           </h2>
           <p className="text-sm text-obsidian-400 mt-2">
-            CodeEagle does not invent fake statistics, fake repositories, or fake AI capabilities. Every review is derived strictly from real AST parsing and contextual reasoning.
+            Every review is derived strictly from real syntax tree parsing and contextual reasoning — no fake numbers or vanity metrics.
           </p>
         </div>
 
@@ -716,11 +712,11 @@ export function LandingPage({
             icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
             kicker="STATIC ENGINE"
             badge={<span className="font-mono text-xl font-bold text-brand-400">13</span>}
-            title="Deterministic AST Rules"
-            description="Babel-powered AST static verification detects hardcoded secrets, SQL injections, and prototype pollution with zero false positives."
+            title="Deterministic Rules"
+            description="Built-in AST rules detect hardcoded secrets, injection flaws, and prototype pollution with zero false positives."
             footer={
               <span className="font-mono text-[10px] text-obsidian-400">
-                Deterministic AST static verification
+                Instant static verification
               </span>
             }
           />
@@ -729,11 +725,11 @@ export function LandingPage({
             icon={<Hash className="w-5 h-5 text-brand-500" />}
             kicker="INTEGRITY GUARD"
             badge={<span className="font-mono text-base font-bold text-brand-400">SHA-256</span>}
-            title="Single-Authority Hash Guard"
-            description="Cryptographic checksum validation guarantees string mutations match the authoritative buffer, preventing stale source corruption."
+            title="Cryptographic Hash Guard"
+            description="Every fix is checksummed before it touches your code. If the code changed since the fix was generated, it won't apply."
             footer={
               <span className="font-mono text-[10px] text-obsidian-400">
-                Protects against stale source corruption
+                Protects against stale code corruption
               </span>
             }
           />
@@ -742,11 +738,11 @@ export function LandingPage({
             icon={<Zap className="w-5 h-5 text-brand-500" />}
             kicker="LOCAL LATENCY"
             badge={<span className="font-mono text-xl font-bold text-brand-400">0 ms</span>}
-            title="Local AST Execution"
-            description="Static analyzer rules execute immediately in memory, returning instant baseline diagnostics before outbound network requests."
+            title="Instant Local Analysis"
+            description="Static rules execute immediately in memory, returning baseline findings before network calls finish."
             footer={
               <span className="font-mono text-[10px] text-obsidian-400">
-                Instant static analysis before network calls
+                Zero-latency first pass
               </span>
             }
           />
@@ -759,8 +755,8 @@ export function LandingPage({
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-obsidian-50">
             Before you ship, let CodeEagle take a look.
           </h2>
-          <p className="text-sm sm:text-base text-obsidian-400 max-w-xl mx-auto">
-            Paste your JavaScript or JSX source code into CodeEagle. Receive immediate line-grounded findings, senior PR review comments, and verified patches.
+          <p className="text-base text-obsidian-400 max-w-xl mx-auto">
+            Paste your code, see what's wrong, and fix it — all in one place.
           </p>
           <div className="pt-2">
             <Button
@@ -785,7 +781,7 @@ export function LandingPage({
                 <CodeEagleLogo size={24} withText={true} withSubtitle={true} />
               </div>
               <p className="text-sm text-[#74716C] max-w-sm leading-relaxed">
-                See what your code missed before your users do. Compiler-grade AST verification paired with contextual AI reasoning.
+                AI-powered code review that finds real problems and helps you fix them.
               </p>
             </div>
 
@@ -839,7 +835,7 @@ export function LandingPage({
                 <ul className="space-y-2.5 text-xs">
                   <li>
                     <a
-                      href="#pipeline"
+                      href="#architecture"
                       className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
                     >
                       AST Analysis
@@ -880,7 +876,10 @@ export function LandingPage({
                   </li>
                   <li>
                     <button
-                      onClick={onStartReviewing}
+                      onClick={() => {
+                        const el = document.getElementById('architecture');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }}
                       className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
                     >
                       Architecture
@@ -893,7 +892,7 @@ export function LandingPage({
 
           {/* Bottom Bar */}
           <div className="pt-8 border-t border-[#1C1C1C] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-[#74716C]">
-            <div>CodeEagle © 2026 · Single-Authority Safe Code Review</div>
+            <div>CodeEagle © 2026</div>
             <div className="text-[#A6A29B]">Built for developers who ship.</div>
           </div>
         </div>

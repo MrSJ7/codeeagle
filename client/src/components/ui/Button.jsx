@@ -30,10 +30,10 @@ export function Button({
     'hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.98]';
 
   const sizeStyles = {
-    xs: 'h-7 px-2.5 text-[11px] gap-1 rounded-[4px]',
-    sm: 'h-8 px-3 text-xs gap-1.5 rounded-[5px]',
-    md: 'h-9 px-3.5 text-xs gap-2 rounded-[5px]',
-    lg: 'h-10 px-4.5 text-sm gap-2.5 rounded-[6px]',
+    xs: 'h-7 px-2.5 text-xs gap-1 rounded-[4px]',
+    sm: 'h-8 px-3 text-[13px] gap-1.5 rounded-[5px]',
+    md: 'h-9 px-4 text-sm gap-2 rounded-[5px]',
+    lg: 'h-11 px-5 text-[15px] gap-2.5 rounded-[6px]',
   };
 
   const variantStyles = {

@@ -374,7 +374,7 @@ export default function App() {
           setPatchDiff(response.diff);
         }
 
-        showToast('Fix applied & verified with automated re-analysis.');
+        showToast('Fix applied and re-analyzed your code.');
       }
     } catch (err) {
       console.error('Patch error:', err);
@@ -444,7 +444,7 @@ export default function App() {
 
         setPreviewAiIssue(null);
         setAiPreviewData(null);
-        showToast('AI Patch applied & verified with automated re-analysis.');
+        showToast('AI Patch applied and re-analyzed your code.');
       }
     } catch (err) {
       console.error('Apply AI patch error:', err);
@@ -531,7 +531,7 @@ export default function App() {
             <div className="px-6 py-2 bg-brand-500/10 border-b border-brand-500/30 flex items-center justify-between text-xs font-mono text-brand-300 select-none shrink-0 shadow-sm">
               <div className="flex items-center gap-2">
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-500" />
-                <span>Reviewing code... AST static analysis: Complete · Gemini semantic reasoning: Running...</span>
+                <span>Analyzing your code...</span>
               </div>
               <span className="text-brand-400 text-[11px] font-bold uppercase tracking-wider bg-brand-500/20 px-2 py-0.5 rounded-[4px] border border-brand-500/40">Analyzing</span>
             </div>

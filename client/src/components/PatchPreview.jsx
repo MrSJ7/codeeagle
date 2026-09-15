@@ -51,7 +51,7 @@ export function PatchPreview({
               <Sparkles className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 id="patch-preview-title" className="text-xs font-bold text-obsidian-100 flex items-center gap-2">
+              <h3 id="patch-preview-title" className="text-base font-bold text-obsidian-100 flex items-center gap-2">
                 <span>Preview AI Patch</span>
                 {issue.rule && (
                   <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[3px] bg-obsidian-800 text-brand-400 border border-obsidian-700">
@@ -90,7 +90,7 @@ export function PatchPreview({
           <div className="rounded-[6px] border border-obsidian-800 bg-obsidian-950 text-obsidian-100 overflow-hidden font-mono text-[11px] leading-relaxed shadow-sm">
             <div className="px-3 py-1.5 bg-obsidian-950 border-b border-obsidian-800 flex items-center justify-between text-[10px] text-obsidian-400">
               <span className="font-semibold uppercase tracking-wider text-obsidian-300">
-                Proposed Diff
+                Suggested fix
               </span>
               <span>
                 Lines {startLine}{endLine !== startLine ? `–${endLine}` : ''}
@@ -117,7 +117,7 @@ export function PatchPreview({
         <div className="px-5 py-3 bg-obsidian-850 border-t border-obsidian-800 flex items-center justify-end gap-2.5">
           <Button
             variant="secondary"
-            size="sm"
+            size="md"
             onClick={onClose}
             disabled={isApplying}
             aria-label="Cancel patch application"
@@ -126,7 +126,7 @@ export function PatchPreview({
           </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="md"
             onClick={() => onConfirmApply(issue)}
             disabled={isApplying}
             isLoading={isApplying}

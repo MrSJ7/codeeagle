@@ -95,7 +95,7 @@ export function IssueDetails({
                 : 'text-obsidian-300 bg-obsidian-800 border-obsidian-700'
             }`}
           >
-            {isAi ? 'AI Semantic' : 'Static AST'}
+            {isAi ? 'AI' : 'Static'}
           </span>
         </div>
 
@@ -130,7 +130,7 @@ export function IssueDetails({
           <div className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 font-semibold mb-1.5">
             Why this matters
           </div>
-          <p className="text-obsidian-200 leading-relaxed font-normal">
+          <p className="text-sm text-obsidian-200 leading-relaxed font-normal">
             {issue.description}
           </p>
         </div>
@@ -140,7 +140,7 @@ export function IssueDetails({
           <div className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 font-semibold mb-1.5">
             Recommendation
           </div>
-          <p className="text-obsidian-200 leading-relaxed font-normal">
+          <p className="text-sm text-obsidian-200 leading-relaxed font-normal">
             {issue.recommendation}
           </p>
         </div>
@@ -150,7 +150,7 @@ export function IssueDetails({
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-mono uppercase tracking-wider text-obsidian-300 font-semibold">
-                Suggested Change (Unified Diff)
+                Suggested fix
               </span>
 
               <button
@@ -197,13 +197,13 @@ export function IssueDetails({
           {/* Integrity Note */}
           <div className="flex items-center gap-1.5 text-[11px] font-mono text-obsidian-400">
             <ShieldCheck className="w-3.5 h-3.5 text-brand-500 shrink-0" />
-            <span>Source verified · Single-occurrence SHA-256 match</span>
+            <span>Source verified · Fix verified against current code</span>
           </div>
 
           {isStatic && (
             <Button
               variant="primary"
-              size="md"
+              size="lg"
               onClick={() => onApplyPatch(issue)}
               disabled={isStale || isApplyingPatch}
               isLoading={isApplyingPatch}
@@ -217,7 +217,7 @@ export function IssueDetails({
           {isAi && (
             <Button
               variant="primary"
-              size="md"
+              size="lg"
               onClick={() => onPreviewAiPatch(issue)}
               disabled={isStale || isVerifyingAiPatch}
               isLoading={isVerifyingAiPatch}

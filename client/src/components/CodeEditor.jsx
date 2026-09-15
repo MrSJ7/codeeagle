@@ -312,9 +312,9 @@ export function CodeEditor({
                 <FileCode className="w-6 h-6" />
               </div>
               <h3 className="text-sm font-bold text-obsidian-100 font-sans mb-1">
-                Source Code Buffer Empty
+                Paste your code
               </h3>
-              <p className="text-xs text-obsidian-400 font-sans max-w-sm mb-5 leading-relaxed">
+              <p className="text-sm text-obsidian-400 font-sans max-w-sm mb-5 leading-relaxed">
                 Paste raw JavaScript or JSX source code to review, or select a pre-configured sample scenario:
               </p>
               <div className="flex items-center gap-2 flex-wrap justify-center font-mono text-xs">
@@ -344,7 +344,7 @@ export function CodeEditor({
             autoComplete="off"
             autoCorrect="off"
             aria-label={`Code editor for ${filename}`}
-            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-[#E6EDF3] resize-none outline-none font-mono text-xs leading-6 selection:bg-brand-500/25 selection:text-white dark-editor-scrollbar overflow-auto z-10"
+            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-[#E6EDF3] resize-none outline-none font-mono text-[13px] leading-6 selection:bg-brand-500/25 selection:text-white dark-editor-scrollbar overflow-auto z-10"
             style={{ tabSize: 2 }}
           />
         </div>

@@ -150,7 +150,7 @@ export function IssuePanel({
             </p>
             <p className="text-xs text-obsidian-500 mt-1 max-w-[200px] leading-relaxed">
               {issues.length === 0
-                ? 'Zero vulnerabilities or regressions detected.'
+                ? 'No issues found.'
                 : 'Try choosing another filter.'}
             </p>
           </div>
@@ -187,7 +187,7 @@ export function IssuePanel({
                         }`}
                         aria-hidden="true"
                       />
-                      <span className={`text-xs font-bold leading-snug truncate ${isSelected ? 'text-obsidian-50' : 'text-obsidian-200'}`}>
+                      <span className={`text-sm font-bold leading-snug truncate ${isSelected ? 'text-obsidian-50' : 'text-obsidian-200'}`}>
                         {issue.title}
                       </span>
                     </div>

@@ -38,7 +38,7 @@ export function ReviewSummary({
 
           {/* Idle Prompt */}
           <div className="text-obsidian-400 text-xs font-sans">
-            <span>Ready for review · AST static checks & Gemini semantic reasoning</span>
+            <span>Ready for review</span>
           </div>
 
           {/* Quick Action Button */}
@@ -68,7 +68,7 @@ export function ReviewSummary({
           <div className="flex items-center gap-2.5">
             <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-500 shrink-0" />
             <span className="font-mono text-xs text-obsidian-200">
-              Analyzing <strong className="text-obsidian-50">{filename}</strong>... Deterministic AST checks complete · Gemini semantic reasoning running...
+              Analyzing <strong className="text-obsidian-50">{filename}</strong>...
             </span>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-[4px] border border-brand-500/30 font-bold">
@@ -249,7 +249,7 @@ export function ReviewSummary({
                   : 'text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850'
               }`}
             >
-              Perf <strong className="font-mono font-semibold">{breakdown.performance ?? 100}</strong>
+              Performance <strong className="font-mono font-semibold">{breakdown.performance ?? 100}</strong>
             </button>
             <span className="text-obsidian-600">•</span>
             <button

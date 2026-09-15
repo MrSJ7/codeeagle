@@ -47,19 +47,19 @@ export const FeatureCard = ({
           {badge ? (
             <div>{badge}</div>
           ) : kicker ? (
-            <span className="font-mono text-[10px] tracking-wider uppercase text-[#74716C] group-hover:text-brand-400 transition-colors">
+            <span className="font-mono text-[11px] tracking-wider uppercase text-[#74716C] group-hover:text-brand-400 transition-colors">
               {kicker}
             </span>
           ) : null}
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-bold text-[#F5F3EF] mb-2 tracking-tight">
+        <h3 className="text-lg font-bold text-[#F5F3EF] mb-2 tracking-tight">
           {title}
         </h3>
 
         {/* Description */}
-        <p className="text-xs text-[#A6A29B] leading-relaxed">
+        <p className="text-sm text-[#A6A29B] leading-relaxed max-w-[65ch]">
           {description}
         </p>
       </div>
