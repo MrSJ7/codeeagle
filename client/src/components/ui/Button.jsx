@@ -25,7 +25,7 @@ export function Button({
 
   const variantStyles = {
     primary:
-      'bg-brand-500 hover:bg-brand-400 text-graphite-950 font-semibold shadow-dev hover:shadow-glow-amber border border-brand-400/50 active:bg-brand-600',
+      'bg-brand-500 hover:bg-brand-400 text-graphite-950 font-semibold shadow-dev hover:shadow-glow-emerald border border-brand-400/50 active:bg-brand-600',
     secondary:
       'bg-graphite-800 hover:bg-graphite-750 text-graphite-100 font-medium border border-graphite-700 hover:border-graphite-600 shadow-dev-sm',
     ghost:
@@ -33,7 +33,7 @@ export function Button({
     danger:
       'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 hover:border-red-500/50 shadow-dev-sm',
     accent:
-      'bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 border border-brand-500/30 hover:border-brand-500/50',
+      'bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 border border-teal-500/30 hover:border-teal-500/50',
   };
 
   const chosenVariant = variantStyles[variant] || variantStyles.primary;

@@ -1,5 +1,16 @@
 import React from 'react';
-import { Play, Loader2, History, ArrowRight, FileCode, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  Play,
+  Loader2,
+  History,
+  ArrowRight,
+  FileCode,
+  CheckCircle2,
+  AlertCircle,
+  Layers,
+  ListTree,
+  GitBranch,
+} from 'lucide-react';
 import { CodeEagleLogo } from './CodeEagleLogo.jsx';
 import { Button } from './ui/Button.jsx';
 
@@ -20,6 +31,8 @@ export function Navbar({
   lineCount = null,
   issueCount = null,
   reviewStatus = 'IDLE',
+  activeLens = 'overview', // 'overview' | 'findings' | 'architecture'
+  onSelectLens = null,
 }) {
   const handleRun = onRunReview || onRunAudit;
   const isRunning = isReviewing || isAuditing;
@@ -41,7 +54,7 @@ export function Navbar({
           {/* Editorial Nav Anchors */}
           <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-graphite-400">
             <a
-              href="#interactive-demo"
+              href="#product-demo"
               className="hover:text-graphite-100 transition-colors focus-visible:outline-none focus-visible:text-graphite-100"
             >
               Demo
@@ -93,14 +106,14 @@ export function Navbar({
 
   // Workspace Mode (Compact, Precision Developer Cockpit)
   return (
-    <header className="h-11 bg-graphite-900 border-b border-graphite-800 px-4 sm:px-5 flex items-center justify-between select-none shrink-0 z-20">
+    <header className="h-12 bg-graphite-900 border-b border-graphite-800 px-4 sm:px-5 flex items-center justify-between select-none shrink-0 z-20">
       {/* Left: Brand Mark + Breadcrumb File Context */}
       <div className="flex items-center gap-4 min-w-0">
         <button
           type="button"
           onClick={onNavigateHome}
           className="flex items-center hover:opacity-85 transition-opacity cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[4px]"
-          title="Return to Product Overview"
+          title="Return to Product Introduction"
         >
           <CodeEagleLogo size={20} withText={true} />
         </button>
@@ -133,11 +146,66 @@ export function Navbar({
           ) : reviewStatus === 'SUCCESS' ? (
             <span className="inline-flex items-center gap-1 text-[11px] text-brand-400 font-medium">
               <CheckCircle2 className="w-3 h-3 text-brand-400" />
-              <span className="hidden lg:inline">Review complete</span>
+              <span className="hidden lg:inline">Complete</span>
             </span>
           ) : null}
         </div>
       </div>
+
+      {/* Center: 3 Review Lenses Switcher */}
+      {onSelectLens && reviewStatus !== 'IDLE' && (
+        <div className="flex items-center gap-1 bg-graphite-950 p-1 rounded-lg border border-graphite-800 shadow-dev-sm">
+          <button
+            type="button"
+            onClick={() => onSelectLens('overview')}
+            className={`px-3 py-1 rounded-[6px] text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+              activeLens === 'overview'
+                ? 'bg-brand-500 text-graphite-950 font-semibold shadow-dev-sm'
+                : 'text-graphite-400 hover:text-graphite-200 hover:bg-graphite-850'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>Overview</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onSelectLens('findings')}
+            className={`px-3 py-1 rounded-[6px] text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+              activeLens === 'findings'
+                ? 'bg-brand-500 text-graphite-950 font-semibold shadow-dev-sm'
+                : 'text-graphite-400 hover:text-graphite-200 hover:bg-graphite-850'
+            }`}
+          >
+            <ListTree className="w-3.5 h-3.5" />
+            <span>Findings</span>
+            {typeof issueCount === 'number' && issueCount > 0 && (
+              <span
+                className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold ${
+                  activeLens === 'findings'
+                    ? 'bg-graphite-950 text-graphite-100'
+                    : 'bg-graphite-800 text-graphite-300'
+                }`}
+              >
+                {issueCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onSelectLens('architecture')}
+            className={`px-3 py-1 rounded-[6px] text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
+              activeLens === 'architecture'
+                ? 'bg-brand-500 text-graphite-950 font-semibold shadow-dev-sm'
+                : 'text-graphite-400 hover:text-graphite-200 hover:bg-graphite-850'
+            }`}
+          >
+            <GitBranch className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Architecture</span>
+          </button>
+        </div>
+      )}
 
       {/* Right: History & Primary Action */}
       <div className="flex items-center gap-2.5 shrink-0">

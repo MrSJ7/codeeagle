@@ -16,8 +16,10 @@ import {
   verifyAiPatchApi,
   applyAiPatchApi,
 } from './services/reviewApi.js';
-import { AlertTriangle, Loader2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { LandingPage } from './components/LandingPage.jsx';
+import { ReviewOverview } from './components/ReviewOverview.jsx';
+import { ArchitectureFlow } from './components/ArchitectureFlow.jsx';
 
 export default function App() {
   const getInitialRoute = () => {
@@ -38,6 +40,7 @@ export default function App() {
   const [reviewData, setReviewData] = useState(null);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState(null);
+  const [activeLens, setActiveLens] = useState('overview'); // 'overview' | 'findings' | 'architecture'
   const [currentReviewId, setCurrentReviewId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [toast, setToast] = useState(null);
@@ -121,6 +124,7 @@ export default function App() {
       const result = await runReview(sourceCode, 'javascript', filenameToUse);
       setReviewData(result);
       setReviewStatus('SUCCESS');
+      setActiveLens('overview');
       setSelectedIssueId(result.issues[0]?.id || null);
       setCurrentReviewId(result.reviewId || null);
       setIsHistoricalView(false);
@@ -191,19 +195,81 @@ export default function App() {
     }, 200);
   };
 
-  // Keyboard shortcut: ⌘+Enter to Run Review
+  // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Escape closes modals/drawers first
+      if (e.key === 'Escape') {
+        if (previewAiIssue) {
+          e.preventDefault();
+          setPreviewAiIssue(null);
+          setAiPreviewData(null);
+          return;
+        }
+        if (isHistoryOpen) {
+          e.preventDefault();
+          setIsHistoryOpen(false);
+          return;
+        }
+      }
+
+      // ⌘+Enter to Run Review
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         if (currentRoute === 'review' && reviewStatus !== 'ANALYZING') {
           e.preventDefault();
           handleRunReview();
+          return;
+        }
+      }
+
+      // Ignore single key shortcuts if user is typing in an input, textarea, or contentEditable
+      const targetTag = e.target?.tagName?.toLowerCase();
+      if (targetTag === 'input' || targetTag === 'textarea' || e.target?.isContentEditable) {
+        return;
+      }
+
+      if (currentRoute === 'review') {
+        // Lens navigation: 1 (Overview), 2 (Findings), 3 (Architecture)
+        if (e.key === '1' && reviewStatus !== 'IDLE') {
+          e.preventDefault();
+          setActiveLens('overview');
+        } else if (e.key === '2') {
+          e.preventDefault();
+          setActiveLens('findings');
+        } else if (e.key === '3' && reviewStatus !== 'IDLE') {
+          e.preventDefault();
+          setActiveLens('architecture');
+        }
+
+        // Issue navigation: J (next), K (prev)
+        if (activeLens === 'findings' && reviewData?.issues?.length > 0) {
+          const issues = reviewData.issues;
+          const currentIndex = issues.findIndex((i) => i.id === selectedIssueId);
+          if (e.key === 'j' || e.key === 'J') {
+            e.preventDefault();
+            const nextIndex = currentIndex < issues.length - 1 ? currentIndex + 1 : 0;
+            setSelectedIssueId(issues[nextIndex].id);
+          } else if (e.key === 'k' || e.key === 'K') {
+            e.preventDefault();
+            const prevIndex = currentIndex > 0 ? currentIndex - 1 : issues.length - 1;
+            setSelectedIssueId(issues[prevIndex].id);
+          }
         }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentRoute, reviewStatus, code, currentFilename]);
+  }, [
+    currentRoute,
+    reviewStatus,
+    code,
+    currentFilename,
+    activeLens,
+    reviewData,
+    selectedIssueId,
+    isHistoryOpen,
+    previewAiIssue,
+  ]);
 
   // 1. Preset change from dropdown
   const handleSelectPreset = (presetId) => {
@@ -251,6 +317,7 @@ export default function App() {
       setCode(data.code || '');
       setReviewData(data);
       setReviewStatus('SUCCESS');
+      setActiveLens('overview');
       setSelectedIssueId(data.issues?.[0]?.id || null);
       setCurrentReviewId(data.reviewId);
       setIsHistoricalView(true);
@@ -402,26 +469,30 @@ export default function App() {
             lineCount={code.split('\n').length}
             issueCount={reviewData?.issues?.length || 0}
             reviewStatus={reviewStatus}
+            activeLens={activeLens}
+            onSelectLens={setActiveLens}
           />
 
-          {/* Review Summary Bar - Always visible to eliminate layout shifts */}
-          <ReviewSummary
-            reviewData={reviewData}
-            reviewStatus={reviewStatus}
-            isStale={isStale}
-            isHistorical={isHistoricalView}
-            historicalCreatedAt={historicalCreatedAt}
-            filename={currentFilename}
-            language="JavaScript"
-            lineCount={code.split('\n').length}
-            activeCategory={activeCategoryFilter}
-            onSelectCategory={(cat) =>
-              setActiveCategoryFilter((prev) => (prev === cat ? null : cat))
-            }
-            onRunReview={handleRunReview}
-            patchDiff={patchDiff}
-            onDismissDiff={() => setPatchDiff(null)}
-          />
+          {/* Review Summary Bar - visible in findings mode or when diff is present */}
+          {(activeLens === 'findings' || reviewStatus !== 'SUCCESS' || patchDiff) && (
+            <ReviewSummary
+              reviewData={reviewData}
+              reviewStatus={reviewStatus}
+              isStale={isStale}
+              isHistorical={isHistoricalView}
+              historicalCreatedAt={historicalCreatedAt}
+              filename={currentFilename}
+              language="JavaScript"
+              lineCount={code.split('\n').length}
+              activeCategory={activeCategoryFilter}
+              onSelectCategory={(cat) =>
+                setActiveCategoryFilter((prev) => (prev === cat ? null : cat))
+              }
+              onRunReview={handleRunReview}
+              patchDiff={patchDiff}
+              onDismissDiff={() => setPatchDiff(null)}
+            />
+          )}
 
           {/* Review in Progress Banner */}
           {isReviewing && (
@@ -451,53 +522,83 @@ export default function App() {
             </div>
           )}
 
-          {/* Stable Three-Column Workspace Layout (Zero layout jumps) */}
-          <main className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden bg-graphite-950">
-            {/* Left Column: Review findings / Findings Queue */}
-            <IssuePanel
-              issues={reviewData?.issues || []}
-              selectedIssueId={selectedIssueId}
-              onSelectIssue={setSelectedIssueId}
-              reviewStatus={reviewStatus}
-              onRunReview={handleRunReview}
-              isStale={isStale}
-              filename={currentFilename}
-              externalCategoryFilter={activeCategoryFilter}
-              onClearCategoryFilter={() => setActiveCategoryFilter(null)}
-              className="w-full lg:w-72 xl:w-80 shrink-0 h-48 lg:h-full border-b lg:border-b-0 border-r border-graphite-800"
-            />
-
-            {/* Center Column: Code Editor */}
-            <section className="flex-1 h-full flex flex-col overflow-hidden min-w-0">
-              <CodeEditor
-                code={code}
-                onChange={handleCodeChange}
-                issues={reviewData?.issues || []}
-                highlightedIssue={currentSelectedIssue}
+          {/* Main Content Area based on Active Lens */}
+          {reviewStatus === 'SUCCESS' && activeLens === 'overview' ? (
+            <main className="flex-1 h-full overflow-hidden bg-graphite-950">
+              <ReviewOverview
+                reviewData={reviewData}
                 filename={currentFilename}
                 language="JavaScript"
+                lineCount={code.split('\n').length}
+                onNavigateFindings={() => setActiveLens('findings')}
+                onSelectIssue={(issueId) => {
+                  setSelectedIssueId(issueId);
+                  setActiveLens('findings');
+                }}
+              />
+            </main>
+          ) : reviewStatus === 'SUCCESS' && activeLens === 'architecture' ? (
+            <main className="flex-1 h-full overflow-hidden bg-graphite-950">
+              <ArchitectureFlow
+                code={code}
+                issues={reviewData?.issues || []}
+                filename={currentFilename}
+                onSelectIssue={(issueId) => {
+                  setSelectedIssueId(issueId);
+                  setActiveLens('findings');
+                }}
+                onNavigateFindings={() => setActiveLens('findings')}
+              />
+            </main>
+          ) : (
+            /* Findings Lens / Code Workspace (Three-Column Layout) */
+            <main className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden bg-graphite-950">
+              {/* Left Column: Review findings / Findings Queue */}
+              <IssuePanel
+                issues={reviewData?.issues || []}
+                selectedIssueId={selectedIssueId}
+                onSelectIssue={setSelectedIssueId}
+                reviewStatus={reviewStatus}
+                onRunReview={handleRunReview}
+                isStale={isStale}
+                filename={currentFilename}
+                externalCategoryFilter={activeCategoryFilter}
+                onClearCategoryFilter={() => setActiveCategoryFilter(null)}
+                className="w-full lg:w-72 xl:w-80 shrink-0 h-48 lg:h-full border-b lg:border-b-0 border-r border-graphite-800"
+              />
+
+              {/* Center Column: Code Editor */}
+              <section className="flex-1 h-full flex flex-col overflow-hidden min-w-0">
+                <CodeEditor
+                  code={code}
+                  onChange={handleCodeChange}
+                  issues={reviewData?.issues || []}
+                  highlightedIssue={currentSelectedIssue}
+                  filename={currentFilename}
+                  language="JavaScript"
+                  reviewStatus={reviewStatus}
+                  isStale={isStale}
+                  presets={PRESETS}
+                  selectedPresetId={selectedPresetId}
+                  onSelectPreset={handleSelectPreset}
+                  onSelectIssue={setSelectedIssueId}
+                />
+              </section>
+
+              {/* Right Column: Selected Finding Details / Remediation */}
+              <IssueDetails
+                issue={currentSelectedIssue}
+                onApplyPatch={handleApplyPatch}
+                onPreviewAiPatch={handlePreviewAiPatch}
                 reviewStatus={reviewStatus}
                 isStale={isStale}
-                presets={PRESETS}
-                selectedPresetId={selectedPresetId}
-                onSelectPreset={handleSelectPreset}
-                onSelectIssue={setSelectedIssueId}
+                isApplyingPatch={isApplyingPatch || isApplyingAiPatch}
+                isVerifyingAiPatch={isVerifyingAiPatch}
+                filename={currentFilename}
+                className="w-full lg:w-80 xl:w-96 shrink-0 h-64 lg:h-full border-t lg:border-t-0 border-l border-graphite-800"
               />
-            </section>
-
-            {/* Right Column: Selected Finding Details / Remediation */}
-            <IssueDetails
-              issue={currentSelectedIssue}
-              onApplyPatch={handleApplyPatch}
-              onPreviewAiPatch={handlePreviewAiPatch}
-              reviewStatus={reviewStatus}
-              isStale={isStale}
-              isApplyingPatch={isApplyingPatch || isApplyingAiPatch}
-              isVerifyingAiPatch={isVerifyingAiPatch}
-              filename={currentFilename}
-              className="w-full lg:w-80 xl:w-96 shrink-0 h-64 lg:h-full border-t lg:border-t-0 border-l border-graphite-800"
-            />
-          </main>
+            </main>
+          )}
         </>
       )}
 

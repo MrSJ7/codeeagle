@@ -42,3 +42,15 @@ Thumbs.db
 .impeccable/*.local.json
 .impeccable/live/
 
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+
+# Agent skill installations
+.agents/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.opencode/
+skills-lock.json
+

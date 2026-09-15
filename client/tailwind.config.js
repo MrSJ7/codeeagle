@@ -33,7 +33,7 @@ export default {
         border: {
           subtle: '#21262D',
           strong: '#30363D',
-          active: '#F97316',
+          active: '#10B981',
         },
         code: {
           DEFAULT: '#0D1117',
@@ -44,22 +44,27 @@ export default {
           lineHover: '#161B22',
         },
         brand: {
-          50: '#FFF7ED',
-          100: '#FFEDD5',
-          200: '#FED7AA',
-          300: '#FDBA74',
-          400: '#FB923C',
-          500: '#F97316', // Vibrant Amber brand anchor from logo
-          600: '#EA580C',
-          700: '#C2410C',
-          800: '#9A3412',
-          900: '#7C2D12',
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          400: '#34D399',
+          500: '#10B981', // Vibrant Emerald primary brand
+          600: '#059669',
+          700: '#047857',
+          800: '#065F46',
+          900: '#064E3B',
         },
         teal: {
           400: '#2DD4BF',
           500: '#14B8A6',
           600: '#0D9488',
           700: '#0F766E',
+        },
+        blue: {
+          400: '#60A5FA',
+          500: '#3B82F6',
+          600: '#2563EB',
         },
         cyan: {
           400: '#38BDF8',
@@ -69,7 +74,7 @@ export default {
         severity: {
           critical: '#EF4444',
           high: '#F97316',
-          medium: '#FBBF24',
+          medium: '#F59E0B',
           low: '#38BDF8',
         },
       },
@@ -77,8 +82,8 @@ export default {
         'dev-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)',
         'dev': '0 4px 12px 0 rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06)',
         'dev-lg': '0 12px 32px -4px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08)',
-        'glow-amber': '0 0 20px -3px rgba(249, 115, 22, 0.35)',
-        'glow-brand': '0 0 20px -3px rgba(249, 115, 22, 0.35)',
+        'glow-emerald': '0 0 20px -3px rgba(16, 185, 129, 0.35)',
+        'glow-brand': '0 0 20px -3px rgba(16, 185, 129, 0.35)',
         'glow-cyan': '0 0 20px -4px rgba(56, 189, 248, 0.25)',
       },
     },
