@@ -462,7 +462,7 @@ export default function App() {
     <div
       className={`min-h-screen ${
         currentRoute === 'review' ? 'h-screen flex flex-col overflow-hidden' : 'flex flex-col'
-      } bg-obsidian-950 text-obsidian-50 font-sans transition-opacity duration-200 ${
+      } bg-slate-50 dark:bg-[#080808] text-slate-900 dark:text-[#F5F3EF] font-sans transition-opacity duration-200 ${
         isTransitioning ? 'opacity-40' : 'opacity-100'
       }`}
     >

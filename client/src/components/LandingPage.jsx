@@ -41,7 +41,7 @@ export function LandingPage({
   };
 
   return (
-    <div className="min-h-screen bg-obsidian-950 text-obsidian-50 font-sans selection:bg-brand-500/20 selection:text-brand-300 flex flex-col scroll-smooth">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#080808] text-slate-900 dark:text-[#F5F3EF] font-sans selection:bg-blue-500/20 dark:selection:bg-brand-500/20 selection:text-blue-700 dark:selection:text-brand-300 flex flex-col scroll-smooth">
       {/* 1. Header Navigation */}
       <Navbar
         variant="marketing"
@@ -56,13 +56,11 @@ export function LandingPage({
       {/* 2. Hero Section: Editorial Developer Entry Point */}
       <section className="pt-12 sm:pt-20 pb-16 px-4 sm:px-8 max-w-7xl mx-auto w-full">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          {/* Hero headline — clean entry with no jargon kicker */}
-
           {/* Kinetic Editorial Headline */}
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-obsidian-50 leading-[1.12]">
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50 leading-[1.12]">
             <span>Review your code.</span>
             <br />
-            <span className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-obsidian-50">
+            <span className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-slate-900 dark:text-obsidian-50">
               <span>Catch</span>
               <LayoutTextFlip
                 words={[
@@ -73,14 +71,14 @@ export function LandingPage({
                   'SECRET LEAKS',
                 ]}
                 duration={2600}
-                pillClassName="border-brand-500/40 bg-brand-500/10 text-brand-400"
+                pillClassName="border-blue-300 dark:border-brand-500/40 bg-blue-50 dark:bg-brand-500/10 text-blue-700 dark:text-brand-400"
               />
             </span>
             <span>before you ship.</span>
           </h1>
 
           {/* Precision Technical Subtitle */}
-          <p className="text-base sm:text-lg text-obsidian-400 leading-relaxed max-w-2xl mx-auto font-normal">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-obsidian-400 leading-relaxed max-w-2xl mx-auto font-normal">
             Paste your code. Get line-by-line findings with fixes you can apply in one click.
           </p>
 
@@ -107,39 +105,39 @@ export function LandingPage({
           </div>
 
           {/* Instant Scenario Quick-Starts */}
-          <div className="pt-8 border-t border-obsidian-800/80 max-w-2xl mx-auto">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 mb-3.5">
+          <div className="pt-8 border-t border-slate-200 dark:border-obsidian-800/80 max-w-2xl mx-auto">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-slate-500 dark:text-obsidian-400 mb-3.5 font-semibold">
               Try a live example:
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2.5">
               <button
                 onClick={() => onSelectScenarioAndStart('insecure-login')}
-                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
+                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-white dark:bg-obsidian-900 hover:bg-slate-100 dark:hover:bg-obsidian-850 border border-slate-200 dark:border-obsidian-750 hover:border-slate-300 dark:hover:border-obsidian-600 text-xs text-slate-700 dark:text-obsidian-300 hover:text-slate-900 dark:hover:text-obsidian-50 transition-all font-mono cursor-pointer shadow-xs"
               >
-                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-red-950/50 text-red-400 border border-red-800/50 font-bold">P0</span>
-                <span className="font-semibold text-obsidian-100">auth.js</span>
-                <span className="text-obsidian-400 text-[11px]">· Hardcoded Secret</span>
-                <ArrowRight className="w-3 h-3 text-obsidian-500 group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800/50 font-bold">P0</span>
+                <span className="font-semibold text-slate-900 dark:text-obsidian-100">auth.js</span>
+                <span className="text-slate-500 dark:text-obsidian-400 text-[11px]">· Hardcoded Secret</span>
+                <ArrowRight className="w-3 h-3 text-slate-400 dark:text-obsidian-500 group-hover:text-blue-600 dark:group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
               </button>
 
               <button
                 onClick={() => onSelectScenarioAndStart('buggy-react')}
-                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
+                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-white dark:bg-obsidian-900 hover:bg-slate-100 dark:hover:bg-obsidian-850 border border-slate-200 dark:border-obsidian-750 hover:border-slate-300 dark:hover:border-obsidian-600 text-xs text-slate-700 dark:text-obsidian-300 hover:text-slate-900 dark:hover:text-obsidian-50 transition-all font-mono cursor-pointer shadow-xs"
               >
-                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-orange-950/50 text-orange-400 border border-orange-800/50 font-bold">P1</span>
-                <span className="font-semibold text-obsidian-100">ActivityFeed.jsx</span>
-                <span className="text-obsidian-400 text-[11px]">· Key Bug</span>
-                <ArrowRight className="w-3 h-3 text-obsidian-500 group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-orange-100 dark:bg-orange-950/50 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50 font-bold">P1</span>
+                <span className="font-semibold text-slate-900 dark:text-obsidian-100">ActivityFeed.jsx</span>
+                <span className="text-slate-500 dark:text-obsidian-400 text-[11px]">· Key Bug</span>
+                <ArrowRight className="w-3 h-3 text-slate-400 dark:text-obsidian-500 group-hover:text-blue-600 dark:group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
               </button>
 
               <button
                 onClick={() => onSelectScenarioAndStart('complex-function')}
-                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
+                className="group flex items-center gap-2.5 px-3.5 py-2 rounded-[5px] bg-white dark:bg-obsidian-900 hover:bg-slate-100 dark:hover:bg-obsidian-850 border border-slate-200 dark:border-obsidian-750 hover:border-slate-300 dark:hover:border-obsidian-600 text-xs text-slate-700 dark:text-obsidian-300 hover:text-slate-900 dark:hover:text-obsidian-50 transition-all font-mono cursor-pointer shadow-xs"
               >
-                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-amber-950/50 text-amber-400 border border-amber-800/50 font-bold">P2</span>
-                <span className="font-semibold text-obsidian-100">shippingFee.js</span>
-                <span className="text-obsidian-400 text-[11px]">· Logic Edge Case</span>
-                <ArrowRight className="w-3 h-3 text-obsidian-500 group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50 font-bold">P2</span>
+                <span className="font-semibold text-slate-900 dark:text-obsidian-100">shippingFee.js</span>
+                <span className="text-slate-500 dark:text-obsidian-400 text-[11px]">· Logic Edge Case</span>
+                <ArrowRight className="w-3 h-3 text-slate-400 dark:text-obsidian-500 group-hover:text-blue-600 dark:group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
               </button>
             </div>
           </div>
@@ -151,22 +149,22 @@ export function LandingPage({
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
             <div>
-              <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
+              <div className="text-[11px] font-mono text-blue-600 dark:text-brand-500 uppercase tracking-wider font-semibold">
                 Live Demo
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-obsidian-50">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50">
                 See a review in action
               </h2>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs font-mono text-obsidian-400 flex items-center gap-2">
+              <span className="text-xs font-mono text-slate-600 dark:text-obsidian-400 flex items-center gap-2">
                 <span>Status:</span>
                 {demoFixed ? (
-                  <span className="px-2.5 py-0.5 rounded-[4px] bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 font-semibold">
+                  <span className="px-2.5 py-0.5 rounded-[4px] bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 font-semibold">
                     RESOLVED (100/100) · +25 pts
                   </span>
                 ) : (
-                  <span className="px-2.5 py-0.5 rounded-[4px] bg-red-950/40 border border-red-800/60 text-red-300 font-semibold">
+                  <span className="px-2.5 py-0.5 rounded-[4px] bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 font-semibold">
                     1 BLOCKER (50/100)
                   </span>
                 )}
@@ -174,9 +172,9 @@ export function LandingPage({
               {demoFixed && (
                 <button
                   onClick={handleResetDemo}
-                  className="text-xs font-mono text-obsidian-300 hover:text-white px-2.5 py-1 rounded-[4px] bg-[#141414] hover:bg-[#1C1C1C] border border-[#242424] inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                  className="text-xs font-mono text-slate-700 dark:text-obsidian-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1 rounded-[4px] bg-slate-100 dark:bg-[#141414] hover:bg-slate-200 dark:hover:bg-[#1C1C1C] border border-slate-200 dark:border-[#242424] inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
                 >
-                  <RotateCcw className="w-3 h-3 text-brand-400" />
+                  <RotateCcw className="w-3 h-3 text-blue-600 dark:text-brand-400" />
                   <span>Replay Demo</span>
                 </button>
               )}
@@ -433,15 +431,15 @@ export function LandingPage({
       </section>
 
       {/* 4. Section 04: Product Storytelling — How a Review Happens */}
-      <section id="how-it-works" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
+      <section id="how-it-works" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-slate-200 dark:border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
-          <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
+          <div className="text-[11px] font-mono text-blue-600 dark:text-brand-500 uppercase tracking-wider font-semibold">
             How It Works
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50 mt-1">
             How a review happens
           </h2>
-          <p className="text-sm text-obsidian-400 mt-2">
+          <p className="text-sm text-slate-600 dark:text-obsidian-400 mt-2">
             From paste to fix in four steps.
           </p>
         </div>
@@ -471,15 +469,15 @@ export function LandingPage({
       </section>
 
       {/* 5. Section 05: Why CodeEagle: SEE · UNDERSTAND · FIX · VERIFY */}
-      <section id="philosophy" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
+      <section id="philosophy" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-slate-200 dark:border-obsidian-850 scroll-mt-24">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
-          <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
+          <div className="text-[11px] font-mono text-blue-600 dark:text-brand-500 uppercase tracking-wider font-semibold">
             Why CodeEagle
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-obsidian-50">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50">
             See. Understand. Fix. Verify.
           </h2>
-          <p className="text-sm text-obsidian-400">
+          <p className="text-sm text-slate-600 dark:text-obsidian-400">
             A complete review workflow that eliminates developer guesswork.
           </p>
         </div>
@@ -558,15 +556,15 @@ export function LandingPage({
       </section>
 
       {/* 6. Section 06: Analysis Engine Pipeline Architecture */}
-      <section id="architecture" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
+      <section id="architecture" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-slate-200 dark:border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
-          <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
+          <div className="text-[11px] font-mono text-blue-600 dark:text-brand-500 uppercase tracking-wider font-semibold">
             Under the hood
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50 mt-1">
             How the engine works
           </h2>
-          <p className="text-sm text-obsidian-400 mt-2">
+          <p className="text-sm text-slate-600 dark:text-obsidian-400 mt-2">
             Two engines run in parallel — static rules for known patterns, AI for everything else.
           </p>
         </div>
@@ -578,7 +576,7 @@ export function LandingPage({
             title="Source Code"
             description="JavaScript and JSX syntax streams parsed directly in memory without telemetry."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400">
+              <span className="font-mono text-[10px] text-slate-500 dark:text-obsidian-400">
                 Format: JS · JSX · ES2024
               </span>
             }
@@ -589,7 +587,7 @@ export function LandingPage({
             title="Syntax Tree Traversal"
             description="Breaks code into program nodes to eliminate false positives from text matching."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400">
+              <span className="font-mono text-[10px] text-slate-500 dark:text-obsidian-400">
                 Engine: @babel/parser
               </span>
             }
@@ -599,9 +597,9 @@ export function LandingPage({
             kicker="03 / ANALYZERS"
             title="Rules + Contextual AI"
             description="13 fast deterministic rules run first, then AI evaluates semantic logic and edge cases."
-            className="border-brand-500/40 bg-brand-500/[0.03]"
+            className="border-blue-300 dark:border-brand-500/40 bg-blue-50/50 dark:bg-brand-500/[0.03]"
             footer={
-              <span className="font-mono text-[10px] text-brand-400">
+              <span className="font-mono text-[10px] text-blue-700 dark:text-brand-400">
                 Hybrid: Static Rules + AI
               </span>
             }
@@ -612,7 +610,7 @@ export function LandingPage({
             title="Verified Diff"
             description="Cryptographic SHA-256 hashes ensure fixes match your code before applying."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400">
+              <span className="font-mono text-[10px] text-slate-500 dark:text-obsidian-400">
                 Guard: SHA-256 Checksum
               </span>
             }
@@ -624,15 +622,15 @@ export function LandingPage({
       </section>
 
       {/* 7. Section 07: Review Intelligence & Findings Severity Spectrum */}
-      <section id="prioritization" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
+      <section id="prioritization" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-slate-200 dark:border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
-          <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
+          <div className="text-[11px] font-mono text-blue-600 dark:text-brand-500 uppercase tracking-wider font-semibold">
             Severity levels
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50 mt-1">
             Not all issues are equal
           </h2>
-          <p className="text-sm text-obsidian-400 mt-2">
+          <p className="text-sm text-slate-600 dark:text-obsidian-400 mt-2">
             Findings are ranked by risk so you fix the dangerous ones first.
           </p>
         </div>
@@ -682,9 +680,9 @@ export function LandingPage({
             kicker="P3 Style"
             title="Hygiene & Style"
             description="Unused variables, dead code paths, and opportunities to simplify."
-            className="border-obsidian-750 hover:border-obsidian-600"
+            className="border-slate-200 dark:border-obsidian-750 hover:border-slate-300 dark:hover:border-obsidian-600"
             footer={
-              <span className="text-[11px] font-mono text-obsidian-400 font-semibold">
+              <span className="text-[11px] font-mono text-slate-500 dark:text-obsidian-400 font-semibold">
                 P3 Style · Advisory Only
               </span>
             }
@@ -693,15 +691,15 @@ export function LandingPage({
       </section>
 
       {/* 8. Section 08: Technical Trust & Real Capabilities */}
-      <section id="integrity" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
+      <section id="integrity" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-slate-200 dark:border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
-          <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
+          <div className="text-[11px] font-mono text-blue-600 dark:text-brand-500 uppercase tracking-wider font-semibold">
             What makes it different
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50 mt-1">
             Built on real engineering
           </h2>
-          <p className="text-sm text-obsidian-400 mt-2">
+          <p className="text-sm text-slate-600 dark:text-obsidian-400 mt-2">
             Every review is derived strictly from real syntax tree parsing and contextual reasoning — no fake numbers or vanity metrics.
           </p>
         </div>
@@ -709,11 +707,11 @@ export function LandingPage({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FeatureCard
             kicker="STATIC ENGINE"
-            badge={<span className="font-mono text-xl font-bold text-brand-400">13</span>}
+            badge={<span className="font-mono text-xl font-bold text-blue-600 dark:text-brand-400">13</span>}
             title="Deterministic Rules"
             description="Built-in AST rules detect hardcoded secrets, injection flaws, and prototype pollution with zero false positives."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400">
+              <span className="font-mono text-[10px] text-slate-500 dark:text-obsidian-400">
                 Instant static verification
               </span>
             }
@@ -721,11 +719,11 @@ export function LandingPage({
 
           <FeatureCard
             kicker="INTEGRITY GUARD"
-            badge={<span className="font-mono text-base font-bold text-brand-400">SHA-256</span>}
+            badge={<span className="font-mono text-base font-bold text-blue-600 dark:text-brand-400">SHA-256</span>}
             title="Cryptographic Hash Guard"
             description="Every fix is checksummed before it touches your code. If the code changed since the fix was generated, it won't apply."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400">
+              <span className="font-mono text-[10px] text-slate-500 dark:text-obsidian-400">
                 Protects against stale code corruption
               </span>
             }
@@ -733,11 +731,11 @@ export function LandingPage({
 
           <FeatureCard
             kicker="LOCAL LATENCY"
-            badge={<span className="font-mono text-xl font-bold text-brand-400">0 ms</span>}
+            badge={<span className="font-mono text-xl font-bold text-blue-600 dark:text-brand-400">0 ms</span>}
             title="Instant Local Analysis"
             description="Static rules execute immediately in memory, returning baseline findings before network calls finish."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400">
+              <span className="font-mono text-[10px] text-slate-500 dark:text-obsidian-400">
                 Zero-latency first pass
               </span>
             }
@@ -748,10 +746,10 @@ export function LandingPage({
       {/* 9. Section 09: Final High-Contrast Call to Action */}
       <section className="py-20 px-4 sm:px-8 max-w-7xl mx-auto w-full text-center">
         <div className="max-w-3xl mx-auto space-y-6">
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-obsidian-50">
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-obsidian-50">
             Before you ship, let CodeEagle take a look.
           </h2>
-          <p className="text-base text-obsidian-400 max-w-xl mx-auto">
+          <p className="text-base text-slate-600 dark:text-obsidian-400 max-w-xl mx-auto">
             Paste your code, see what's wrong, and fix it — all in one place.
           </p>
           <div className="pt-2">
