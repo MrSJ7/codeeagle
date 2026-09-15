@@ -7,6 +7,7 @@ import {
   GEMINI_SYSTEM_INSTRUCTION,
   GEMINI_RESPONSE_SCHEMA,
   buildGeminiPrompt,
+  buildContextAwarePrompt,
 } from './geminiPrompt.js';
 import { validateAiResponse } from './aiValidator.js';
 
@@ -55,6 +56,7 @@ export function getGeminiClient() {
  * @param {string} params.filename Name of the file being reviewed.
  * @param {Array} params.staticIssues Findings already discovered by static analysis.
  * @param {object} params.metrics Deterministic metrics calculated for the code.
+ * @param {object} [params.distilledContext] Optional distilled cross-file project context.
  * @returns {Promise<{ status: 'SUCCESS'|'UNAVAILABLE'|'VALIDATION_FAILED', data: object|null, error: string|null }>}
  */
 export function analyzeCodeWithGemini({
@@ -63,6 +65,7 @@ export function analyzeCodeWithGemini({
   filename = 'source.js',
   staticIssues = [],
   metrics = {},
+  distilledContext = null,
 }) {
   return new Promise(async (resolve) => {
     // 1. Check API Key availability
@@ -76,13 +79,15 @@ export function analyzeCodeWithGemini({
     }
 
     const modelName = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL;
-    const prompt = buildGeminiPrompt({
-      code,
-      language,
-      filename,
-      staticIssues,
-      metrics,
-    });
+    const prompt = distilledContext
+      ? buildContextAwarePrompt({ distilledContext })
+      : buildGeminiPrompt({
+          code,
+          language,
+          filename,
+          staticIssues,
+          metrics,
+        });
 
     let timeoutHandle = null;
     let didTimeout = false;

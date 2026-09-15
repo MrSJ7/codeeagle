@@ -2,11 +2,12 @@ import crypto from "node:crypto";
 import { runProjectStaticAnalysis } from "./projectAnalyzer.js";
 import { runProjectAiReview } from "./projectAiService.js";
 import { calculateProjectScore } from "./projectScoreCalculator.js";
+import { buildProjectContext } from "./projectContextService.js";
 import { projectRepository } from "../repositories/projectRepository.js";
 
 /**
  * Orchestrates full end-to-end project code review:
- * Ingestion -> Static Analysis -> Contextual AI -> Deduplication -> Scoring -> Persistence
+ * Ingestion -> Static Analysis -> Context Graph -> Bounded Gemini AI -> Deduplication -> Scoring -> Persistence
  *
  * @param {Object} options
  * @param {Object} options.manifest Normalized ProjectManifest
@@ -46,6 +47,9 @@ export async function executeProjectReview({ manifest, onProgress = null }) {
     },
   });
 
+  // Phase 1.5: Project Context & Dependency Graph Indexing
+  const projectContext = buildProjectContext(manifest.files, staticResult.staticIssues);
+
   if (onProgress) {
     onProgress({
       status: "ai-review",
@@ -56,12 +60,13 @@ export async function executeProjectReview({ manifest, onProgress = null }) {
     });
   }
 
-  // Phase 2: Bounded Gemini AI Semantic Reasoning
+  // Phase 2: Bounded Gemini AI Semantic Reasoning with Project Context
   const aiResult = await runProjectAiReview({
     projectId,
     reviewId,
     files: manifest.files,
     fileResults: staticResult.fileResults,
+    projectContext,
     onProgress: (p) => {
       if (onProgress) {
         onProgress({
@@ -87,9 +92,10 @@ export async function executeProjectReview({ manifest, onProgress = null }) {
   // Phase 3: Project Health Scoring & Summary
   const health = calculateProjectScore(aiResult.allIssues, manifest.eligibleFileCount);
 
-  // Build per-file review structures
+  // Build per-file review structures enriched with graph metrics
   const fileReviews = manifest.files.map((file) => {
     const analysis = aiResult.updatedFileResults.get(file.id);
+    const node = projectContext?.nodes?.get(file.path);
 
     if (file.status === "SKIPPED") {
       return {
@@ -105,6 +111,11 @@ export async function executeProjectReview({ manifest, onProgress = null }) {
         skipMessage: file.skipMessage,
         score: null,
         metrics: null,
+        fanIn: 0,
+        fanOut: 0,
+        hasCycle: false,
+        imports: [],
+        exports: [],
         findingCount: 0,
         severityCounts: { critical: 0, high: 0, medium: 0, low: 0 },
         issues: [],
@@ -133,6 +144,11 @@ export async function executeProjectReview({ manifest, onProgress = null }) {
       score: analysis ? analysis.score : 100,
       breakdown: analysis ? analysis.breakdown : { security: 100, quality: 100, performance: 100, complexity: 100 },
       metrics: analysis ? analysis.metrics : null,
+      fanIn: node?.fanIn || 0,
+      fanOut: node?.fanOut || 0,
+      hasCycle: node?.hasCycle || false,
+      imports: node?.imports || [],
+      exports: (node?.exports || []).map((e) => e.name),
       findingCount: issues.length,
       severityCounts,
       issues,
@@ -156,6 +172,7 @@ export async function executeProjectReview({ manifest, onProgress = null }) {
     healthStatus: health.status,
     healthStatusLabel: health.statusLabel,
     severityCounts: health.severityCounts,
+    categoryCounts: health.categoryCounts,
     breakdown: health.breakdown,
     metrics: staticResult.totalMetrics,
     totalFiles: manifest.totalFileCount,
@@ -165,6 +182,14 @@ export async function executeProjectReview({ manifest, onProgress = null }) {
     engine: aiResult.engine,
     aiAnalyzedCount: aiResult.aiAnalyzedCount,
     sourceSnapshotHash: manifest.projectSourceHash,
+    contextTopology: {
+      totalCrossFileEdges: projectContext.topology.crossFileEdges,
+      cyclesDetected: projectContext.topology.cyclesDetected,
+      cycles: projectContext.cycles,
+      entrypoints: projectContext.topology.entrypoints,
+      leafNodes: projectContext.topology.leafNodes,
+      centralFiles: projectContext.topology.centralFiles,
+    },
     topPriorities: health.topPriorities,
     findings: aiResult.allIssues,
     files: fileReviews,

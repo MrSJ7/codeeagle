@@ -1,0 +1,1 @@
+export function isEmail(val) { return typeof val === 'string' && val.includes('@'); }

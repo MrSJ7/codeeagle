@@ -1,0 +1,1 @@
+export function logAudit(action) { return { action, at: Date.now() }; }

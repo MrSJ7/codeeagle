@@ -71,6 +71,17 @@ export const GEMINI_RESPONSE_SCHEMA = {
             type: 'NUMBER',
             description: 'Confidence score between 0.0 and 1.0.',
           },
+          evidence: {
+            type: 'STRING',
+            description: 'Verbatim code snippet from the target file demonstrating the defect.',
+          },
+          relatedFiles: {
+            type: 'ARRAY',
+            description: 'Optional list of related dependency file paths involved in this issue.',
+            items: {
+              type: 'STRING',
+            },
+          },
           fix: {
             type: 'OBJECT',
             description: 'Optional replacement code snippet. Must be verbatim text if provided.',
@@ -154,4 +165,78 @@ ${numberedSource}
 \`\`\`
 
 Perform your review and return the structured JSON result adhering to the response schema.`;
+}
+
+/**
+ * Builds a context-aware semantic review prompt incorporating cross-file dependencies,
+ * graph topology, exported interfaces, and static issues.
+ */
+export function buildContextAwarePrompt({
+  distilledContext,
+  promptVersion = 'v2',
+}) {
+  if (!distilledContext || !distilledContext.targetFile) {
+    return buildGeminiPrompt({});
+  }
+
+  const {
+    targetFile,
+    directDependencies = [],
+    externalPackages = [],
+    staticIssues = [],
+    cycles = [],
+  } = distilledContext;
+
+  const numberedSource = formatNumberedSource(targetFile.content || '');
+
+  const depSection = directDependencies.length > 0
+    ? directDependencies
+        .map((d) => {
+          const exportStr = (d.exports && d.exports.length > 0) ? d.exports.join(', ') : 'none';
+          const header = `--- Module: ${d.path} (role: ${d.role}, exported: [${exportStr}]) ---`;
+          return `${header}\n\`\`\`javascript\n${d.content}\n\`\`\``;
+        })
+        .join('\n\n')
+    : 'None (self-contained or zero local dependencies).';
+
+  const staticSummary = staticIssues.length > 0
+    ? staticIssues
+        .map((i) => `- [${i.severity}] ${i.rule} at line ${i.line}: ${i.title} (${i.description})`)
+        .join('\n')
+    : 'None (no static defects flagged in this file).';
+
+  const cyclesSummary = cycles.length > 0
+    ? cycles.map((c) => `- Circular reference: ${c.join(' -> ')}`).join('\n')
+    : 'None detected.';
+
+  return `=== TARGET FILE TO REVIEW ===
+File: ${targetFile.path}
+Language: ${targetFile.language}
+Total Lines: ${targetFile.lineCount}
+Incoming Dependents (Fan-in): ${targetFile.fanIn}
+Outgoing Dependencies (Fan-out): ${targetFile.fanOut}
+Engine Version: 2.0 (Context-Aware Hybrid)
+Prompt Version: ${promptVersion}
+
+=== DIRECT LOCAL DEPENDENCIES (Bounded Context) ===
+${depSection}
+
+=== EXTERNAL PACKAGES USED ===
+${externalPackages.length > 0 ? externalPackages.join(', ') : 'None'}
+
+=== DEPENDENCY CYCLES ===
+${cyclesSummary}
+
+=== STATIC ANALYSIS FINDINGS ALREADY DETECTED (DO NOT DUPLICATE) ===
+${staticSummary}
+
+NOTE: The static analyzer has already reported the issues above. Do NOT duplicate or re-report them.
+Focus on subtle cross-module contract mismatches, state mutations, logic defects, security bugs, and unhandled promise/error states.
+
+=== TARGET FILE NUMBERED SOURCE CODE (1-BASED) ===
+\`\`\`${targetFile.language}
+${numberedSource}
+\`\`\`
+
+Return a structured JSON review complying strictly with the JSON schema.`;
 }

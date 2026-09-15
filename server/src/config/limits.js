@@ -13,10 +13,14 @@ export const PROJECT_LIMITS = {
   // Concurrency & Analysis bounds
   STATIC_ANALYSIS_CONCURRENCY: 4,           // Max concurrent worker promises for AST parsing
 
-  // Gemini AI semantic analysis limits
-  MAX_AI_FILES_PER_REVIEW: 5,               // Max eligible files selected for deep AI review
+  // Gemini AI semantic analysis & Context limits
+  MAX_AI_FILES_PER_REVIEW: 6,               // Max eligible files selected for deep AI review
   MAX_AI_SOURCE_BYTES: 50 * 1024,           // Max source bytes sent to Gemini per file (50 KB)
-  MAX_AI_TOTAL_BYTES: 150 * 1024,           // Max total AI context across all files
+  MAX_AI_CONTEXT_BYTES: 48 * 1024,          // 48 KB max distilled context budget per candidate
+  MAX_AI_TOTAL_BYTES: 180 * 1024,           // Max total AI context across all files
+  MAX_AI_CALLS_PER_REVIEW: 8,               // Bounded AI API calls per project review
+  MAX_CONTEXT_DEPTH: 1,                     // Dependency context depth limit
+  AI_FINDING_MIN_CONFIDENCE: 0.70,          // Minimum acceptable confidence for AI findings
 
   // GitHub import limits
   MAX_GITHUB_FILES: 300,                    // Max files ingested from public GitHub repo

@@ -1,0 +1,1 @@
+export function sendWelcome(email) { return true; }

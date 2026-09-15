@@ -1,0 +1,1 @@
+export function createPost(title, authorId) { return { title, authorId }; }

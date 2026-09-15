@@ -130,31 +130,42 @@ export function isDuplicate(staticIssue, aiIssue) {
 
 /**
  * Deduplicates AI findings against static findings.
- * Static findings are fully preserved. Any AI finding that describes the same defect as a static finding is pruned.
+ * Static findings are fully preserved and enriched with AI semantic context if corroborated.
+ * Any AI finding that describes the same defect as a static finding is merged into the static finding.
  *
  * @param {Array} staticIssues Array of static issues.
  * @param {Array} aiIssues Array of normalized AI issues.
- * @returns {{ deduplicatedAiIssues: Array, droppedAiCount: number }}
+ * @returns {{ deduplicatedAiIssues: Array, droppedAiCount: number, enrichedStaticIssues: Array }}
  */
 export function deduplicateAiAgainstStatic(staticIssues = [], aiIssues = []) {
   if (!Array.isArray(aiIssues) || aiIssues.length === 0) {
-    return { deduplicatedAiIssues: [], droppedAiCount: 0 };
+    return { deduplicatedAiIssues: [], droppedAiCount: 0, enrichedStaticIssues: staticIssues };
   }
 
+  const enrichedStatic = staticIssues.map((s) => ({ ...s }));
   const keptAi = [];
   let droppedCount = 0;
 
   for (const aiIssue of aiIssues) {
-    const hasStaticDuplicate = staticIssues.some((staticIssue) =>
+    const matchingStatic = enrichedStatic.find((staticIssue) =>
       isDuplicate(staticIssue, aiIssue)
     );
 
-    if (hasStaticDuplicate) {
+    if (matchingStatic) {
+      // Corroboration: Attach AI contextual enrichment to authoritative static finding
+      matchingStatic.aiEnrichment = {
+        title: aiIssue.title,
+        description: aiIssue.description,
+        recommendation: aiIssue.recommendation,
+        confidence: aiIssue.confidence,
+      };
+      matchingStatic.corroboratedByAi = true;
+      matchingStatic.engine = 'HYBRID';
       droppedCount++;
     } else {
-      // Also check against already kept AI issues to avoid intra-AI duplication on same line/rule
+      // Check against already kept AI issues to avoid intra-AI duplication on same line/rule
       const hasAiDuplicate = keptAi.some((kept) =>
-        kept.line === aiIssue.line && kept.rule === aiIssue.rule
+        kept.line === aiIssue.line && (kept.rule === aiIssue.rule || kept.category === aiIssue.category)
       );
 
       if (hasAiDuplicate) {
@@ -168,6 +179,7 @@ export function deduplicateAiAgainstStatic(staticIssues = [], aiIssues = []) {
   return {
     deduplicatedAiIssues: keptAi,
     droppedAiCount: droppedCount,
+    enrichedStaticIssues: enrichedStatic,
   };
 }
 
@@ -175,7 +187,7 @@ export function deduplicateAiAgainstStatic(staticIssues = [], aiIssues = []) {
  * Combines static issues with deduplicated AI issues in deterministic order.
  */
 export function deduplicateIssues(staticIssues = [], aiIssues = []) {
-  const { deduplicatedAiIssues } = deduplicateAiAgainstStatic(staticIssues, aiIssues);
-  return [...staticIssues, ...deduplicatedAiIssues];
+  const { deduplicatedAiIssues, enrichedStaticIssues } = deduplicateAiAgainstStatic(staticIssues, aiIssues);
+  return [...enrichedStaticIssues, ...deduplicatedAiIssues];
 }
 

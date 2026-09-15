@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "node --watch src/app.js",
-    "test": "node test/analyzer.test.js && node test/gemini.test.js && node test/hybrid.test.js && node test/patch.test.js && node test/aiPatch.test.js && node test/persistence.test.js && node test/hashing.test.js && node test/project.test.js && node test/projectIntegration.test.js && node test/refactor.test.js"
+    "test": "node test/analyzer.test.js && node test/gemini.test.js && node test/hybrid.test.js && node test/patch.test.js && node test/aiPatch.test.js && node test/persistence.test.js && node test/hashing.test.js && node test/project.test.js && node test/projectIntegration.test.js && node test/refactor.test.js && node test/contextEngine.test.js"
   },
   "dependencies": {
     "@babel/parser": "^7.29.8",

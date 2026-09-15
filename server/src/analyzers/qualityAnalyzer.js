@@ -52,12 +52,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         source: 'STATIC',
         severity: meta.defaultSeverity,
         category: meta.category,
+        ruleClass: meta.ruleClass,
         title: `High cyclomatic complexity (${fn.complexity}) in '${fn.name}'`,
         line: fn.startLine,
         endLine: fn.endLine,
         description: `Function '${fn.name}' has a cyclomatic complexity of ${fn.complexity} (threshold > 10). Numerous independent decision paths increase testing difficulty and maintenance overhead.`,
         recommendation: meta.recommendation,
-        confidence: 1.0,
+        confidence: meta.confidence ?? 0.95,
+        impactWeight: meta.impactWeight ?? 0.70,
         fix: null,
       });
     }
@@ -70,30 +72,41 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         source: 'STATIC',
         severity: meta.defaultSeverity,
         category: meta.category,
+        ruleClass: meta.ruleClass,
         title: `Excessive control-flow nesting (${fn.nesting} levels) in '${fn.name}'`,
         line: fn.startLine,
         endLine: fn.endLine,
         description: `Function '${fn.name}' has ${fn.nesting} levels of nested control blocks (threshold > 4). Deep nesting impairs readability and cognitive tractability.`,
         recommendation: meta.recommendation,
-        confidence: 1.0,
+        confidence: meta.confidence ?? 0.95,
+        impactWeight: meta.impactWeight ?? 0.70,
         fix: null,
       });
     }
 
     if (fn.lines > 50) {
       const meta = RULE_REGISTRY['QUAL-LENGTH'];
+      const isSimple = (fn.complexity || 1) <= 6 && (fn.nesting || 0) <= 2;
+      const confidence = isSimple ? 0.55 : 0.75;
+      const impactWeight = isSimple ? 0.15 : 0.30;
+      const description = isSimple
+        ? `Function '${fn.name}' spans ${fn.lines} lines (threshold > 50). Since cyclomatic complexity (${fn.complexity || 1}) and nesting (${fn.nesting || 0}) are modest, this is an informational maintainability suggestion.`
+        : `Function '${fn.name}' spans ${fn.lines} lines with elevated complexity (${fn.complexity || 1}) or nesting (${fn.nesting || 0}). Decomposing into single-responsibility helpers is recommended.`;
+
       addIssue({
         id: `QUAL-LENGTH-${fn.startLine}`,
         rule: meta.rule,
         source: 'STATIC',
         severity: meta.defaultSeverity,
         category: meta.category,
+        ruleClass: meta.ruleClass,
         title: `Function '${fn.name}' spans ${fn.lines} lines`,
         line: fn.startLine,
         endLine: fn.endLine,
-        description: `Function '${fn.name}' exceeds the recommended length threshold of 50 lines. Large functions often combine multiple responsibilities.`,
+        description,
         recommendation: meta.recommendation,
-        confidence: 1.0,
+        confidence,
+        impactWeight,
         fix: null,
       });
     }
@@ -114,12 +127,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
           source: 'STATIC',
           severity: meta.defaultSeverity,
           category: meta.category,
+          ruleClass: meta.ruleClass,
           title: meta.title,
           line,
           endLine: path.node.loc?.end.line || line,
           description: meta.description,
           recommendation: meta.recommendation,
-          confidence: 1.0,
+          confidence: meta.confidence ?? 0.90,
+          impactWeight: meta.impactWeight ?? 0.60,
           fix: null,
         });
       }
@@ -136,12 +151,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
           source: 'STATIC',
           severity: meta.defaultSeverity,
           category: meta.category,
+          ruleClass: meta.ruleClass,
           title: meta.title,
           line,
           endLine: line,
           description: meta.description,
           recommendation: meta.recommendation,
-          confidence: 1.0,
+          confidence: meta.confidence ?? 0.50,
+          impactWeight: meta.impactWeight ?? 0.10,
           fix: null, // Intentionally null to prevent breaking reassignments
         });
       }
@@ -192,12 +209,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
                 source: 'STATIC',
                 severity: meta.defaultSeverity,
                 category: meta.category,
+                ruleClass: meta.ruleClass,
                 title: meta.title,
                 line,
                 endLine: path.node.loc?.end.line || line,
                 description: meta.description,
                 recommendation: meta.recommendation,
-                confidence: 0.9,
+                confidence: meta.confidence ?? 0.85,
+                impactWeight: meta.impactWeight ?? 0.85,
                 fix: null, // Manual refactor required to ensure identical callback references
               });
             }
@@ -248,12 +267,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
                 source: 'STATIC',
                 severity: meta.defaultSeverity,
                 category: meta.category,
+                ruleClass: meta.ruleClass,
                 title: `Potential missing dependency '${depName}' in useEffect hook`,
                 line,
                 endLine: depsArray.loc?.end.line || line,
                 description: `The effect callback references '${depName}', but the dependency array is empty []. When '${depName}' changes, the effect will not re-run.`,
                 recommendation: `Include '${depName}' in the dependency array [${depName}].`,
-                confidence: 0.85,
+                confidence: meta.confidence ?? 0.85,
+                impactWeight: meta.impactWeight ?? 0.85,
                 fix: verifyFixSnippet(code, rawFix),
               });
             }
@@ -280,12 +301,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
                 source: 'STATIC',
                 severity: meta.defaultSeverity,
                 category: meta.category,
+                ruleClass: meta.ruleClass,
                 title: `Array index '${expr.name}' used as React key prop`,
                 line,
                 endLine: line,
                 description: meta.description,
                 recommendation: meta.recommendation,
-                confidence: 0.95,
+                confidence: meta.confidence ?? 0.65,
+                impactWeight: meta.impactWeight ?? 0.20,
                 fix: null, // Safe replacement requires knowledge of unique property
               });
             }
@@ -304,12 +327,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         source: 'STATIC',
         severity: meta.defaultSeverity,
         category: meta.category,
+        ruleClass: meta.ruleClass,
         title: meta.title,
         line,
         endLine: line,
         description: meta.description,
         recommendation: meta.recommendation,
-        confidence: 1.0,
+        confidence: meta.confidence ?? 1.0,
+        impactWeight: meta.impactWeight ?? 0.40,
         fix: null,
       });
     },
@@ -329,12 +354,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
           source: 'STATIC',
           severity: meta.defaultSeverity,
           category: meta.category,
+          ruleClass: meta.ruleClass,
           title: `Loose equality operator '${op}' should be strict '${strictOp}'`,
           line,
           endLine: line,
           description: meta.description,
           recommendation: `Replace '${op}' with '${strictOp}'.`,
-          confidence: 0.9,
+          confidence: meta.confidence ?? 0.70,
+          impactWeight: meta.impactWeight ?? 0.20,
           fix: null,
         });
       }
@@ -356,12 +383,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
                 source: 'STATIC',
                 severity: meta.defaultSeverity,
                 category: meta.category,
+                ruleClass: meta.ruleClass,
                 title: `Duplicate key '${keyName}' in object literal`,
                 line,
                 endLine: line,
                 description: `Property '${keyName}' is defined multiple times in this object literal. Later keys overwrite earlier values.`,
                 recommendation: meta.recommendation,
-                confidence: 1.0,
+                confidence: meta.confidence ?? 0.95,
+                impactWeight: meta.impactWeight ?? 0.80,
                 fix: null,
               });
             } else {
@@ -388,12 +417,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
             source: 'STATIC',
             severity: meta.defaultSeverity,
             category: meta.category,
+            ruleClass: meta.ruleClass,
             title: meta.title,
             line,
             endLine: stmt.loc?.end.line || line,
             description: `Statements after return/throw on line ${terminatingLine} are unreachable and will never execute.`,
             recommendation: meta.recommendation,
-            confidence: 1.0,
+            confidence: meta.confidence ?? 0.95,
+            impactWeight: meta.impactWeight ?? 0.50,
             fix: null,
           });
           break; // Flag once per unreachable sequence

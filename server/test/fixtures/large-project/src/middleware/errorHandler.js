@@ -1,0 +1,1 @@
+export function handleError(err) { return { error: err.message }; }

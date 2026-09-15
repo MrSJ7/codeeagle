@@ -1,0 +1,1 @@
+export function createComment(text, postId) { return { text, postId }; }

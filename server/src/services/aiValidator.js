@@ -102,20 +102,74 @@ export function validateAiFinding(finding, totalLines = 1, code = '') {
     }
   }
 
+  // 8. Evidence extraction & grounding
+  let evidence = null;
+  if (typeof finding.evidence === 'string' && finding.evidence.trim() && code.includes(finding.evidence)) {
+    evidence = finding.evidence.trim();
+  } else if (code) {
+    const lines = code.split('\n');
+    const start = Math.max(0, finding.line - 1);
+    const end = Math.min(lines.length, finding.endLine);
+    evidence = lines.slice(start, end).join('\n').trim();
+  }
+
+  const category = finding.category.toUpperCase();
+  const ruleClass = String(finding.ruleClass || (category === 'SECURITY' ? 'SECURITY' : category === 'PERFORMANCE' ? 'PERFORMANCE' : 'CORRECTNESS')).toUpperCase();
+  const severity = finding.severity.toUpperCase();
+  const impactWeight = typeof finding.impactWeight === 'number' ? finding.impactWeight : (
+    severity === 'CRITICAL' ? 1.0 : severity === 'HIGH' ? 0.85 : severity === 'MEDIUM' ? 0.60 : 0.20
+  );
+
   const sanitized = {
     rule: finding.rule.trim().toUpperCase(),
-    severity: finding.severity.toUpperCase(),
-    category: finding.category.toUpperCase(),
+    severity,
+    category,
+    ruleClass,
     title: finding.title.trim(),
     line: finding.line,
     endLine: finding.endLine,
     description: finding.description.trim(),
     recommendation: finding.recommendation.trim(),
     confidence: Math.max(0, Math.min(1, finding.confidence)),
+    evidence,
+    relatedFiles: Array.isArray(finding.relatedFiles) ? finding.relatedFiles.filter((p) => typeof p === 'string') : [],
+    impactWeight,
     fix: sanitizedFix,
   };
 
   return { valid: true, errors: [], sanitized };
+}
+
+/**
+ * Filters AI findings based on confidence threshold and rejects cosmetic style noise.
+ * 
+ * @param {Array<object>} findings Validated AI findings
+ * @param {object} options
+ * @param {number} [options.minConfidence=0.70] Minimum acceptable confidence
+ * @param {boolean} [options.allowStyle=false] Whether to permit cosmetic style issues
+ * @returns {Array<object>} Vetted findings
+ */
+export function filterGroundedAiFindings(findings = [], options = {}) {
+  const minConfidence = options.minConfidence ?? 0.70;
+  const allowStyle = options.allowStyle ?? false;
+  const STYLE_REGEX = /\b(prettier|formatting|indentation|naming convention|camelcase|pascalcase|spacing|whitespace|missing comment|add comment|jsdoc)\b/i;
+
+  return findings.filter((finding) => {
+    // 1. Minimum confidence threshold
+    if (typeof finding.confidence === 'number' && finding.confidence < minConfidence) {
+      return false;
+    }
+
+    // 2. Reject superficial cosmetic style complaints
+    if (!allowStyle && finding.category === 'QUALITY' && finding.severity === 'LOW') {
+      const text = `${finding.rule || ''} ${finding.title || ''} ${finding.description || ''}`;
+      if (STYLE_REGEX.test(text)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
 }
 
 /**
@@ -176,6 +230,7 @@ export function validateAiResponse(aiRawResponse, code = '') {
     validatedData: {
       summary: aiRawResponse.summary.trim(),
       findings: validatedFindings,
+      issues: validatedFindings, // Synonym for robust consumption across project services
     },
   };
 }

@@ -35,19 +35,26 @@ export function normalizeFinding(rawIssue, code) {
   const severity = String(rawIssue.severity || 'LOW').toUpperCase();
   const validSeverity = SEVERITY_ORDER[severity] ? severity : 'LOW';
   const confidence = Math.max(0, Math.min(1, typeof rawIssue.confidence === 'number' ? rawIssue.confidence : 1.0));
+  const category = String(rawIssue.category || 'QUALITY').toUpperCase();
+  const ruleClass = String(rawIssue.ruleClass || category).toUpperCase();
+  const impactWeight = typeof rawIssue.impactWeight === 'number' ? rawIssue.impactWeight : (
+    severity === 'CRITICAL' ? 1.0 : severity === 'HIGH' ? 0.85 : severity === 'MEDIUM' ? 0.60 : 0.20
+  );
 
   return {
     id: String(rawIssue.id || `${rawIssue.rule || 'RULE'}-${line}`),
     rule: String(rawIssue.rule || 'STATIC-RULE'),
     source: 'STATIC',
     severity: validSeverity,
-    category: String(rawIssue.category || 'QUALITY').toUpperCase(),
+    category,
+    ruleClass,
     title: String(rawIssue.title || 'Untitled Issue'),
     line,
     endLine,
     description: String(rawIssue.description || 'No description provided.'),
     recommendation: String(rawIssue.recommendation || 'No recommendation provided.'),
     confidence,
+    impactWeight,
     fix: verifyFixSnippet(code, rawIssue.fix),
   };
 }

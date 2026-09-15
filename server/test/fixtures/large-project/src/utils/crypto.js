@@ -1,0 +1,1 @@
+export const secretKey = 'known_secret_key_123';

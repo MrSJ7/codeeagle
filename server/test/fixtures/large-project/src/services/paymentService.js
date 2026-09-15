@@ -1,0 +1,1 @@
+export function processCharge(amount) { return { ok: true, amount }; }
