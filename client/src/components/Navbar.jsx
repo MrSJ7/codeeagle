@@ -90,7 +90,7 @@ export function Navbar({
             className="flex items-center cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[6px]"
             title="CodeEagle — AI Code Review"
           >
-            <CodeEagleLogo size={24} withText={true} withSubtitle={true} />
+            <CodeEagleLogo size={28} withText={true} />
           </motion.button>
 
           {/* Center: Dynamic Floating Hover Nav Items */}
@@ -131,7 +131,7 @@ export function Navbar({
               onClick={onNavigateHome}
               className="flex items-center cursor-pointer"
             >
-              <CodeEagleLogo size={20} withText={true} withSubtitle={false} />
+              <CodeEagleLogo size={24} withText={true} />
             </button>
 
             <div className="flex items-center gap-2">
@@ -209,7 +209,7 @@ export function Navbar({
   ];
 
   return (
-    <header className="relative h-13 bg-obsidian-950/80 backdrop-blur-xl border-b border-obsidian-800/90 px-4 sm:px-6 flex items-center justify-between select-none shrink-0 z-30 shadow-[0_1px_0_rgba(255,255,255,0.08)_inset,0_10px_25px_-5px_rgba(0,0,0,0.6)]">
+    <header className="relative h-13 bg-[#10141D]/92 backdrop-blur-xl border-b border-[#212736] px-4 sm:px-6 flex items-center justify-between select-none shrink-0 z-30 shadow-[0_1px_0_rgba(255,255,255,0.08)_inset,0_10px_25px_-5px_rgba(0,0,0,0.6)]">
       {/* Specular Liquid Glass Top Highlight Glint */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
@@ -224,7 +224,7 @@ export function Navbar({
           className="flex items-center cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[6px]"
           title="Return to Product Introduction"
         >
-          <CodeEagleLogo size={20} withText={true} withSubtitle={true} />
+          <CodeEagleLogo size={24} withText={true} />
         </motion.button>
 
         <div className="h-4 w-px bg-white/[0.1] hidden sm:block shrink-0" />
@@ -289,7 +289,7 @@ export function Navbar({
                 {isActive && (
                   <motion.div
                     layoutId="active-lens-indicator"
-                    className="absolute inset-0 rounded-full bg-obsidian-800 border border-white/[0.14] shadow-[0_2px_8px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.12)_inset]"
+                    className="absolute inset-0 rounded-full bg-[#1E2535] border border-white/[0.16] shadow-[0_2px_8px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.14)_inset]"
                     transition={{
                       type: 'spring',
                       stiffness: 420,
