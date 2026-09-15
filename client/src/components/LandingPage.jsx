@@ -1,18 +1,7 @@
 import React, { useState } from 'react';
 import {
   ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  FileCode,
-  Layers,
-  ListTree,
-  RotateCcw,
   Check,
-  Cpu,
-  Hash,
-  Sparkles,
-  Zap,
-  Lock,
 } from 'lucide-react';
 import { Button } from './ui/Button.jsx';
 import { Card3D } from './ui/Card3D.jsx';
@@ -437,25 +426,21 @@ export function LandingPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <FeatureCard
-            icon={<Cpu className="w-5 h-5 text-brand-500" />}
             kicker="Step 1"
             title="Find real problems"
             description="Your code is parsed into a syntax tree — not searched with regex. No false alarms."
           />
           <FeatureCard
-            icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
             kicker="Step 2"
             title="Know exactly what's wrong"
             description="13 built-in rules catch secrets, injections, and React anti-patterns on the first pass."
           />
           <FeatureCard
-            icon={<Sparkles className="w-5 h-5 text-brand-500" />}
             kicker="Step 3"
             title="Understand why it matters"
             description="AI reads your logic and explains findings the way a senior engineer would."
           />
           <FeatureCard
-            icon={<Hash className="w-5 h-5 text-brand-500" />}
             kicker="Step 4"
             title="Fix it safely"
             description="Every fix is checksummed before it touches your code. Apply it in one click."
@@ -567,7 +552,6 @@ export function LandingPage({
         {/* Technical Flowchart */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FeatureCard
-            icon={<FileCode className="w-5 h-5 text-brand-500" />}
             kicker="01 / INPUT"
             title="Source Code"
             description="JavaScript and JSX syntax streams parsed directly in memory without telemetry."
@@ -579,7 +563,6 @@ export function LandingPage({
           />
 
           <FeatureCard
-            icon={<Cpu className="w-5 h-5 text-brand-500" />}
             kicker="02 / PARSER"
             title="Syntax Tree Traversal"
             description="Breaks code into program nodes to eliminate false positives from text matching."
@@ -591,7 +574,6 @@ export function LandingPage({
           />
 
           <FeatureCard
-            icon={<Sparkles className="w-5 h-5 text-brand-500" />}
             kicker="03 / ANALYZERS"
             title="Rules + Contextual AI"
             description="13 fast deterministic rules run first, then AI evaluates semantic logic and edge cases."
@@ -604,7 +586,6 @@ export function LandingPage({
           />
 
           <FeatureCard
-            icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
             kicker="04 / OUTPUT"
             title="Verified Diff"
             description="Cryptographic SHA-256 hashes ensure fixes match your code before applying."
@@ -636,7 +617,6 @@ export function LandingPage({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FeatureCard
-            icon={<Lock className="w-5 h-5 text-severity-critical" />}
             badge={<SeverityBadge severity="CRITICAL" />}
             kicker="P0 Blocker"
             title="Security Flaws"
@@ -650,7 +630,6 @@ export function LandingPage({
           />
 
           <FeatureCard
-            icon={<Zap className="w-5 h-5 text-severity-high" />}
             badge={<SeverityBadge severity="HIGH" />}
             kicker="P1 High"
             title="Runtime Defects"
@@ -664,7 +643,6 @@ export function LandingPage({
           />
 
           <FeatureCard
-            icon={<Layers className="w-5 h-5 text-severity-medium" />}
             badge={<SeverityBadge severity="MEDIUM" />}
             kicker="P2 Quality"
             title="Complexity & Smells"
@@ -678,7 +656,6 @@ export function LandingPage({
           />
 
           <FeatureCard
-            icon={<FileCode className="w-5 h-5 text-obsidian-400" />}
             badge={<SeverityBadge severity="LOW" />}
             kicker="P3 Style"
             title="Hygiene & Style"
@@ -709,7 +686,6 @@ export function LandingPage({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FeatureCard
-            icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
             kicker="STATIC ENGINE"
             badge={<span className="font-mono text-xl font-bold text-brand-400">13</span>}
             title="Deterministic Rules"
@@ -722,7 +698,6 @@ export function LandingPage({
           />
 
           <FeatureCard
-            icon={<Hash className="w-5 h-5 text-brand-500" />}
             kicker="INTEGRITY GUARD"
             badge={<span className="font-mono text-base font-bold text-brand-400">SHA-256</span>}
             title="Cryptographic Hash Guard"
@@ -735,7 +710,6 @@ export function LandingPage({
           />
 
           <FeatureCard
-            icon={<Zap className="w-5 h-5 text-brand-500" />}
             kicker="LOCAL LATENCY"
             badge={<span className="font-mono text-xl font-bold text-brand-400">0 ms</span>}
             title="Instant Local Analysis"

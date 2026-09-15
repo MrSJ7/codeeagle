@@ -4,16 +4,8 @@ import * as React from "react";
 import { motion, useReducedMotion, type Variants, type HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
-  Cpu,
-  Sparkles,
   ShieldCheck,
-  CheckCircle2,
-  FileCode,
-  RotateCcw,
-  ListTree,
-  GitBranch,
   Terminal,
-  Hash,
 } from "lucide-react";
 
 /**
@@ -142,10 +134,7 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={2} className="justify-between bg-gradient-to-b from-[#111111] to-[#0A0A0A]">
         <div>
           <div className="flex items-center justify-between mb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-brand-500/10 border border-brand-500/20 text-brand-500">
-              <Cpu className="h-5 w-5" />
-            </div>
-            <span className="font-mono text-[11px] tracking-wider uppercase px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] text-[#A6A29B] border border-[#2A2A2A]">
+            <span className="font-mono text-[11px] tracking-wider uppercase px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] text-brand-400 border border-[#2A2A2A] font-semibold">
               Deterministic Engine
             </span>
           </div>
@@ -153,7 +142,7 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
           <h3 className="text-lg font-bold text-[#F5F3EF] tracking-tight mb-2">
             Babel AST Parser
           </h3>
-          <p className="text-xs text-[#A6A29B] leading-relaxed mb-4">
+          <p className="text-sm text-[#A6A29B] leading-relaxed mb-4">
             Directly parses JavaScript and JSX into standard abstract syntax trees. Traverses nodes locally before external calls, ensuring zero false negatives on syntax flaws and hardcoded secrets.
           </p>
 
@@ -181,10 +170,7 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={1}>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-[#181818] border border-[#282828] text-brand-400">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <span className="font-mono text-[11px] uppercase text-[#74716C]">
+            <span className="font-mono text-[11px] uppercase text-[#74716C] font-semibold tracking-wider">
               Semantic Audit
             </span>
           </div>
@@ -204,10 +190,7 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={1}>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-[#181818] border border-[#282828] text-[#38C793]">
-              <Hash className="h-4 w-4" />
-            </div>
-            <span className="font-mono text-[11px] uppercase text-[#38C793]">
+            <span className="font-mono text-[11px] uppercase text-[#38C793] font-semibold tracking-wider">
               Cryptographic
             </span>
           </div>
@@ -227,10 +210,7 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={1}>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-[#181818] border border-[#282828] text-brand-500">
-              <ListTree className="h-4 w-4" />
-            </div>
-            <span className="font-mono text-[11px] uppercase text-[#74716C]">
+            <span className="font-mono text-[11px] uppercase text-[#74716C] font-semibold tracking-wider">
               Precision
             </span>
           </div>
@@ -251,10 +231,7 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={1}>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-[#181818] border border-[#282828] text-brand-400">
-              <RotateCcw className="h-4 w-4" />
-            </div>
-            <span className="font-mono text-[11px] uppercase text-brand-500">
+            <span className="font-mono text-[11px] uppercase text-brand-500 font-semibold tracking-wider">
               Instant
             </span>
           </div>
@@ -276,9 +253,6 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           <div className="md:col-span-6 space-y-2">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-brand-500/10 border border-brand-500/20 text-brand-500">
-                <FileCode className="h-4 w-4" />
-              </div>
               <span className="font-mono text-[11px] tracking-wider uppercase text-brand-400 font-semibold">
                 Verified Executable Patches & History
               </span>

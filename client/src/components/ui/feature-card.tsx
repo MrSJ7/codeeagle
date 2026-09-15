@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
  * Props for the FeatureCard component.
  */
 export interface FeatureCardProps {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   title: string;
   description: string;
   className?: string;
@@ -39,19 +39,21 @@ export const FeatureCard = ({
       )}
     >
       <div>
-        {/* Top bar: Icon and Badge/Kicker */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-[#161616] border border-[#262626] text-brand-500 group-hover:border-brand-500/40 group-hover:bg-brand-500/10 transition-colors">
-            {icon}
+        {/* Top bar: Kicker and Badge */}
+        {(kicker || badge || icon) && (
+          <div className="flex items-center justify-between mb-4">
+            {icon ? (
+              <div className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-[#161616] border border-[#262626] text-brand-500 group-hover:border-brand-500/40 group-hover:bg-brand-500/10 transition-colors">
+                {icon}
+              </div>
+            ) : kicker ? (
+              <span className="font-mono text-[11px] tracking-wider uppercase text-[#74716C] group-hover:text-brand-400 transition-colors font-semibold">
+                {kicker}
+              </span>
+            ) : null}
+            {badge ? <div>{badge}</div> : null}
           </div>
-          {badge ? (
-            <div>{badge}</div>
-          ) : kicker ? (
-            <span className="font-mono text-[11px] tracking-wider uppercase text-[#74716C] group-hover:text-brand-400 transition-colors">
-              {kicker}
-            </span>
-          ) : null}
-        </div>
+        )}
 
         {/* Title */}
         <h3 className="text-lg font-bold text-[#F5F3EF] mb-2 tracking-tight">
