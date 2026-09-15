@@ -53,8 +53,8 @@ export function Navbar({
   // --------------------------------------------------------------------------
   if (isMarketing) {
     return (
-      <header className="sticky top-4 z-50 w-full px-4 sm:px-6 select-none">
-        <div className="max-w-6xl mx-auto h-14 px-4 sm:px-6 rounded-[8px] bg-[#0A0A0A]/90 backdrop-blur-md border border-[#222222] shadow-[0_8px_24px_rgba(0,0,0,0.6),0_1px_0_rgba(255,255,255,0.04)_inset] flex items-center justify-between transition-all">
+      <header className="sticky top-0 z-50 w-full px-4 sm:px-8 select-none bg-[#08090A]/92 backdrop-blur-xl border-b border-[#222222]/80 transition-all shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
+        <div className="max-w-7xl mx-auto h-16 flex items-center justify-between">
           {/* Left: Brand Mark */}
           <div className="flex items-center gap-8">
             <button
@@ -75,15 +75,12 @@ export function Navbar({
                 Product
               </a>
 
-              {onOpenHowItWorks && (
-                <button
-                  type="button"
-                  onClick={onOpenHowItWorks}
-                  className="px-3 py-1.5 rounded-[5px] hover:text-[#F5F3EF] hover:bg-[#161616] transition-colors cursor-pointer"
-                >
-                  How It Works
-                </button>
-              )}
+              <a
+                href="#how-it-works"
+                className="px-3 py-1.5 rounded-[5px] hover:text-[#F5F3EF] hover:bg-[#161616] transition-colors cursor-pointer"
+              >
+                How It Works
+              </a>
 
               <button
                 type="button"

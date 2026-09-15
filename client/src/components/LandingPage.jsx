@@ -20,6 +20,8 @@ import {
   Lock,
   ChevronRight,
   Code2,
+  Eye,
+  Brain,
 } from 'lucide-react';
 import { Button } from './ui/Button.jsx';
 import { Card3D } from './ui/Card3D.jsx';
@@ -28,6 +30,7 @@ import { LayoutTextFlip } from './ui/layout-text-flip.jsx';
 import { Navbar } from './Navbar.jsx';
 import { CodeEagleLogo } from './CodeEagleLogo.jsx';
 import { CodeEagleBentoShowcase } from './ui/bento-product-features.tsx';
+import { FeatureCard } from './ui/feature-card.tsx';
 
 export function LandingPage({
   onStartReviewing,
@@ -53,7 +56,7 @@ export function LandingPage({
   };
 
   return (
-    <div className="min-h-screen bg-obsidian-950 text-obsidian-50 font-sans selection:bg-brand-500/20 selection:text-brand-300 flex flex-col">
+    <div className="min-h-screen bg-obsidian-950 text-obsidian-50 font-sans selection:bg-brand-500/20 selection:text-brand-300 flex flex-col scroll-smooth">
       {/* 1. Header Navigation */}
       <Navbar
         variant="marketing"
@@ -375,7 +378,7 @@ export function LandingPage({
       </section>
 
       {/* 4. Section 04: Product Storytelling — The 7-Step Review Flow */}
-      <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850">
+      <section id="how-it-works" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
             Product Storytelling
@@ -389,50 +392,35 @@ export function LandingPage({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-3">
-            <div className="w-8 h-8 rounded-[5px] bg-obsidian-800 border border-obsidian-750 flex items-center justify-center font-mono text-xs font-bold text-brand-500">
-              01
-            </div>
-            <h3 className="text-sm font-bold text-obsidian-100">Babel AST Parsing</h3>
-            <p className="text-xs text-obsidian-400 leading-relaxed">
-              Source code is parsed into an abstract syntax tree. Rules evaluate actual program nodes, preventing false positives from regex string matching.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-3">
-            <div className="w-8 h-8 rounded-[5px] bg-obsidian-800 border border-obsidian-750 flex items-center justify-center font-mono text-xs font-bold text-brand-500">
-              02
-            </div>
-            <h3 className="text-sm font-bold text-obsidian-100">Deterministic Rules</h3>
-            <p className="text-xs text-obsidian-400 leading-relaxed">
-              13 static rules instantly flag hardcoded secrets, SQL injection, eval injection, prototype pollution, and React key index anti-patterns.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-3">
-            <div className="w-8 h-8 rounded-[5px] bg-obsidian-800 border border-obsidian-750 flex items-center justify-center font-mono text-xs font-bold text-brand-500">
-              03
-            </div>
-            <h3 className="text-sm font-bold text-obsidian-100">Gemini Contextual AI</h3>
-            <p className="text-xs text-obsidian-400 leading-relaxed">
-              Gemini contextual reasoning inspects complex logic flows, evaluates boundary conditions, and generates human-readable senior PR review comments.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-3">
-            <div className="w-8 h-8 rounded-[5px] bg-obsidian-800 border border-obsidian-750 flex items-center justify-center font-mono text-xs font-bold text-brand-500">
-              04
-            </div>
-            <h3 className="text-sm font-bold text-obsidian-100">SHA-256 Verified Fix</h3>
-            <p className="text-xs text-obsidian-400 leading-relaxed">
-              Safe string mutations are guarded by single-authority SHA-256 hashes. Applying a patch instantly mutates the code and re-runs the full review suite.
-            </p>
-          </div>
+          <FeatureCard
+            icon={<Cpu className="w-5 h-5 text-brand-500" />}
+            kicker="01 / AST"
+            title="Babel AST Parsing"
+            description="Source code is parsed into an abstract syntax tree. Rules evaluate actual program nodes, preventing false positives from regex string matching."
+          />
+          <FeatureCard
+            icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
+            kicker="02 / RULES"
+            title="Deterministic Rules"
+            description="13 static rules instantly flag hardcoded secrets, SQL injection, eval injection, prototype pollution, and React key index anti-patterns."
+          />
+          <FeatureCard
+            icon={<Sparkles className="w-5 h-5 text-brand-500" />}
+            kicker="03 / AI"
+            title="Gemini Contextual AI"
+            description="Gemini contextual reasoning inspects complex logic flows, evaluates boundary conditions, and generates human-readable senior PR review comments."
+          />
+          <FeatureCard
+            icon={<Hash className="w-5 h-5 text-brand-500" />}
+            kicker="04 / PATCH"
+            title="SHA-256 Verified Fix"
+            description="Safe string mutations are guarded by single-authority SHA-256 hashes. Applying a patch instantly mutates the code and re-runs the full review suite."
+          />
         </div>
       </section>
 
       {/* 5. Section 05: Why CodeEagle: SEE · UNDERSTAND · FIX · VERIFY */}
-      <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850">
+      <section id="philosophy" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
             Core Philosophy
@@ -445,10 +433,11 @@ export function LandingPage({
           </p>
         </div>
 
-        <div id="philosophy" className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5" />
                 SEE
               </span>
               <h3 className="text-base font-bold text-[#F5F3EF]">
@@ -465,7 +454,8 @@ export function LandingPage({
 
           <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold flex items-center gap-1.5">
+                <Brain className="w-3.5 h-3.5" />
                 UNDERSTAND
               </span>
               <h3 className="text-base font-bold text-[#F5F3EF]">
@@ -482,7 +472,8 @@ export function LandingPage({
 
           <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold flex items-center gap-1.5">
+                <Wrench className="w-3.5 h-3.5" />
                 FIX
               </span>
               <h3 className="text-base font-bold text-[#F5F3EF]">
@@ -500,7 +491,8 @@ export function LandingPage({
 
           <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5" />
                 VERIFY
               </span>
               <h3 className="text-base font-bold text-[#F5F3EF]">
@@ -519,7 +511,7 @@ export function LandingPage({
       </section>
 
       {/* 6. Section 06: Analysis Engine Pipeline Architecture */}
-      <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850">
+      <section id="architecture" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
             Technical Architecture
@@ -582,7 +574,7 @@ export function LandingPage({
       </section>
 
       {/* 7. Section 07: Review Intelligence & Findings Severity Spectrum */}
-      <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850">
+      <section id="prioritization" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="max-w-3xl mb-12">
           <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
             Prioritization
@@ -596,54 +588,70 @@ export function LandingPage({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-[8px] bg-obsidian-900 border border-severity-critical/30 space-y-3">
-            <div className="flex items-center justify-between">
-              <SeverityBadge severity="CRITICAL" />
-              <span className="text-[11px] font-mono text-severity-critical font-semibold">P0 Blocker</span>
-            </div>
-            <h3 className="text-sm font-bold text-obsidian-100">Security Flaws</h3>
-            <p className="text-xs text-obsidian-400 leading-relaxed">
-              Hardcoded secrets, unescaped SQL injections, eval() execution, and unverified token validations that immediately block deployment.
-            </p>
-          </div>
+          <FeatureCard
+            icon={<Lock className="w-5 h-5 text-severity-critical" />}
+            badge={<SeverityBadge severity="CRITICAL" />}
+            kicker="P0 Blocker"
+            title="Security Flaws"
+            description="Hardcoded secrets, unescaped SQL injections, eval() execution, and unverified token validations that immediately block deployment."
+            className="border-severity-critical/30 hover:border-severity-critical/60"
+            footer={
+              <span className="text-[11px] font-mono text-severity-critical font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-severity-critical animate-pulse" />
+                P0 Blocker · Immediate Fix
+              </span>
+            }
+          />
 
-          <div className="p-5 rounded-[8px] bg-obsidian-900 border border-severity-high/30 space-y-3">
-            <div className="flex items-center justify-between">
-              <SeverityBadge severity="HIGH" />
-              <span className="text-[11px] font-mono text-severity-high font-semibold">P1 High</span>
-            </div>
-            <h3 className="text-sm font-bold text-obsidian-100">Runtime Defects</h3>
-            <p className="text-xs text-obsidian-400 leading-relaxed">
-              Unhandled asynchronous rejections, mutable global state side-effects, and React array-index key mutations causing state corruption.
-            </p>
-          </div>
+          <FeatureCard
+            icon={<Zap className="w-5 h-5 text-severity-high" />}
+            badge={<SeverityBadge severity="HIGH" />}
+            kicker="P1 High"
+            title="Runtime Defects"
+            description="Unhandled asynchronous rejections, mutable global state side-effects, and React array-index key mutations causing state corruption."
+            className="border-severity-high/30 hover:border-severity-high/60"
+            footer={
+              <span className="text-[11px] font-mono text-severity-high font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-severity-high" />
+                P1 High · Blocks Deployment
+              </span>
+            }
+          />
 
-          <div className="p-5 rounded-[8px] bg-obsidian-900 border border-severity-medium/30 space-y-3">
-            <div className="flex items-center justify-between">
-              <SeverityBadge severity="MEDIUM" />
-              <span className="text-[11px] font-mono text-severity-medium font-semibold">P2 Quality</span>
-            </div>
-            <h3 className="text-sm font-bold text-obsidian-100">Complexity & Smells</h3>
-            <p className="text-xs text-obsidian-400 leading-relaxed">
-              Cyclomatic complexity exceeding thresholds, deeply nested branching logic, and unoptimized resource allocations.
-            </p>
-          </div>
+          <FeatureCard
+            icon={<Layers className="w-5 h-5 text-severity-medium" />}
+            badge={<SeverityBadge severity="MEDIUM" />}
+            kicker="P2 Quality"
+            title="Complexity & Smells"
+            description="Cyclomatic complexity exceeding thresholds, deeply nested branching logic, and unoptimized resource allocations."
+            className="border-severity-medium/30 hover:border-severity-medium/60"
+            footer={
+              <span className="text-[11px] font-mono text-severity-medium font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-severity-medium" />
+                P2 Quality · Refactoring Req.
+              </span>
+            }
+          />
 
-          <div className="p-5 rounded-[8px] bg-obsidian-900 border border-obsidian-750 space-y-3">
-            <div className="flex items-center justify-between">
-              <SeverityBadge severity="LOW" />
-              <span className="text-[11px] font-mono text-obsidian-400 font-semibold">P3 Style</span>
-            </div>
-            <h3 className="text-sm font-bold text-obsidian-100">Hygiene & Conventions</h3>
-            <p className="text-xs text-obsidian-400 leading-relaxed">
-              Unused identifier bindings, dead code paths, missing type annotations, and minor readability opportunities.
-            </p>
-          </div>
+          <FeatureCard
+            icon={<FileCode className="w-5 h-5 text-obsidian-400" />}
+            badge={<SeverityBadge severity="LOW" />}
+            kicker="P3 Style"
+            title="Hygiene & Conventions"
+            description="Unused identifier bindings, dead code paths, missing type annotations, and minor readability opportunities."
+            className="border-obsidian-750 hover:border-obsidian-600"
+            footer={
+              <span className="text-[11px] font-mono text-obsidian-400 font-semibold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-obsidian-500" />
+                P3 Style · Advisory Only
+              </span>
+            }
+          />
         </div>
       </section>
 
       {/* 8. Section 08: Technical Trust & Real Capabilities */}
-      <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850">
+      <section id="integrity" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
         <div className="p-8 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-6">
           <div className="max-w-2xl space-y-2">
             <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
