@@ -3,13 +3,96 @@ import { motion } from 'framer-motion';
 
 /**
  * Official CodeEagle brand mark.
- * Eagle head with glowing amber beak, eye, and <> code emblem.
- * Supports piece-by-piece scroll collapse where each letter and subtitle chunk
- * animates sequentially directly into the emblem as the user scrolls.
+ * Powered by Framer Motion:
+ * - Clean logo emblem with no orange highlight/halo
+ * - Brand typography dismantles into pieces (character by character & word by word)
+ *   that fly into the logo emblem in sequence when scrolling down
+ * - Characters emerge out of the emblem in sequence when scrolling back up
  */
 const PREFIX_CHARS = ['C', 'o', 'd', 'e'];
 const SUFFIX_CHARS = ['E', 'a', 'g', 'l', 'e'];
 const SUBTITLE_WORDS = ['AI', 'Code', 'Review'];
+
+// Framer Motion spring variants for each individual character piece
+// Global index: 0 ('C') to 8 (last 'e')
+const letterVariants = {
+  visible: (i) => ({
+    x: 0,
+    y: 0,
+    opacity: 1,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring',
+      stiffness: 400,
+      damping: 25,
+      mass: 0.7,
+      delay: i * 0.028, // Left to right emergence
+    },
+  }),
+  hidden: (i) => ({
+    x: -30 - ((8 - i) * 3.5), // Fly to the left directly into the emblem
+    y: 0,
+    opacity: 0,
+    scale: 0.15,
+    filter: 'blur(3px)',
+    transition: {
+      type: 'spring',
+      stiffness: 340,
+      damping: 24,
+      mass: 0.6,
+      delay: (8 - i) * 0.032, // Outermost letters fly in first!
+    },
+  }),
+};
+
+// Framer Motion spring variants for subtitle word pieces
+const subtitleVariants = {
+  visible: (i) => ({
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring',
+      stiffness: 380,
+      damping: 25,
+      delay: 0.12 + (i * 0.03),
+    },
+  }),
+  hidden: (i) => ({
+    x: -26 - ((2 - i) * 4),
+    opacity: 0,
+    scale: 0.2,
+    filter: 'blur(2.5px)',
+    transition: {
+      type: 'spring',
+      stiffness: 320,
+      damping: 24,
+      delay: (2 - i) * 0.025, // 'Review' first, then 'Code', then 'AI'
+    },
+  }),
+};
+
+const containerVariants = {
+  visible: {
+    maxWidth: 240,
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+  hidden: {
+    maxWidth: 0,
+    opacity: 0,
+    transition: {
+      duration: 0.4,
+      delay: 0.28,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+};
 
 export function CodeEagleLogo({
   size = 30,
@@ -18,31 +101,24 @@ export function CodeEagleLogo({
   dark = true,
   className = '',
   scrollCollapse = false,
+  isScrolled: isScrolledProp = null,
 }) {
   const pixelSize = typeof size === 'number' ? size : size === 'lg' ? 36 : size === 'sm' ? 22 : 30;
 
-  const [scrollY, setScrollY] = useState(0);
+  const [internalScrolled, setInternalScrolled] = useState(false);
+  const isScrolled = scrollCollapse
+    ? (typeof isScrolledProp === 'boolean' ? isScrolledProp : internalScrolled)
+    : false;
 
   useEffect(() => {
-    if (!scrollCollapse) return;
-    let rafId = null;
+    if (!scrollCollapse || typeof isScrolledProp === 'boolean') return;
     const onScroll = () => {
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        setScrollY(window.scrollY);
-      });
+      setInternalScrolled(window.scrollY > 35);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener('scroll', onScroll);
-    };
-  }, [scrollCollapse]);
-
-  // Normalized scroll progress between 0 (top of page) and 1 (fully collapsed into logo)
-  const maxScrollDistance = 140;
-  const progress = scrollCollapse ? Math.min(1, Math.max(0, scrollY / maxScrollDistance)) : 0;
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [scrollCollapse, isScrolledProp]);
 
   const titleClass = pixelSize >= 32
     ? 'text-lg sm:text-xl font-bold tracking-tight font-sans'
@@ -54,66 +130,23 @@ export function CodeEagleLogo({
     ? 'text-xs font-semibold tracking-wider uppercase font-sans'
     : 'text-[11px] font-semibold tracking-wider uppercase font-sans';
 
-  // Helper to compute character/piece motion styles:
-  // pieceIndex: 0 = 'C' (collapses last), 8 = last 'e' (collapses first)
-  const getCharStyle = (globalIndex) => {
-    if (!scrollCollapse) return {};
-
-    // 9 letters total: index 8 goes in first (rev = 0), index 0 goes in last (rev = 8)
-    const rev = 8 - globalIndex;
-    const start = 0.1 + (rev * 0.08);
-    const end = Math.min(1, start + 0.16);
-
-    let local = 0;
-    if (progress >= end) local = 1;
-    else if (progress > start) local = (progress - start) / (end - start);
-
-    if (local === 0) return {};
-
-    return {
-      opacity: Math.max(0, 1 - local),
-      transform: `translate3d(${-local * (28 + rev * 4)}px, 0, 0) scale(${1 - local * 0.65})`,
-      filter: `blur(${local * 3}px)`,
-      display: local >= 1 ? 'none' : 'inline-block',
-    };
-  };
-
-  // Subtitle words collapse even earlier: 'Review' -> 'Code' -> 'AI'
-  const getSubtitleWordStyle = (wordIndex) => {
-    if (!scrollCollapse) return {};
-
-    const rev = 2 - wordIndex; // 0 for 'Review', 1 for 'Code', 2 for 'AI'
-    const start = rev * 0.08;
-    const end = start + 0.14;
-
-    let local = 0;
-    if (progress >= end) local = 1;
-    else if (progress > start) local = (progress - start) / (end - start);
-
-    if (local === 0) return {};
-
-    return {
-      opacity: Math.max(0, 1 - local),
-      transform: `translate3d(${-local * 24}px, 0, 0) scale(${1 - local * 0.5})`,
-      filter: `blur(${local * 2}px)`,
-      display: local >= 1 ? 'none' : 'inline-block',
-    };
-  };
-
-  // Container width smoothly contracts as the letters tuck in
-  const isFullyCollapsed = progress >= 0.98;
-  const containerMaxWidth = scrollCollapse
-    ? `${Math.max(0, (1 - Math.max(0, (progress - 0.6) / 0.4)) * 220)}px`
-    : 'none';
+  const animationState = isScrolled ? 'hidden' : 'visible';
 
   return (
     <div className={`flex items-center gap-3 select-none ${className}`}>
       {/* Official CodeEagle Brand Mark (Clean, zero orange highlight halo) */}
       <motion.div
         className="relative shrink-0 flex items-center justify-center"
+        animate={{
+          scale: isScrolled ? [1, 1.07, 1] : 1,
+        }}
+        transition={{
+          duration: 0.35,
+          delay: 0.22,
+          ease: [0.16, 1, 0.3, 1],
+        }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.96 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
       >
         <img
           src="/codeeagle-logo.png"
@@ -125,35 +158,43 @@ export function CodeEagleLogo({
         />
       </motion.div>
 
-      {/* Brand Typography Lockup that enters logo in pieces on scroll */}
-      {withText && !isFullyCollapsed && (
-        <div
+      {/* Brand Typography Lockup that enters logo in pieces on scroll via Framer Motion */}
+      {withText && (
+        <motion.div
+          variants={containerVariants}
+          initial="visible"
+          animate={animationState}
           className="flex flex-col leading-tight overflow-hidden whitespace-nowrap will-change-transform"
-          style={{ maxWidth: containerMaxWidth }}
         >
           {/* Main Brand Title: "Code" + "Eagle" broken into animated character pieces */}
           <div className={`flex items-center ${titleClass}`}>
             <span className={dark ? 'text-obsidian-50' : 'text-obsidian-900'}>
               {PREFIX_CHARS.map((char, i) => (
-                <span
+                <motion.span
                   key={`prefix-${i}`}
-                  className="inline-block transition-transform duration-75"
-                  style={getCharStyle(i)}
+                  custom={i}
+                  variants={letterVariants}
+                  initial="visible"
+                  animate={animationState}
+                  className="inline-block"
                 >
                   {char}
-                </span>
+                </motion.span>
               ))}
             </span>
 
             <span className="text-brand-500 font-bold ml-0.5">
               {SUFFIX_CHARS.map((char, i) => (
-                <span
+                <motion.span
                   key={`suffix-${i}`}
-                  className="inline-block transition-transform duration-75"
-                  style={getCharStyle(4 + i)}
+                  custom={4 + i}
+                  variants={letterVariants}
+                  initial="visible"
+                  animate={animationState}
+                  className="inline-block"
                 >
                   {char}
-                </span>
+                </motion.span>
               ))}
             </span>
           </div>
@@ -166,17 +207,20 @@ export function CodeEagleLogo({
               }`}
             >
               {SUBTITLE_WORDS.map((word, i) => (
-                <span
+                <motion.span
                   key={`sub-${i}`}
-                  className="inline-block transition-transform duration-75"
-                  style={getSubtitleWordStyle(i)}
+                  custom={i}
+                  variants={subtitleVariants}
+                  initial="visible"
+                  animate={animationState}
+                  className="inline-block"
                 >
                   {word}
-                </span>
+                </motion.span>
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );
