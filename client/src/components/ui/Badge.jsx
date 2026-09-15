@@ -18,8 +18,8 @@ export function Badge({
     medium: 'bg-amber-950/60 text-amber-300 border border-amber-800/60',
     low: 'bg-cyan-950/60 text-cyan-300 border border-cyan-800/60',
     ast: 'bg-cyan-950/40 text-cyan-300 border border-cyan-800/50',
-    ai: 'bg-teal-950/50 text-teal-300 border border-teal-800/50',
-    success: 'bg-brand-900/60 text-brand-300 border border-brand-700/60',
+    ai: 'bg-amber-950/40 text-amber-300 border border-amber-800/50',
+    success: 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60',
     category: 'bg-graphite-800 text-graphite-300 border border-graphite-700 uppercase tracking-wider',
   };
 

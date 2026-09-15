@@ -1,12 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { CheckCircle2, Wrench, Filter, Shield, Zap, Sparkles } from 'lucide-react';
+import { CheckCircle2, Wrench, Filter, Shield, Zap, Sparkles, Play, Loader2 } from 'lucide-react';
 import { filterIssues, sortIssues, getSeverityCounts } from '../utils/reviewHelpers.js';
 import { Badge } from './ui/Badge.jsx';
+import { Button } from './ui/Button.jsx';
 
 export function IssuePanel({
   issues = [],
   selectedIssueId,
   onSelectIssue,
+  reviewStatus = 'IDLE',
+  onRunReview = null,
   isStale = false,
   filename = 'auth.js',
   className = '',
@@ -70,9 +73,11 @@ export function IssuePanel({
           <h2 className="text-xs font-bold text-graphite-200 font-sans tracking-tight uppercase">
             Findings Queue
           </h2>
-          <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-graphite-800 text-graphite-300 font-semibold border border-graphite-700">
-            {issues.length}
-          </span>
+          {reviewStatus !== 'IDLE' && (
+            <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-graphite-800 text-graphite-300 font-semibold border border-graphite-700">
+              {issues.length}
+            </span>
+          )}
         </div>
 
         {isStale && (
@@ -98,43 +103,78 @@ export function IssuePanel({
         </div>
       )}
 
-      {/* Severity Filter Tabs */}
-      <div className="px-3 py-1.5 border-b border-graphite-800 flex items-center gap-1 overflow-x-auto text-[11px] shrink-0 bg-graphite-900">
-        {filterTabs.map((tab) => {
-          const isActive = severityFilter === tab.key;
-          if (tab.key !== 'ALL' && tab.count === 0) return null;
+      {/* Severity Filter Tabs (only shown when reviewed) */}
+      {reviewStatus !== 'IDLE' && (
+        <div className="px-3 py-1.5 border-b border-graphite-800 flex items-center gap-1 overflow-x-auto text-[11px] shrink-0 bg-graphite-900">
+          {filterTabs.map((tab) => {
+            const isActive = severityFilter === tab.key;
+            if (tab.key !== 'ALL' && tab.count === 0) return null;
 
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setSeverityFilter(tab.key)}
-              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer ${
-                isActive
-                  ? 'bg-brand-500 text-graphite-950 font-semibold shadow-dev-sm'
-                  : 'text-graphite-400 hover:text-graphite-200 hover:bg-graphite-800'
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span className={`text-[10px] font-mono ${isActive ? 'text-graphite-950 font-bold' : 'text-graphite-500'}`}>
-                {tab.count}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setSeverityFilter(tab.key)}
+                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer ${
+                  isActive
+                    ? 'bg-brand-500 text-graphite-950 font-semibold shadow-dev-sm'
+                    : 'text-graphite-400 hover:text-graphite-200 hover:bg-graphite-800'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`text-[10px] font-mono ${isActive ? 'text-graphite-950 font-bold' : 'text-graphite-500'}`}>
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Grouped Findings Rail */}
+      {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto">
-        {displayedIssues.length === 0 ? (
+        {/* 1. Idle State: Review not started */}
+        {reviewStatus === 'IDLE' ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-6 text-graphite-500">
-            <CheckCircle2 className="w-6 h-6 text-brand-400 mb-2" />
+            <div className="w-10 h-10 rounded-full bg-graphite-850 border border-graphite-750 flex items-center justify-center mb-3 text-brand-400 shadow-dev-sm">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <p className="text-xs font-semibold text-graphite-200 mb-1">
+              Ready to analyze
+            </p>
+            <p className="text-xs text-graphite-400 mb-4 max-w-[200px] leading-relaxed font-sans">
+              Click Run Review or press ⌘↵ to start static AST checks and Gemini reasoning.
+            </p>
+            {onRunReview && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={onRunReview}
+                leftIcon={<Play className="w-3 h-3 fill-current" />}
+              >
+                Run Review
+              </Button>
+            )}
+          </div>
+        ) : reviewStatus === 'ANALYZING' ? (
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-graphite-500">
+            <Loader2 className="w-6 h-6 animate-spin text-brand-400 mb-2" />
             <p className="text-xs font-semibold text-graphite-200">
-              {issues.length === 0 ? 'No issues detected' : 'No matching issues'}
+              Analyzing source code...
+            </p>
+            <p className="text-xs text-graphite-400 mt-1 max-w-[200px] leading-relaxed font-sans">
+              Inspecting AST syntax trees & querying Gemini reasoning.
+            </p>
+          </div>
+        ) : displayedIssues.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-graphite-500">
+            <CheckCircle2 className="w-6 h-6 text-emerald-400 mb-2" />
+            <p className="text-xs font-semibold text-graphite-200">
+              {issues.length === 0 ? 'All checks passed' : 'No matching issues'}
             </p>
             <p className="text-xs text-graphite-400 mt-1 max-w-[200px] leading-relaxed font-sans">
               {issues.length === 0
-                ? 'Your code passed all static AST and AI security checks.'
+                ? 'Your code passed all deterministic AST and AI semantic security checks.'
                 : 'Try choosing another severity or category filter.'}
             </p>
           </div>

@@ -41,6 +41,12 @@ export function Navbar({
           {/* Editorial Nav Anchors */}
           <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-graphite-400">
             <a
+              href="#interactive-demo"
+              className="hover:text-graphite-100 transition-colors focus-visible:outline-none focus-visible:text-graphite-100"
+            >
+              Demo
+            </a>
+            <a
               href="#why-codeeagle"
               className="hover:text-graphite-100 transition-colors focus-visible:outline-none focus-visible:text-graphite-100"
             >
@@ -51,12 +57,6 @@ export function Navbar({
               className="hover:text-graphite-100 transition-colors focus-visible:outline-none focus-visible:text-graphite-100"
             >
               How It Works
-            </a>
-            <a
-              href="#showcase"
-              className="hover:text-graphite-100 transition-colors focus-visible:outline-none focus-visible:text-graphite-100"
-            >
-              Showcase
             </a>
           </nav>
         </div>

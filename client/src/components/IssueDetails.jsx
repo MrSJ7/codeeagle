@@ -17,6 +17,7 @@ export function IssueDetails({
   issue,
   onApplyPatch,
   onPreviewAiPatch,
+  reviewStatus = 'IDLE',
   isStale = false,
   isApplyingPatch = false,
   isVerifyingAiPatch = false,
@@ -31,14 +32,16 @@ export function IssueDetails({
         aria-label="Finding remediation"
         className={`bg-graphite-900 flex flex-col items-center justify-center p-8 text-center text-graphite-500 h-full select-none ${className}`}
       >
-        <div className="w-10 h-10 rounded-full bg-graphite-850 border border-graphite-700 flex items-center justify-center mb-3 text-graphite-400 shadow-dev-sm">
+        <div className="w-10 h-10 rounded-full bg-graphite-850 border border-graphite-750 flex items-center justify-center mb-3 text-graphite-400 shadow-dev-sm">
           <Info className="w-5 h-5" />
         </div>
         <h3 className="text-sm font-bold text-graphite-200 font-sans mb-1">
-          No finding selected
+          {reviewStatus === 'IDLE' ? 'Review not started' : 'No finding selected'}
         </h3>
         <p className="text-xs text-graphite-400 max-w-xs leading-relaxed font-sans">
-          Select an issue from the findings queue to inspect its rationale, security impact, and verified fix.
+          {reviewStatus === 'IDLE'
+            ? 'Run code review to inspect findings, view actionable security rationale, and apply verified code fixes.'
+            : 'Select an issue from the findings queue to inspect its rationale, security impact, and verified fix.'}
         </p>
       </section>
     );
@@ -161,8 +164,8 @@ export function IssueDetails({
               >
                 {copyStatus === 'copied' ? (
                   <>
-                    <Check className="w-3 h-3 text-brand-400" />
-                    <span className="text-brand-400">Copied</span>
+                    <Check className="w-3 h-3 text-emerald-400" />
+                    <span className="text-emerald-400">Copied</span>
                   </>
                 ) : (
                   <>
@@ -194,9 +197,9 @@ export function IssueDetails({
               {replacementLines.map((line, idx) => (
                 <div
                   key={`rep-${idx}`}
-                  className="text-brand-300 bg-brand-950/40 px-2 py-0.5 rounded border border-brand-900/30 flex items-baseline gap-2"
+                  className="text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-900/30 flex items-baseline gap-2"
                 >
-                  <span className="text-brand-500 select-none font-bold shrink-0">+</span>
+                  <span className="text-emerald-500 select-none font-bold shrink-0">+</span>
                   <span className="whitespace-pre overflow-x-auto">{line}</span>
                 </div>
               ))}

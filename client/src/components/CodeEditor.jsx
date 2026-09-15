@@ -305,6 +305,33 @@ export function CodeEditor({
             })}
           </div>
 
+          {/* Empty State Overlay when buffer is cleared */}
+          {!code.trim() && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none pointer-events-auto z-20 bg-code">
+              <div className="w-12 h-12 rounded-xl bg-graphite-900 border border-graphite-750 flex items-center justify-center mb-4 text-brand-400 shadow-dev-sm">
+                <FileCode className="w-6 h-6" />
+              </div>
+              <h3 className="text-sm font-bold text-graphite-100 font-sans mb-1">
+                Source Code Buffer Empty
+              </h3>
+              <p className="text-xs text-graphite-400 font-sans max-w-sm mb-5 leading-relaxed">
+                Paste raw JavaScript or JSX source code to review, or select a pre-configured sample scenario:
+              </p>
+              <div className="flex items-center gap-2 flex-wrap justify-center font-mono text-xs">
+                {presets.map((preset) => (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    onClick={() => onSelectPreset(preset.id)}
+                    className="px-3 py-1.5 rounded-[6px] bg-graphite-900 hover:bg-graphite-850 text-graphite-200 border border-graphite-750 hover:border-brand-500/40 transition-colors cursor-pointer shadow-dev-sm"
+                  >
+                    {preset.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Editable Textarea Surface */}
           <textarea
             ref={textareaRef}

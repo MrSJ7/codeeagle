@@ -374,8 +374,8 @@ export default function App() {
     >
       {currentRoute === 'landing' ? (
         <LandingPage
-          onStartReviewing={() => navigateTo('review', 'insecure-login', true)}
-          onSelectScenarioAndStart={(presetId) => navigateTo('review', presetId, true)}
+          onStartReviewing={() => navigateTo('review', 'insecure-login', false)}
+          onSelectScenarioAndStart={(presetId) => navigateTo('review', presetId, false)}
           onOpenHistory={() => setIsHistoryOpen(true)}
           historyCount={historyRefreshTrigger}
         />
@@ -404,29 +404,24 @@ export default function App() {
             reviewStatus={reviewStatus}
           />
 
-          {/* Review Outcome Banner (Before/After Resolution Diff) */}
-          {patchDiff && (
-            <PatchDiffBanner
-              diff={patchDiff}
-              onDismiss={() => setPatchDiff(null)}
-            />
-          )}
-
-          {/* Review Summary Bar */}
-          {reviewData && reviewStatus !== 'IDLE' && (
-            <ReviewSummary
-              reviewData={reviewData}
-              isStale={isStale}
-              isHistorical={isHistoricalView}
-              historicalCreatedAt={historicalCreatedAt}
-              filename={currentFilename}
-              language="JavaScript"
-              activeCategory={activeCategoryFilter}
-              onSelectCategory={(cat) =>
-                setActiveCategoryFilter((prev) => (prev === cat ? null : cat))
-              }
-            />
-          )}
+          {/* Review Summary Bar - Always visible to eliminate layout shifts */}
+          <ReviewSummary
+            reviewData={reviewData}
+            reviewStatus={reviewStatus}
+            isStale={isStale}
+            isHistorical={isHistoricalView}
+            historicalCreatedAt={historicalCreatedAt}
+            filename={currentFilename}
+            language="JavaScript"
+            lineCount={code.split('\n').length}
+            activeCategory={activeCategoryFilter}
+            onSelectCategory={(cat) =>
+              setActiveCategoryFilter((prev) => (prev === cat ? null : cat))
+            }
+            onRunReview={handleRunReview}
+            patchDiff={patchDiff}
+            onDismissDiff={() => setPatchDiff(null)}
+          />
 
           {/* Review in Progress Banner */}
           {isReviewing && (
@@ -463,6 +458,8 @@ export default function App() {
               issues={reviewData?.issues || []}
               selectedIssueId={selectedIssueId}
               onSelectIssue={setSelectedIssueId}
+              reviewStatus={reviewStatus}
+              onRunReview={handleRunReview}
               isStale={isStale}
               filename={currentFilename}
               externalCategoryFilter={activeCategoryFilter}
@@ -493,6 +490,7 @@ export default function App() {
               issue={currentSelectedIssue}
               onApplyPatch={handleApplyPatch}
               onPreviewAiPatch={handlePreviewAiPatch}
+              reviewStatus={reviewStatus}
               isStale={isStale}
               isApplyingPatch={isApplyingPatch || isApplyingAiPatch}
               isVerifyingAiPatch={isVerifyingAiPatch}

@@ -1,19 +1,87 @@
 import React from 'react';
-import { Clock, CheckCircle2, Sparkles, Shield, AlertTriangle, FileCode } from 'lucide-react';
+import { Clock, CheckCircle2, Sparkles, Shield, AlertTriangle, FileCode, Play, Loader2, ArrowRight, X } from 'lucide-react';
 import { Badge } from './ui/Badge.jsx';
+import { Button } from './ui/Button.jsx';
 
 export function ReviewSummary({
   reviewData,
+  reviewStatus = 'IDLE',
   isStale = false,
   isHistorical = false,
   historicalCreatedAt = null,
   filename = 'auth.js',
   language = 'JavaScript',
+  lineCount = null,
   activeCategory = null,
   onSelectCategory = null,
+  onRunReview = null,
+  patchDiff = null,
+  onDismissDiff = null,
 }) {
-  if (!reviewData) return null;
+  // 1. Idle State: Clean prompt without fake scores
+  if (reviewStatus === 'IDLE' || !reviewData) {
+    return (
+      <div className="px-4 sm:px-5 py-2 bg-graphite-900 border-b border-graphite-800 text-graphite-300 text-xs shrink-0 select-none">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          {/* File Context */}
+          <div className="flex items-center gap-2 font-mono text-xs text-graphite-200">
+            <FileCode className="w-3.5 h-3.5 text-brand-400" />
+            <span className="font-semibold text-graphite-100">{filename}</span>
+            <span className="text-graphite-600 font-sans">•</span>
+            <span className="text-[11px] text-graphite-400 font-sans">{language}</span>
+            {lineCount && (
+              <>
+                <span className="text-graphite-600 font-sans">•</span>
+                <span className="text-[11px] text-graphite-400 font-sans">{lineCount} lines</span>
+              </>
+            )}
+          </div>
 
+          {/* Idle Prompt */}
+          <div className="flex items-center gap-2 text-graphite-400 text-xs font-sans">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+            <span>Ready for review · AST checks & Gemini semantic reasoning</span>
+          </div>
+
+          {/* Quick Action Button */}
+          {onRunReview && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onRunReview}
+              leftIcon={<Play className="w-3 h-3 fill-current" />}
+            >
+              <span>Run Review</span>
+              <kbd className="hidden sm:inline-block ml-1 px-1 py-0.2 text-[9px] font-mono rounded bg-graphite-950/20 text-graphite-950/80 font-bold">
+                ⌘↵
+              </kbd>
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Analyzing State: Non-blocking progress indicator
+  if (reviewStatus === 'ANALYZING') {
+    return (
+      <div className="px-4 sm:px-5 py-2 bg-brand-950/40 border-b border-brand-800/60 text-brand-300 text-xs shrink-0 select-none">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-400 shrink-0" />
+            <span className="font-mono text-xs">
+              Analyzing <strong className="text-graphite-100">{filename}</strong>... Deterministic AST checks complete · Gemini semantic reasoning running...
+            </span>
+          </div>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-brand-400 bg-brand-950 px-2 py-0.5 rounded border border-brand-800/80 font-semibold">
+            Analyzing
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Reviewed State (Success / Stale)
   const { score = 100, breakdown = {}, issues = [], metadata = {} } = reviewData;
   const normScore = Math.max(0, Math.min(100, Math.round(score)));
 
@@ -22,8 +90,6 @@ export function ReviewSummary({
   const highCount = issues.filter((i) => i.severity === 'HIGH').length;
   const mediumCount = issues.filter((i) => i.severity === 'MEDIUM').length;
   const lowCount = issues.filter((i) => i.severity === 'LOW').length;
-
-  const isHybrid = metadata?.engine === 'hybrid';
 
   const getVerdict = (s) => {
     if (s === 100) return 'Ready to ship';
@@ -52,11 +118,11 @@ export function ReviewSummary({
             <span>{filename}</span>
             <span className="text-graphite-600 font-normal font-sans">•</span>
             <span className="text-[11px] text-graphite-400 font-normal font-sans">{language}</span>
-            {reviewData.metrics?.lines && (
+            {lineCount && (
               <>
                 <span className="text-graphite-600 font-normal font-sans">•</span>
                 <span className="text-[11px] text-graphite-400 font-normal font-sans">
-                  {reviewData.metrics.lines} lines
+                  {lineCount} lines
                 </span>
               </>
             )}
@@ -66,8 +132,8 @@ export function ReviewSummary({
 
           {/* Primary Findings Headline */}
           {totalFindings === 0 ? (
-            <div className="flex items-center gap-1.5 text-brand-400 font-medium font-sans">
-              <CheckCircle2 className="w-3.5 h-3.5 text-brand-400" />
+            <div className="flex items-center gap-1.5 text-emerald-400 font-medium font-sans">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               <span>Review complete — All checks passed</span>
             </div>
           ) : (
@@ -105,15 +171,38 @@ export function ReviewSummary({
               </div>
             </div>
           )}
+
+          {/* Inline Patch Resolution Pill if diff exists */}
+          {patchDiff && (
+            <div className="flex items-center gap-2 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded text-[11px] font-mono text-emerald-300">
+              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+              <span>Score {patchDiff.scoreBefore} → {patchDiff.scoreAfter}</span>
+              {patchDiff.scoreAfter > patchDiff.scoreBefore && (
+                <span className="font-bold text-emerald-400">
+                  (+{patchDiff.scoreAfter - patchDiff.scoreBefore})
+                </span>
+              )}
+              {onDismissDiff && (
+                <button
+                  type="button"
+                  onClick={onDismissDiff}
+                  className="text-emerald-400 hover:text-emerald-200 ml-1 cursor-pointer"
+                  title="Dismiss diff badge"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right: Quality Score + Interactive Category Signals + Review Engine */}
         <div className="flex items-center gap-3 flex-wrap">
-          {/* Quality Score & Verdict (Supportive, not giant) */}
+          {/* Quality Score & Verdict */}
           <div className="flex items-center gap-2">
             <div
               title="Deterministic code quality score"
-              className="flex items-baseline gap-1 px-2 py-0.5 rounded bg-graphite-950 border border-graphite-700/80 text-graphite-100 font-mono shadow-dev-sm"
+              className="flex items-baseline gap-1 px-2 py-0.5 rounded bg-graphite-950 border border-graphite-750 text-graphite-100 font-mono shadow-dev-sm"
             >
               <span className={`text-xs font-bold ${normScore >= 80 ? 'text-brand-400' : normScore >= 50 ? 'text-orange-400' : 'text-red-400'}`}>
                 {normScore}

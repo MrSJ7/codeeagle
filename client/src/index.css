@@ -8,7 +8,7 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #0A0D12;
+  background-color: #090C10;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -26,8 +26,8 @@ html {
 body {
   margin: 0;
   font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #0A0D12;
-  color: #F1F5F9;
+  background-color: #090C10;
+  color: #F0F3F6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -39,17 +39,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A0D12;
+  background: #090C10;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E2838;
+  background: #1F242C;
   border-radius: 9999px;
-  border: 1px solid #111620;
+  border: 1px solid #0D1117;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2D394E;
+  background: #30363D;
 }
 
 /* Dedicated dark scrollbar for the code editor surface */
@@ -59,15 +59,15 @@ body {
 }
 
 .dark-editor-scrollbar::-webkit-scrollbar-track {
-  background: #090D12;
+  background: #090C10;
 }
 
 .dark-editor-scrollbar::-webkit-scrollbar-thumb {
-  background: #1E2636;
+  background: #21262D;
   border-radius: 9999px;
   border: 1px solid #0D1117;
 }
 
 .dark-editor-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #2D394E;
+  background: #30363D;
 }
