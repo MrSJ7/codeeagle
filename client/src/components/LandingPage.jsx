@@ -178,174 +178,238 @@ export function LandingPage({
               </h2>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs font-mono text-obsidian-400">
-                Status: {demoFixed ? (
-                  <span className="text-severity-resolved font-semibold">RESOLVED (100/100)</span>
+              <span className="text-xs font-mono text-obsidian-400 flex items-center gap-2">
+                <span>Status:</span>
+                {demoFixed ? (
+                  <span className="px-2.5 py-0.5 rounded-[4px] bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 font-semibold flex items-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.25)]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    RESOLVED (100/100) · +25 pts
+                  </span>
                 ) : (
-                  <span className="text-severity-critical font-semibold">1 BLOCKER (50/100)</span>
+                  <span className="px-2.5 py-0.5 rounded-[4px] bg-red-950/40 border border-red-800/60 text-red-300 font-semibold flex items-center gap-1.5 shadow-[0_0_10px_rgba(239,68,68,0.25)]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                    1 BLOCKER (50/100)
+                  </span>
                 )}
               </span>
               {demoFixed && (
                 <button
                   onClick={handleResetDemo}
-                  className="text-xs font-mono text-obsidian-400 hover:text-obsidian-200 underline inline-flex items-center gap-1"
+                  className="text-xs font-mono text-obsidian-300 hover:text-white px-2.5 py-1 rounded-[4px] bg-[#141414] hover:bg-[#1C1C1C] border border-[#242424] inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
                 >
-                  <RotateCcw className="w-3 h-3" /> Reset Demo
+                  <RotateCcw className="w-3 h-3 text-brand-400" />
+                  <span>Replay Demo</span>
                 </button>
               )}
             </div>
           </div>
 
-          {/* Workbench Frame */}
-          <div className="bg-obsidian-900 border border-obsidian-750 rounded-[8px] overflow-hidden shadow-2xl">
-            {/* Workbench Header */}
-            <div className="h-10 bg-obsidian-850 px-4 flex items-center justify-between border-b border-obsidian-750 text-xs font-mono">
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1.5 font-semibold text-obsidian-200">
-                  <FileCode className="w-3.5 h-3.5 text-obsidian-400" />
-                  auth.js
-                </span>
-                <span className="text-obsidian-500">·</span>
-                <span className="text-obsidian-400">JavaScript</span>
-                <span className="text-obsidian-500">·</span>
-                <span className="text-obsidian-400">27 lines</span>
+          {/* Workbench Frame with 3D Depth & Radial Specular Glare */}
+          <Card3D
+            maxTilt={1.0}
+            withGlare={true}
+            className="rounded-[10px] bg-[#0A0A0A] border border-[#242424] overflow-hidden shadow-[0_24px_70px_-16px_rgba(0,0,0,0.95),0_0_0_1px_rgba(255,255,255,0.06),0_1px_0_rgba(255,255,255,0.08)_inset]"
+          >
+            {/* Workbench IDE Header Bar */}
+            <div className="h-11 bg-[#101010] px-4 flex items-center justify-between border-b border-[#202020] text-xs font-mono select-none">
+              {/* Left: Window Traffic Controls + Active File Tab */}
+              <div className="flex items-center gap-3.5">
+                <div className="flex items-center gap-1.5 pr-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/80 border border-[#E0443E]/50" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/80 border border-[#DEA123]/50" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/80 border border-[#1AAB29]/50" />
+                </div>
+
+                <div className="flex items-center gap-2 px-3 py-1 rounded-[5px] bg-[#0A0A0A] border border-[#262626] text-xs font-mono font-medium text-[#F5F3EF] shadow-[0_1px_3px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.04)_inset]">
+                  <FileCode className="w-3.5 h-3.5 text-brand-400" />
+                  <span>auth.js</span>
+                  <span className="text-[10px] text-obsidian-500">· JS · 27 lines</span>
+                </div>
               </div>
+
+              {/* Right: Engine Indicator Pill with Pulsating Status */}
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-[4px] bg-obsidian-800 text-[10px] text-obsidian-300 border border-obsidian-700">
-                  Babel AST Engine
-                </span>
+                <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-[#141414] border border-[#242424] text-[11px] font-mono text-obsidian-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse shadow-[0_0_6px_rgba(255,122,24,0.6)]" />
+                  <span className="font-semibold text-obsidian-200">Babel AST Engine</span>
+                  <span className="text-obsidian-600">·</span>
+                  <span className="text-obsidian-400 text-[10px]">13 Rules Active</span>
+                </div>
               </div>
             </div>
 
             {/* Workbench Grid: Left = Code Canvas, Right = Senior PR Review Comment */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-obsidian-750">
+            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[#202020]">
               {/* Left Column: Monaco-Style Code Canvas */}
-              <div className="lg:col-span-7 bg-obsidian-950 font-mono text-xs overflow-x-auto select-text p-4">
-                <div className="space-y-1">
-                  <div className="flex items-center text-obsidian-600">
-                    <span className="w-8 text-right pr-4 select-none">1</span>
-                    <span className="text-obsidian-400">import jwt from 'jsonwebtoken';</span>
+              <div className="lg:col-span-7 bg-[#070707] font-mono text-xs overflow-x-auto select-text p-4 sm:p-5">
+                <div className="space-y-0.5">
+                  {/* Line 1 */}
+                  <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
+                    <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">1</span>
+                    <span className="text-obsidian-300">
+                      <span className="text-[#C586C0]">import</span> <span className="text-[#9CDCFE]">jwt</span> <span className="text-[#C586C0]">from</span> <span className="text-[#CE9178]">'jsonwebtoken'</span>;
+                    </span>
                   </div>
-                  <div className="flex items-center text-obsidian-600">
-                    <span className="w-8 text-right pr-4 select-none">2</span>
-                    <span className="text-obsidian-400">import bcrypt from 'bcrypt';</span>
+
+                  {/* Line 2 */}
+                  <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
+                    <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">2</span>
+                    <span className="text-obsidian-300">
+                      <span className="text-[#C586C0]">import</span> <span className="text-[#9CDCFE]">bcrypt</span> <span className="text-[#C586C0]">from</span> <span className="text-[#CE9178]">'bcrypt'</span>;
+                    </span>
                   </div>
-                  <div className="flex items-center text-obsidian-600">
-                    <span className="w-8 text-right pr-4 select-none">3</span>
-                    <span className="text-obsidian-600">// Authentication middleware</span>
+
+                  {/* Line 3 */}
+                  <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
+                    <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">3</span>
+                    <span className="text-[#6A9955] italic">// Authentication middleware</span>
                   </div>
-                  <div className="flex items-center text-obsidian-600">
-                    <span className="w-8 text-right pr-4 select-none">4</span>
-                    <span className="text-obsidian-300">export function generateToken(user) &#123;</span>
+
+                  {/* Line 4 */}
+                  <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
+                    <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">4</span>
+                    <span className="text-obsidian-200">
+                      <span className="text-[#C586C0]">export</span> <span className="text-[#569CD6]">function</span> <span className="text-[#DCDCAA]">generateToken</span>(<span className="text-[#9CDCFE]">user</span>) &#123;
+                    </span>
                   </div>
-                  <div className="flex items-center text-obsidian-600">
-                    <span className="w-8 text-right pr-4 select-none">5</span>
-                    <span className="text-obsidian-300 pl-4">const payload = &#123; id: user.id, role: user.role &#125;;</span>
+
+                  {/* Line 5 */}
+                  <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
+                    <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">5</span>
+                    <span className="text-obsidian-200 pl-4">
+                      <span className="text-[#569CD6]">const</span> <span className="text-[#9CDCFE]">payload</span> = &#123; <span className="text-[#9CDCFE]">id</span>: <span className="text-[#9CDCFE]">user</span>.<span className="text-[#9CDCFE]">id</span>, <span className="text-[#9CDCFE]">role</span>: <span className="text-[#9CDCFE]">user</span>.<span className="text-[#9CDCFE]">role</span> &#125;;
+                    </span>
                   </div>
 
                   {/* Line 6: The Highlighted Flaw */}
                   <div
-                    className={`flex items-center transition-colors duration-300 ${
+                    className={`flex items-center py-1.5 px-2 rounded-[4px] transition-all duration-300 ${
                       demoFixed
-                        ? 'bg-severity-resolved/10 text-emerald-300 border-l-2 border-severity-resolved'
-                        : 'bg-severity-critical/15 text-red-200 border-l-2 border-severity-critical'
+                        ? 'bg-emerald-950/25 border border-emerald-500/40 text-emerald-200 shadow-[0_0_24px_rgba(16,185,129,0.12)_inset]'
+                        : 'bg-red-950/30 border border-red-500/40 text-red-200 shadow-[0_0_24px_rgba(239,68,68,0.15)_inset]'
                     }`}
                   >
-                    <span className="w-8 text-right pr-4 select-none font-bold text-obsidian-300">6</span>
-                    <span className="pl-4 font-semibold">
+                    <div className="w-7 flex items-center justify-end pr-2 select-none">
+                      <span className={`w-1.5 h-3.5 rounded-full mr-1.5 ${demoFixed ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]' : 'bg-severity-critical animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.7)]'}`} />
+                      <span className="font-bold text-obsidian-300 font-mono text-[11px]">6</span>
+                    </div>
+                    <span className="pl-3 font-semibold tracking-wide">
                       {demoFixed ? (
-                        <span className="text-emerald-300">
-                          const JWT_SECRET = process.env.JWT_SECRET;
+                        <span>
+                          <span className="text-[#569CD6]">const</span> <span className="text-emerald-400 font-bold">JWT_SECRET</span> = <span className="text-[#9CDCFE]">process</span>.<span className="text-[#9CDCFE]">env</span>.<span className="text-emerald-400 font-bold">JWT_SECRET</span>;
                         </span>
                       ) : (
-                        <span className="text-red-300">
-                          const JWT_SECRET = "production_super_secret_key_12345";
+                        <span>
+                          <span className="text-[#569CD6]">const</span> <span className="text-red-400 font-bold underline decoration-wavy decoration-red-500">JWT_SECRET</span> = <span className="text-[#CE9178]">"production_super_secret_key_12345"</span>;
                         </span>
                       )}
                     </span>
                   </div>
 
-                  <div className="flex items-center text-obsidian-600">
-                    <span className="w-8 text-right pr-4 select-none">7</span>
-                    <span className="text-obsidian-300 pl-4">return jwt.sign(payload, JWT_SECRET, &#123; expiresIn: '1h' &#125;);</span>
+                  {/* Line 7 */}
+                  <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
+                    <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">7</span>
+                    <span className="text-obsidian-200 pl-4">
+                      <span className="text-[#C586C0]">return</span> <span className="text-[#9CDCFE]">jwt</span>.<span className="text-[#DCDCAA]">sign</span>(<span className="text-[#9CDCFE]">payload</span>, <span className="text-[#9CDCFE]">JWT_SECRET</span>, &#123; <span className="text-[#9CDCFE]">expiresIn</span>: <span className="text-[#CE9178]">'1h'</span> &#125;);
+                    </span>
                   </div>
-                  <div className="flex items-center text-obsidian-600">
-                    <span className="w-8 text-right pr-4 select-none">8</span>
+
+                  {/* Line 8 */}
+                  <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
+                    <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">8</span>
                     <span className="text-obsidian-300">&#125;</span>
                   </div>
                 </div>
 
                 {/* Live Diff Mutation Notice */}
                 {demoFixed && (
-                  <div className="mt-4 p-3 rounded-[5px] bg-severity-resolved/10 border border-severity-resolved/30 text-emerald-300 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                  <div className="mt-5 p-3.5 rounded-[6px] bg-emerald-950/30 border border-emerald-500/40 text-emerald-300 flex items-center justify-between shadow-[0_4px_16px_rgba(16,185,129,0.15)] animate-in fade-in duration-300">
+                    <div className="flex items-center gap-2.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span className="text-xs font-sans">
                         Patch verified via SHA-256 hash and applied. Score improved: <strong>50 → 75 (+25 pts)</strong>
                       </span>
                     </div>
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-[4px] bg-emerald-900/50 text-emerald-200 border border-emerald-700/60 shrink-0">
+                      1 BLOCKER RESOLVED
+                    </span>
                   </div>
                 )}
               </div>
 
               {/* Right Column: Senior PR Review Comment & Verified Patch */}
-              <div className="lg:col-span-5 bg-obsidian-900 p-5 flex flex-col justify-between space-y-4">
+              <div className="lg:col-span-5 bg-[#0C0C0C] p-5 sm:p-6 flex flex-col justify-between space-y-4">
                 <div className="space-y-4">
                   {/* Finding Header */}
                   <div className="flex items-start justify-between gap-3">
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
                         {demoFixed ? (
                           <SeverityBadge severity="RESOLVED" />
                         ) : (
                           <SeverityBadge severity="CRITICAL" />
                         )}
-                        <span className="text-[11px] font-mono text-obsidian-400">auth.js:6</span>
+                        <span className="font-mono text-[11px] text-obsidian-400 px-2 py-0.5 rounded-[4px] bg-[#141414] border border-[#222222]">
+                          auth.js:6
+                        </span>
                       </div>
-                      <h3 className="text-sm font-bold text-obsidian-50">
+                      <h3 className="text-base font-bold text-[#F5F3EF] tracking-tight">
                         {demoFixed
-                          ? 'Hardcoded credential resolved'
+                          ? 'Hardcoded Credential Resolved'
                           : 'Hardcoded credential in JWT_SECRET'}
                       </h3>
                     </div>
-                    <span className="px-2 py-0.5 rounded-[4px] bg-obsidian-800 text-[10px] font-mono text-obsidian-300 border border-obsidian-750">
+                    <span className="px-2 py-0.5 rounded-[4px] bg-[#161616] text-[10px] font-mono font-semibold text-brand-400 border border-brand-500/30 tracking-wider">
                       SEC-SECRET
                     </span>
                   </div>
 
                   {/* Why this matters */}
-                  <div className="space-y-1.5 text-xs text-obsidian-300">
-                    <div className="font-semibold text-obsidian-100 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono">
-                      <AlertCircle className="w-3.5 h-3.5 text-severity-critical" />
+                  <div className="p-3.5 rounded-[6px] bg-[#111111] border border-[#222222] hover:border-[#2C2C2C] transition-colors space-y-1.5 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
+                    <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5 text-severity-critical shrink-0" />
                       Why This Matters
                     </div>
-                    <p className="leading-relaxed text-obsidian-300">
+                    <p className="text-xs text-[#A6A29B] leading-relaxed">
                       Storing sensitive JWT secrets in source code allows anyone with repo access to forge authentication tokens and impersonate any user.
                     </p>
                   </div>
 
                   {/* Recommendation */}
-                  <div className="space-y-1.5 text-xs text-obsidian-300">
-                    <div className="font-semibold text-obsidian-100 flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-mono">
-                      <Wrench className="w-3.5 h-3.5 text-brand-500" />
+                  <div className="p-3.5 rounded-[6px] bg-[#111111] border border-[#222222] hover:border-[#2C2C2C] transition-colors space-y-1.5 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
+                    <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider flex items-center gap-1.5">
+                      <Wrench className="w-3.5 h-3.5 text-brand-500 shrink-0" />
                       Recommendation
                     </div>
-                    <p className="leading-relaxed text-obsidian-300">
-                      Read secret credentials exclusively from environment variables via <code className="text-brand-400 font-mono">process.env.JWT_SECRET</code>.
+                    <p className="text-xs text-[#A6A29B] leading-relaxed">
+                      Read secret credentials exclusively from environment variables via{' '}
+                      <code className="text-brand-400 font-mono bg-brand-500/10 px-1.5 py-0.5 rounded-[3px] border border-brand-500/20">
+                        process.env.JWT_SECRET
+                      </code>.
                     </p>
                   </div>
 
                   {/* Unified Diff Box */}
-                  <div className="space-y-1">
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-obsidian-400">
-                      Suggested Change (Unified Diff)
+                  <div className="rounded-[6px] border border-[#242424] bg-[#0A0A0A] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+                    <div className="px-3 py-1.5 bg-[#121212] border-b border-[#202020] text-[10px] font-mono text-obsidian-400 flex items-center justify-between select-none">
+                      <span className="flex items-center gap-1.5 font-medium text-obsidian-300">
+                        <GitBranch className="w-3 h-3 text-brand-400" />
+                        Suggested Change (Unified Diff)
+                      </span>
+                      <span className="flex items-center gap-1 text-[10px]">
+                        <span className="text-red-400 font-semibold">-1</span>
+                        <span className="text-obsidian-600">/</span>
+                        <span className="text-emerald-400 font-semibold">+1</span>
+                      </span>
                     </div>
-                    <div className="p-3 rounded-[5px] bg-obsidian-950 border border-obsidian-800 font-mono text-[11px] space-y-1">
-                      <div className="text-red-400 bg-red-950/30 px-1.5 py-0.5 rounded-[3px]">
-                        - const JWT_SECRET = "production_super_secret_key_12345";
+                    <div className="font-mono text-[11px] p-1.5 space-y-1">
+                      <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-red-950/20 border border-red-500/30 text-red-300 hover:bg-red-950/35 transition-colors">
+                        <span className="text-red-400 font-bold select-none">-</span>
+                        <span>const JWT_SECRET = "production_super_secret_key_12345";</span>
                       </div>
-                      <div className="text-emerald-400 bg-emerald-950/30 px-1.5 py-0.5 rounded-[3px]">
-                        + const JWT_SECRET = process.env.JWT_SECRET;
+                      <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-emerald-950/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-950/35 transition-colors">
+                        <span className="text-emerald-400 font-bold select-none">+</span>
+                        <span>const JWT_SECRET = process.env.JWT_SECRET;</span>
                       </div>
                     </div>
                   </div>
@@ -354,18 +418,23 @@ export function LandingPage({
                 {/* Primary Action Button */}
                 <div className="pt-2">
                   {demoFixed ? (
-                    <div className="w-full py-2.5 px-4 rounded-[5px] bg-emerald-950/30 border border-emerald-800/60 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2">
-                      <Check className="w-4 h-4 text-emerald-400" />
-                      Verified Patch Applied & Re-Analyzed
+                    <div className="w-full py-3 px-4 rounded-[6px] bg-emerald-950/30 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center justify-between shadow-[0_4px_16px_rgba(16,185,129,0.2),0_1px_0_rgba(255,255,255,0.06)_inset] animate-in fade-in duration-200">
+                      <div className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-emerald-400" />
+                        <span>Verified Patch Applied & Re-Analyzed</span>
+                      </div>
+                      <span className="font-mono text-[10px] text-emerald-400/80 bg-emerald-900/40 px-2 py-0.5 rounded-[4px] border border-emerald-700/60">
+                        SHA-256 Valid
+                      </span>
                     </div>
                   ) : (
                     <Button
                       variant="primary"
-                      className="w-full"
+                      className="w-full h-11 text-xs font-bold tracking-tight shadow-[0_4px_20px_rgba(255,122,24,0.4),0_1px_0_rgba(255,255,255,0.3)_inset] hover:shadow-[0_6px_28px_rgba(255,122,24,0.55),0_1px_0_rgba(255,255,255,0.4)_inset] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
                       size="md"
                       isLoading={isApplyingDemo}
                       onClick={handleApplyDemoFix}
-                      rightIcon={<ArrowRight className="w-4 h-4" />}
+                      rightIcon={<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
                     >
                       Apply Fix & Re-Analyze
                     </Button>
@@ -373,7 +442,7 @@ export function LandingPage({
                 </div>
               </div>
             </div>
-          </div>
+          </Card3D>
         </div>
       </section>
 
