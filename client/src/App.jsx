@@ -21,6 +21,10 @@ import { LandingPage } from './components/LandingPage.jsx';
 import { ReviewOverview } from './components/ReviewOverview.jsx';
 import { ArchitectureFlow } from './components/ArchitectureFlow.jsx';
 import { HowItWorksModal } from './components/HowItWorksModal.jsx';
+import { ProjectImportModal } from './components/project/ProjectImportModal.jsx';
+import { ProjectOverview } from './components/project/ProjectOverview.jsx';
+import { ProjectWorkspace } from './components/project/ProjectWorkspace.jsx';
+import { startProjectReviewApi } from './services/projectApi.js';
 
 export default function App() {
   const getInitialRoute = () => {
@@ -32,6 +36,16 @@ export default function App() {
 
   const [currentRoute, setCurrentRoute] = useState(getInitialRoute);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Review Scope: 'single' (file mode) | 'project' (full project codebase mode)
+  const [reviewScope, setReviewScope] = useState('single');
+  const [isProjectImportOpen, setIsProjectImportOpen] = useState(false);
+  const [activeProject, setActiveProject] = useState(null);
+  const [activeProjectReview, setActiveProjectReview] = useState(null);
+  const [projectNavView, setProjectNavView] = useState('overview'); // 'overview' | 'workspace'
+  const [initialWorkspaceFileId, setInitialWorkspaceFileId] = useState(null);
+  const [initialWorkspaceFindingId, setInitialWorkspaceFindingId] = useState(null);
+  const [isProjectAnalyzing, setIsProjectAnalyzing] = useState(false);
 
   const [selectedPresetId, setSelectedPresetId] = useState(PRESETS[0].id);
   const [code, setCode] = useState(PRESETS[0].code);
@@ -454,6 +468,33 @@ export default function App() {
     }
   };
 
+  // Handle project imported & ready
+  const handleProjectReady = ({ project, review }) => {
+    setActiveProject(project);
+    setActiveProjectReview(review);
+    setReviewScope('project');
+    setProjectNavView('overview');
+    setInitialWorkspaceFileId(null);
+    setInitialWorkspaceFindingId(null);
+    navigateTo('review');
+    showToast(`Imported project "${project.name}" with ${review.filesAnalyzed} analyzed files.`);
+  };
+
+  // Re-run project analysis
+  const handleReAnalyzeProject = async () => {
+    if (!activeProject) return;
+    setIsProjectAnalyzing(true);
+    try {
+      const outcome = await startProjectReviewApi(activeProject.id);
+      setActiveProjectReview(outcome.review);
+      showToast('Project re-analyzed successfully.');
+    } catch (err) {
+      showToast(err.message || 'Failed to re-analyze project.', 'error');
+    } finally {
+      setIsProjectAnalyzing(false);
+    }
+  };
+
   const currentSelectedIssue = reviewData?.issues?.find((i) => i.id === selectedIssueId) || null;
   const isStale = reviewStatus === 'STALE';
   const isReviewing = reviewStatus === 'ANALYZING';
@@ -468,13 +509,80 @@ export default function App() {
     >
       {currentRoute === 'landing' ? (
         <LandingPage
-          onStartReviewing={() => navigateTo('review', 'insecure-login', true)}
-          onSelectScenarioAndStart={(presetId) => navigateTo('review', presetId, true)}
+          onStartReviewing={() => {
+            setReviewScope('single');
+            navigateTo('review', 'insecure-login', true);
+          }}
+          onOpenProjectImport={() => setIsProjectImportOpen(true)}
+          onSelectScenarioAndStart={(presetId) => {
+            setReviewScope('single');
+            navigateTo('review', presetId, true);
+          }}
           onOpenHistory={() => setIsHistoryOpen(true)}
           onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
           historyCount={historyRefreshTrigger}
         />
+      ) : reviewScope === 'project' && activeProjectReview ? (
+        /* PROJECT REVIEW MODE */
+        <>
+          <Navbar
+            variant="app"
+            mode="workspace"
+            score={activeProjectReview.score}
+            onRunReview={handleReAnalyzeProject}
+            onRunAudit={handleReAnalyzeProject}
+            isReviewing={isProjectAnalyzing}
+            isAuditing={isProjectAnalyzing}
+            onOpenProjectImport={() => setIsProjectImportOpen(true)}
+            onToggleHistory={() => setIsHistoryOpen((prev) => !prev)}
+            isHistoryOpen={isHistoryOpen}
+            historyCount={historyRefreshTrigger}
+            onNavigateHome={() => navigateTo('landing')}
+            onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+            filename={activeProject?.name || 'Project'}
+            language="Project Scope"
+            lineCount={activeProjectReview.filesAnalyzed}
+            issueCount={activeProjectReview.findings?.length || 0}
+            reviewStatus={isProjectAnalyzing ? 'ANALYZING' : 'SUCCESS'}
+            activeLens={projectNavView === 'overview' ? 'overview' : 'findings'}
+            onSelectLens={(lens) => setProjectNavView(lens === 'overview' ? 'overview' : 'workspace')}
+          />
+
+          {projectNavView === 'overview' ? (
+            <main className="flex-1 min-h-0 overflow-y-auto bg-slate-50 dark:bg-[#080808]">
+              <ProjectOverview
+                project={activeProject}
+                review={activeProjectReview}
+                onOpenWorkspace={() => setProjectNavView('workspace')}
+                onSelectFile={(file) => {
+                  setInitialWorkspaceFileId(file.id);
+                  setProjectNavView('workspace');
+                }}
+                onSelectFinding={(finding) => {
+                  setInitialWorkspaceFileId(finding.fileId);
+                  setInitialWorkspaceFindingId(finding.id);
+                  setProjectNavView('workspace');
+                }}
+                onReAnalyze={handleReAnalyzeProject}
+                isAnalyzing={isProjectAnalyzing}
+              />
+            </main>
+          ) : (
+            <ProjectWorkspace
+              project={activeProject}
+              review={activeProjectReview}
+              onUpdateReview={(newReview) => {
+                setActiveProjectReview(newReview);
+                setHistoryRefreshTrigger((prev) => prev + 1);
+              }}
+              onNavigateOverview={() => setProjectNavView('overview')}
+              initialFileId={initialWorkspaceFileId}
+              initialFindingId={initialWorkspaceFindingId}
+            />
+          )}
+        </>
       ) : (
+        /* SINGLE FILE REVIEW MODE (100% PRESERVED) */
         <>
           {/* Primary Workspace Header */}
           <Navbar
@@ -489,6 +597,7 @@ export default function App() {
             isReviewing={isReviewing}
             isAuditing={isReviewing}
             isStale={isStale}
+            onOpenProjectImport={() => setIsProjectImportOpen(true)}
             onToggleHistory={() => setIsHistoryOpen((prev) => !prev)}
             isHistoryOpen={isHistoryOpen}
             historyCount={historyRefreshTrigger}
@@ -633,6 +742,13 @@ export default function App() {
           )}
         </>
       )}
+
+      {/* Project Import Modal */}
+      <ProjectImportModal
+        isOpen={isProjectImportOpen}
+        onClose={() => setIsProjectImportOpen(false)}
+        onProjectReady={handleProjectReady}
+      />
 
       {/* AI Patch Preview Modal */}
       <PatchPreview

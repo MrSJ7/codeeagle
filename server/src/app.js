@@ -6,6 +6,7 @@ import reviewRouter from './routes/review.routes.js';
 import rulesRouter from './routes/rules.routes.js';
 import patchRouter from './routes/patch.routes.js';
 import reviewsRouter from './routes/reviews.routes.js';
+import projectRouter from './routes/project.routes.js';
 import { connectDatabase } from './config/database.js';
 
 dotenv.config();
@@ -64,13 +65,14 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(express.json({ limit: '500kb' }));
+app.use(express.json({ limit: '35mb' }));
 
 app.use('/api/health', healthRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/rules', rulesRouter);
 app.use('/api/patch', patchRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/projects', projectRouter);
 
 // Catch-all 404 handler for undefined API routes
 app.use('*', (req, res) => {

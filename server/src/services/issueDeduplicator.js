@@ -170,3 +170,12 @@ export function deduplicateAiAgainstStatic(staticIssues = [], aiIssues = []) {
     droppedAiCount: droppedCount,
   };
 }
+
+/**
+ * Combines static issues with deduplicated AI issues in deterministic order.
+ */
+export function deduplicateIssues(staticIssues = [], aiIssues = []) {
+  const { deduplicatedAiIssues } = deduplicateAiAgainstStatic(staticIssues, aiIssues);
+  return [...staticIssues, ...deduplicatedAiIssues];
+}
+

@@ -18,6 +18,7 @@ import { useTheme } from '@/context/ThemeContext.jsx';
 
 export function LandingPage({
   onStartReviewing,
+  onOpenProjectImport,
   onSelectScenarioAndStart,
   onOpenHistory,
   onOpenHowItWorks,
@@ -48,6 +49,7 @@ export function LandingPage({
         mode="landing"
         onNavigateHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         onNavigateReview={onStartReviewing}
+        onOpenProjectImport={onOpenProjectImport}
         onToggleHistory={onOpenHistory}
         onOpenHowItWorks={onOpenHowItWorks}
         historyCount={historyCount}
@@ -79,28 +81,27 @@ export function LandingPage({
 
           {/* Precision Technical Subtitle */}
           <p className="text-base sm:text-lg text-slate-600 dark:text-obsidian-400 leading-relaxed max-w-2xl mx-auto font-normal">
-            Paste your code. Get line-by-line findings with fixes you can apply in one click.
+            Import an entire project or paste code. Get line-by-line findings with fixes you can apply in one click.
           </p>
 
           {/* High-Contrast CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <Button
-              size="lg"
-              variant="primary"
-              onClick={onStartReviewing}
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-            >
-              Start Reviewing
-            </Button>
+            {onOpenProjectImport && (
+              <Button
+                size="lg"
+                variant="primary"
+                onClick={onOpenProjectImport}
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+              >
+                Review a Project (ZIP / GitHub)
+              </Button>
+            )}
             <Button
               size="lg"
               variant="secondary"
-              onClick={() => {
-                const el = document.getElementById('workbench');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onClick={onStartReviewing}
             >
-              See How It Works
+              Review Single File
             </Button>
           </div>
 

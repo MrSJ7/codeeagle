@@ -37,6 +37,7 @@ export function Navbar({
   historyCount = null,
   onNavigateHome,
   onNavigateReview,
+  onOpenProjectImport = null,
   onOpenHowItWorks,
   filename = 'auth.js',
   language = 'JavaScript',
@@ -125,8 +126,20 @@ export function Navbar({
             </nav>
           </div>
 
-          {/* Right: Theme Toggle + Single Primary CTA */}
+          {/* Right: Theme Toggle + Project Import + Single Primary CTA */}
           <div className="flex items-center gap-3">
+            {onOpenProjectImport && (
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={onOpenProjectImport}
+                leftIcon={<Layers className="w-3.5 h-3.5" />}
+                className="hidden sm:flex"
+              >
+                Review a Project
+              </Button>
+            )}
+
             <button
               type="button"
               onClick={toggleTheme}
@@ -270,8 +283,21 @@ export function Navbar({
         </div>
       )}
 
-      {/* Right: Score, History, Theme Toggle & RUN REVIEW */}
+      {/* Right: Project Import, Score, History, Theme Toggle & RUN REVIEW */}
       <div className="flex items-center gap-2.5 shrink-0">
+        {onOpenProjectImport && (
+          <Button
+            variant="secondary"
+            size="xs"
+            onClick={onOpenProjectImport}
+            leftIcon={<Layers className="w-3 h-3 text-brand-500" />}
+            className="h-8 px-2.5 hidden sm:flex"
+            title="Import or switch project"
+          >
+            <span>Projects</span>
+          </Button>
+        )}
+
         {/* Normalized Score Badge */}
         {typeof score === 'number' && (
           <div className={cn(
