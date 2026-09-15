@@ -345,59 +345,91 @@ export function LandingPage({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
             {/* Step 1 */}
-            <div className="p-4 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
+            <div className="p-3.5 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
               <div>
-                <span className="text-xs font-mono font-bold text-brand-400">01</span>
-                <h4 className="text-sm font-bold text-graphite-100 mt-2 mb-1">Paste Code</h4>
-                <p className="text-xs text-graphite-400 leading-relaxed">
-                  Enter JS or JSX source code directly or pick a reference scenario.
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-mono font-bold text-brand-400">01</span>
+                  <span className="text-[10px] font-mono text-graphite-500">INPUT</span>
+                </div>
+                <h4 className="text-xs font-bold text-graphite-100 mb-1">Paste Code</h4>
+                <p className="text-[11px] text-graphite-400 leading-relaxed mb-3">
+                  Raw JS or JSX source code buffer.
                 </p>
+              </div>
+              <div className="rounded bg-code border border-graphite-800 p-1.5 font-mono text-[10px] text-graphite-300 truncate">
+                <code>auth.js (27 lines)</code>
               </div>
             </div>
 
             {/* Step 2 */}
-            <div className="p-4 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
+            <div className="p-3.5 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
               <div>
-                <span className="text-xs font-mono font-bold text-brand-400">02</span>
-                <h4 className="text-sm font-bold text-graphite-100 mt-2 mb-1">Run Review</h4>
-                <p className="text-xs text-graphite-400 leading-relaxed">
-                  AST analyzers run in milliseconds; Gemini models reason concurrently.
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-mono font-bold text-brand-400">02</span>
+                  <span className="text-[10px] font-mono text-teal-400">ANALYZE</span>
+                </div>
+                <h4 className="text-xs font-bold text-graphite-100 mb-1">Run Review</h4>
+                <p className="text-[11px] text-graphite-400 leading-relaxed mb-3">
+                  AST checks in ms; Gemini reasons concurrently.
                 </p>
+              </div>
+              <div className="rounded bg-code border border-graphite-800 p-1.5 font-mono text-[10px] text-teal-300 flex items-center justify-between">
+                <span>AST + AI</span>
+                <span className="text-brand-400">Ready</span>
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="p-4 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
+            <div className="p-3.5 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
               <div>
-                <span className="text-xs font-mono font-bold text-brand-400">03</span>
-                <h4 className="text-sm font-bold text-graphite-100 mt-2 mb-1">Inspect Findings</h4>
-                <p className="text-xs text-graphite-400 leading-relaxed">
-                  Scannable findings rail highlights the code line and PR review commentary.
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-mono font-bold text-brand-400">03</span>
+                  <span className="text-[10px] font-mono text-red-400">DIAGNOSE</span>
+                </div>
+                <h4 className="text-xs font-bold text-graphite-100 mb-1">Inspect Findings</h4>
+                <p className="text-[11px] text-graphite-400 leading-relaxed mb-3">
+                  In-situ review comment with rationale.
                 </p>
+              </div>
+              <div className="rounded bg-red-950/40 border border-red-900/40 p-1.5 font-mono text-[10px] text-red-300 truncate">
+                <span>! auth.js:6 SEC-SECRET</span>
               </div>
             </div>
 
             {/* Step 4 */}
-            <div className="p-4 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
+            <div className="p-3.5 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
               <div>
-                <span className="text-xs font-mono font-bold text-brand-400">04</span>
-                <h4 className="text-sm font-bold text-graphite-100 mt-2 mb-1">Apply Fix</h4>
-                <p className="text-xs text-graphite-400 leading-relaxed">
-                  One click mutates the code buffer with cryptographic hash matching.
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-mono font-bold text-brand-400">04</span>
+                  <span className="text-[10px] font-mono text-brand-400">MUTATE</span>
+                </div>
+                <h4 className="text-xs font-bold text-graphite-100 mb-1">Apply Fix</h4>
+                <p className="text-[11px] text-graphite-400 leading-relaxed mb-3">
+                  Cryptographic SHA-256 line replacement.
                 </p>
+              </div>
+              <div className="rounded bg-brand-950/40 border border-brand-900/40 p-1.5 font-mono text-[10px] text-brand-300 truncate">
+                <span>+ process.env.SECRET</span>
               </div>
             </div>
 
             {/* Step 5 */}
-            <div className="p-4 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
+            <div className="p-3.5 rounded-lg bg-graphite-950 border border-graphite-800 flex flex-col justify-between shadow-dev-sm">
               <div>
-                <span className="text-xs font-mono font-bold text-brand-400">05</span>
-                <h4 className="text-sm font-bold text-graphite-100 mt-2 mb-1">Re-Review</h4>
-                <p className="text-xs text-graphite-400 leading-relaxed">
-                  Authoritative re-audit proves resolution and updates the history log.
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-mono font-bold text-brand-400">05</span>
+                  <span className="text-[10px] font-mono text-cyan-400">VERIFY</span>
+                </div>
+                <h4 className="text-xs font-bold text-graphite-100 mb-1">Re-Review</h4>
+                <p className="text-[11px] text-graphite-400 leading-relaxed mb-3">
+                  Automated re-audit proves zero regression.
                 </p>
+              </div>
+              <div className="rounded bg-code border border-graphite-800 p-1.5 font-mono text-[10px] text-cyan-300 flex items-center justify-between">
+                <span>Score: 50 → 75</span>
+                <span className="text-brand-400 font-bold">✓</span>
               </div>
             </div>
           </div>
