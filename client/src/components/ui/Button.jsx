@@ -1,6 +1,14 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
+/**
+ * CodeEagle Button System
+ * - Primary: Warm confident orange (#FF7A18) with dark text (#080808)
+ * - Secondary: Precision matte graphite (#161616) with 1px border (#262626)
+ * - Tertiary / Ghost: Quiet technical controls
+ * - Micro-interactions: translateY(-1px) hover lift, 0.98 active press, animated icon offset
+ */
 export function Button({
   children,
   variant = 'primary',
@@ -15,34 +23,46 @@ export function Button({
   ...props
 }) {
   const baseStyles =
-    'inline-flex items-center justify-center font-sans font-medium select-none cursor-pointer transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian-950 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]';
+    'group relative inline-flex items-center justify-center font-sans font-semibold select-none cursor-pointer ' +
+    'transition-all duration-150 ease-out will-change-transform ' +
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] ' +
+    'disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none ' +
+    'hover:-translate-y-[1px] active:translate-y-0 active:scale-[0.98]';
 
   const sizeStyles = {
-    xs: 'h-7 px-2 text-[11px] gap-1 rounded-[4px]',
+    xs: 'h-7 px-2.5 text-[11px] gap-1 rounded-[4px]',
     sm: 'h-8 px-3 text-xs gap-1.5 rounded-[5px]',
-    md: 'h-9 px-3.5 text-xs font-semibold gap-2 rounded-[5px]',
-    lg: 'h-11 px-5 text-sm font-semibold gap-2.5 rounded-[6px]',
+    md: 'h-9 px-3.5 text-xs gap-2 rounded-[5px]',
+    lg: 'h-10 px-4.5 text-sm gap-2.5 rounded-[6px]',
   };
 
   const variantStyles = {
-    // Primary: Unmistakable vibrant brand orange with dark text for maximum contrast & authority
+    // Primary: Unmistakable warm orange with high contrast dark text & subtle specular bevel
     primary:
-      'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-obsidian-950 font-bold border border-brand-400/30 hover:text-white shadow-[0_1px_3px_rgba(249,115,22,0.3)]',
+      'bg-[#FF7A18] hover:bg-[#FF8A2A] text-[#080808] border border-[#FFA24D]/30 ' +
+      'shadow-[0_1px_2px_rgba(0,0,0,0.5),0_2px_10px_rgba(255,122,24,0.35),0_1px_0_rgba(255,255,255,0.25)_inset] ' +
+      'hover:shadow-[0_2px_4px_rgba(0,0,0,0.6),0_4px_16px_rgba(255,122,24,0.45),0_1px_0_rgba(255,255,255,0.35)_inset]',
+
     // Secondary: Technical dark graphite with 1px border divider
     secondary:
-      'bg-obsidian-800 hover:bg-obsidian-750 active:bg-obsidian-700 text-obsidian-300 hover:text-obsidian-50 font-medium border border-obsidian-700 hover:border-obsidian-600',
+      'bg-[#161616] hover:bg-[#1C1C1C] text-[#F5F3EF] border border-[#262626] hover:border-[#383838] ' +
+      'shadow-[0_1px_2px_rgba(0,0,0,0.4),0_1px_0_rgba(255,255,255,0.04)_inset]',
+
     // Ghost: Quiet technical control
     ghost:
-      'bg-transparent hover:bg-obsidian-800 text-obsidian-400 hover:text-obsidian-50 border border-transparent',
+      'bg-transparent hover:bg-[#181818] text-[#A6A29B] hover:text-[#F5F3EF] border border-transparent',
+
     // Outline: Transparent with structural border
     outline:
-      'bg-transparent hover:bg-obsidian-850 text-obsidian-300 hover:text-obsidian-50 border border-obsidian-700 hover:border-obsidian-600',
+      'bg-transparent hover:bg-[#141414] text-[#D4D0C8] hover:text-[#F5F3EF] border border-[#262626] hover:border-[#383838]',
+
     // Danger: Controlled red
     danger:
-      'bg-severity-critical/15 hover:bg-severity-critical/25 active:bg-severity-critical/30 text-severity-critical border border-severity-critical/30 font-semibold',
+      'bg-[#FF4D4D]/15 hover:bg-[#FF4D4D]/25 active:bg-[#FF4D4D]/30 text-[#FF4D4D] border border-[#FF4D4D]/30 font-semibold',
+
     // Success: Emerald for resolved patches
     success:
-      'bg-severity-resolved/15 hover:bg-severity-resolved/25 active:bg-severity-resolved/30 text-severity-resolved border border-severity-resolved/30 font-semibold',
+      'bg-[#38C793]/15 hover:bg-[#38C793]/25 active:bg-[#38C793]/30 text-[#38C793] border border-[#38C793]/30 font-semibold',
   };
 
   const chosenVariant = variantStyles[variant] || variantStyles.primary;
@@ -53,7 +73,7 @@ export function Button({
       type={type}
       disabled={disabled || isLoading}
       onClick={onClick}
-      className={`${baseStyles} ${chosenSize} ${chosenVariant} ${className}`}
+      className={cn(baseStyles, chosenSize, chosenVariant, className)}
       {...props}
     >
       {isLoading ? (
@@ -65,7 +85,11 @@ export function Button({
         <>
           {leftIcon && <span className="shrink-0">{leftIcon}</span>}
           <span>{children}</span>
-          {rightIcon && <span className="shrink-0">{rightIcon}</span>}
+          {rightIcon && (
+            <span className="shrink-0 transition-transform duration-150 group-hover:translate-x-0.5">
+              {rightIcon}
+            </span>
+          )}
         </>
       )}
     </button>
@@ -95,7 +119,7 @@ export function CodeEagleIconButton({
       variant={variant}
       aria-label={ariaLabel || title}
       title={title || ariaLabel}
-      className={`p-0 ${sizeMap[size] || sizeMap.md} ${className}`}
+      className={cn('p-0', sizeMap[size] || sizeMap.md, className)}
       {...props}
     >
       {icon}

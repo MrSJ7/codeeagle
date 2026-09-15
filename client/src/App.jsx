@@ -478,7 +478,9 @@ export default function App() {
         <>
           {/* Primary Workspace Header */}
           <Navbar
+            variant="app"
             mode="workspace"
+            score={reviewData?.score}
             presets={PRESETS}
             selectedPresetId={selectedPresetId}
             onSelectPreset={handleSelectPreset}

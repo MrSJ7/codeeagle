@@ -22,9 +22,11 @@ import {
   Code2,
 } from 'lucide-react';
 import { Button } from './ui/Button.jsx';
-import { Navbar } from './Navbar.jsx';
-import { LayoutTextFlip } from './ui/layout-text-flip.jsx';
+import { Card3D } from './ui/Card3D.jsx';
 import { SeverityBadge } from './SeverityBadge.jsx';
+import { LayoutTextFlip } from './ui/layout-text-flip.jsx';
+import { Navbar } from './Navbar.jsx';
+import { CodeEagleLogo } from './CodeEagleLogo.jsx';
 
 export function LandingPage({
   onStartReviewing,
@@ -53,6 +55,7 @@ export function LandingPage({
     <div className="min-h-screen bg-obsidian-950 text-obsidian-50 font-sans selection:bg-brand-500/20 selection:text-brand-300 flex flex-col">
       {/* 1. Header Navigation */}
       <Navbar
+        variant="marketing"
         mode="landing"
         onNavigateHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         onNavigateReview={onStartReviewing}
@@ -441,76 +444,76 @@ export function LandingPage({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-4">
+        <div id="philosophy" className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-brand-500/15 border border-brand-500/30 text-brand-400 font-mono text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold">
                 SEE
               </span>
-              <h3 className="text-base font-bold text-obsidian-100">
+              <h3 className="text-base font-bold text-[#F5F3EF]">
                 Grounded Line-Anchored Precision
               </h3>
             </div>
-            <p className="text-xs text-obsidian-300 leading-relaxed">
+            <p className="text-xs text-[#D4D0C8] leading-relaxed">
               Every finding points directly to an exact start line and end line in your file. Clicking any finding in the triage queue auto-scrolls the code canvas and activates synchronized gutter severity pips.
             </p>
-            <div className="p-3 rounded-[5px] bg-obsidian-950 border border-obsidian-800 font-mono text-[11px] text-obsidian-400">
-              <span className="text-severity-critical">●</span> Line 6: const JWT_SECRET = "production_super_secret_key_12345";
+            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-[11px] text-[#A6A29B]">
+              <span className="text-[#FF4D4D]">●</span> Line 6: const JWT_SECRET = "production_super_secret_key_12345";
             </div>
-          </div>
+          </Card3D>
 
-          <div className="p-6 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-4">
+          <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-brand-500/15 border border-brand-500/30 text-brand-400 font-mono text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold">
                 UNDERSTAND
               </span>
-              <h3 className="text-base font-bold text-obsidian-100">
+              <h3 className="text-base font-bold text-[#F5F3EF]">
                 Senior Staff PR Review Comments
               </h3>
             </div>
-            <p className="text-xs text-obsidian-300 leading-relaxed">
+            <p className="text-xs text-[#D4D0C8] leading-relaxed">
               Findings are not cryptic compiler error codes. They are written as constructive, senior-level code review comments detailing the exact risk mechanism, exploit vector, and remediation advice.
             </p>
-            <div className="p-3 rounded-[5px] bg-obsidian-950 border border-obsidian-800 text-xs text-obsidian-300">
-              <span className="text-brand-400 font-semibold font-mono">Why this matters:</span> Token forging allows unauthenticated access across your entire API service.
+            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] text-xs text-[#D4D0C8]">
+              <span className="text-[#FFA24D] font-semibold font-mono">Why this matters:</span> Token forging allows unauthenticated access across your entire API service.
             </div>
-          </div>
+          </Card3D>
 
-          <div className="p-6 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-4">
+          <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-brand-500/15 border border-brand-500/30 text-brand-400 font-mono text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold">
                 FIX
               </span>
-              <h3 className="text-base font-bold text-obsidian-100">
+              <h3 className="text-base font-bold text-[#F5F3EF]">
                 Executable Unified Diffs
               </h3>
             </div>
-            <p className="text-xs text-obsidian-300 leading-relaxed">
+            <p className="text-xs text-[#D4D0C8] leading-relaxed">
               Review comments do not stop at theoretical advice. They provide concrete, syntactically verified unified diffs formatted for instant review and 1-click in-memory patch execution.
             </p>
-            <div className="p-3 rounded-[5px] bg-obsidian-950 border border-obsidian-800 font-mono text-[11px] space-y-1">
-              <div className="text-red-400">- const JWT_SECRET = "...";</div>
-              <div className="text-emerald-400">+ const JWT_SECRET = process.env.JWT_SECRET;</div>
+            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-[11px] space-y-1">
+              <div className="text-[#FF4D4D]">- const JWT_SECRET = "...";</div>
+              <div className="text-[#38C793]">+ const JWT_SECRET = process.env.JWT_SECRET;</div>
             </div>
-          </div>
+          </Card3D>
 
-          <div className="p-6 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-4">
+          <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-brand-500/15 border border-brand-500/30 text-brand-400 font-mono text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold">
                 VERIFY
               </span>
-              <h3 className="text-base font-bold text-obsidian-100">
+              <h3 className="text-base font-bold text-[#F5F3EF]">
                 Automated Score Re-Auditing
               </h3>
             </div>
-            <p className="text-xs text-obsidian-300 leading-relaxed">
+            <p className="text-xs text-[#D4D0C8] leading-relaxed">
               Applying a patch automatically re-analyzes the modified code against the entire 13-rule AST catalog and recalculates your audit score in real time.
             </p>
-            <div className="p-3 rounded-[5px] bg-obsidian-950 border border-obsidian-800 font-mono text-xs text-emerald-400 flex items-center justify-between">
+            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-xs text-[#38C793] flex items-center justify-between">
               <span>Score: 50 → 75 (+25 pts)</span>
-              <span className="text-obsidian-400 text-[11px]">1 Blocker Resolved</span>
+              <span className="text-[#A6A29B] text-[11px]">1 Blocker Resolved</span>
             </div>
-          </div>
+          </Card3D>
         </div>
       </section>
 
@@ -692,32 +695,127 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* 10. Minimal Developer Footer */}
-      <footer className="mt-auto border-t border-obsidian-850 py-8 px-4 sm:px-8 max-w-7xl mx-auto w-full text-xs font-mono text-obsidian-500 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-obsidian-300">CodeEagle</span>
-          <span>·</span>
-          <span>AI CODE REVIEW</span>
-        </div>
-        <div className="flex items-center gap-6">
-          <button
-            onClick={onStartReviewing}
-            className="hover:text-obsidian-300 transition-colors"
-          >
-            Review Workspace
-          </button>
-          <button
-            onClick={onOpenHowItWorks}
-            className="hover:text-obsidian-300 transition-colors"
-          >
-            How It Works
-          </button>
-          <button
-            onClick={onOpenHistory}
-            className="hover:text-obsidian-300 transition-colors"
-          >
-            Audit History ({historyCount})
-          </button>
+      {/* 10. Complete Professional Developer Footer */}
+      <footer className="mt-auto border-t border-[#1F1F1F] bg-[#0A0A0A] pt-14 pb-10 px-4 sm:px-8 w-full text-xs font-sans text-[#A6A29B]">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+            {/* Left Col: Brand + Tagline */}
+            <div className="md:col-span-5 space-y-4">
+              <div className="flex items-center gap-2.5">
+                <CodeEagleLogo size={24} withText={true} withSubtitle={true} />
+              </div>
+              <p className="text-sm text-[#74716C] max-w-sm leading-relaxed">
+                See what your code missed before your users do. Compiler-grade AST verification paired with contextual AI reasoning.
+              </p>
+            </div>
+
+            {/* Right Cols: Product, Engine, Project */}
+            <div className="md:col-span-7 grid grid-cols-3 gap-6">
+              {/* PRODUCT */}
+              <div className="space-y-3">
+                <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#F5F3EF] font-semibold">
+                  Product
+                </h4>
+                <ul className="space-y-2.5 text-xs">
+                  <li>
+                    <button
+                      onClick={onStartReviewing}
+                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                    >
+                      Review
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={onOpenHistory}
+                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <span>History</span>
+                      {typeof historyCount === 'number' && historyCount > 0 && (
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[#1C1C1C] text-[#D4D0C8] font-bold border border-[#262626]">
+                          {historyCount}
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                  {onOpenHowItWorks && (
+                    <li>
+                      <button
+                        onClick={onOpenHowItWorks}
+                        className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                      >
+                        How It Works
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              {/* ENGINE */}
+              <div className="space-y-3">
+                <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#F5F3EF] font-semibold">
+                  Engine
+                </h4>
+                <ul className="space-y-2.5 text-xs">
+                  <li>
+                    <a
+                      href="#pipeline"
+                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                    >
+                      AST Analysis
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#philosophy"
+                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                    >
+                      AI Reasoning
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#workbench"
+                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                    >
+                      Verified Patches
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* PROJECT */}
+              <div className="space-y-3">
+                <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#F5F3EF] font-semibold">
+                  Project
+                </h4>
+                <ul className="space-y-2.5 text-xs">
+                  <li>
+                    <button
+                      onClick={onOpenHowItWorks}
+                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                    >
+                      About
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={onStartReviewing}
+                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                    >
+                      Architecture
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="pt-8 border-t border-[#1C1C1C] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-[#74716C]">
+            <div>CodeEagle © 2026 · Single-Authority Safe Code Review</div>
+            <div className="text-[#A6A29B]">Built for developers who ship.</div>
+          </div>
         </div>
       </footer>
     </div>

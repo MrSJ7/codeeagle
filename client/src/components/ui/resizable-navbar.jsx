@@ -74,11 +74,11 @@ export const NavBody = ({
         y: visible ? 8 : 0,
         borderRadius: visible ? '9999px' : '12px',
         backdropFilter: 'blur(20px)',
-        backgroundColor: visible ? 'rgba(22, 27, 38, 0.94)' : 'rgba(17, 21, 30, 0.88)',
-        borderColor: visible ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.11)',
+        backgroundColor: visible ? 'rgba(8, 9, 10, 0.88)' : 'rgba(8, 9, 10, 0.72)',
+        borderColor: visible ? 'rgba(255, 255, 255, 0.14)' : 'rgba(255, 255, 255, 0.08)',
         boxShadow: visible
-          ? '0 20px 48px -10px rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 0 24px rgba(0, 0, 0, 0.6)'
-          : '0 8px 32px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.12) inset',
+          ? '0 0 30px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.14) inset, 0 16px 40px -12px rgba(0, 0, 0, 0.85)'
+          : '0 0 20px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.08) inset',
       }}
       transition={{
         type: 'spring',
@@ -160,8 +160,8 @@ export const MobileNav = ({
         y: visible ? 6 : 0,
         borderRadius: visible ? '16px' : '8px',
         backdropFilter: 'blur(20px)',
-        backgroundColor: visible ? 'rgba(22, 27, 38, 0.96)' : 'rgba(17, 21, 30, 0.92)',
-        borderColor: visible ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.11)',
+        backgroundColor: visible ? 'rgba(8, 9, 10, 0.92)' : 'rgba(8, 9, 10, 0.85)',
+        borderColor: visible ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.08)',
         boxShadow: visible
           ? '0 0 24px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.12) inset'
           : 'none',
