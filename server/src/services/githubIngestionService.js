@@ -151,8 +151,13 @@ export async function importGithubRepository(githubUrl) {
         continue;
       }
 
+      // Do not ingest module or build directories
+      const classification = classifyProjectFile(safePath, item.size || 0);
+      if (classification.skipReason === "IGNORED_DIRECTORY") {
+        continue;
+      }
+
       const size = item.size || 0;
-      const classification = classifyProjectFile(safePath, size);
       const binary = isBinaryFile(safePath);
       const sensitive = isSensitiveFile(safePath);
 

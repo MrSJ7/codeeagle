@@ -103,8 +103,22 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady }) {
       const filesArray = [];
       const derivedName = projectName.trim() || (fileList[0].webkitRelativePath?.split("/")[0]) || "Local Project";
 
+      const isModuleOrIgnored = (p) => {
+        const parts = p.toLowerCase().split("/");
+        return parts.some(part => [
+          "node_modules", "bower_components", "jspm_packages", "vendor", ".yarn", ".pnp",
+          ".git", ".svn", ".hg", "dist", "build", "coverage", ".nyc_output",
+          ".cache", ".vite", ".next", ".nuxt", "out", ".turbo", ".vercel", ".netlify", ".idea", ".vscode"
+        ].includes(part));
+      };
+
+      const eligibleFileList = Array.from(fileList).filter(file => {
+        const path = file.webkitRelativePath || file.name;
+        return !isModuleOrIgnored(path);
+      });
+
       // Read text files
-      const readPromises = Array.from(fileList).slice(0, 500).map(async (file) => {
+      const readPromises = eligibleFileList.slice(0, 500).map(async (file) => {
         const path = file.webkitRelativePath || file.name;
         // Skip reading huge files or common binaries in browser
         if (file.size > 1024 * 1024 || /\.(png|jpg|jpeg|gif|webp|pdf|zip|mp4|woff2)$/i.test(file.name)) {

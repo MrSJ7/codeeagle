@@ -1,6 +1,6 @@
 import { PROJECT_LIMITS } from "../config/limits.js";
 import { normalizeSafeRelativePath } from "../utils/paths.js";
-import { isBinaryFile, isSensitiveFile } from "./projectFileFilter.js";
+import { isBinaryFile, isSensitiveFile, isIgnoredDirectory } from "./projectFileFilter.js";
 import { stripCommonRootPrefix } from "./zipIngestionService.js";
 
 /**
@@ -31,6 +31,11 @@ export function ingestFolderFiles(incomingFiles) {
       safePath = normalizeSafeRelativePath(item.path);
     } catch (err) {
       console.warn(`[FolderIngestion] Skipping invalid path "${item.path}": ${err.message}`);
+      continue;
+    }
+
+    // Do not ingest module directories (e.g. node_modules, vendor, dist)
+    if (isIgnoredDirectory(safePath)) {
       continue;
     }
 

@@ -33,9 +33,14 @@ export function buildProjectManifest({
 
   for (let i = 0; i < rawFiles.length; i++) {
     const raw = rawFiles[i];
-    const fileId = `file_${i + 1}_${crypto.randomBytes(3).toString("hex")}`;
     const classification = classifyProjectFile(raw.path, raw.size, gitignoreRules);
 
+    // Completely omit ignored module and build directories from manifest and tree
+    if (classification.skipReason === "IGNORED_DIRECTORY") {
+      continue;
+    }
+
+    const fileId = `file_${i + 1}_${crypto.randomBytes(3).toString("hex")}`;
     const isEligible = classification.status === "ELIGIBLE" && typeof raw.content === "string";
     const content = raw.content || null;
     const contentHash = isEligible ? computeCodeHash(content) : (raw.content ? computeCodeHash(raw.content) : "");

@@ -1,7 +1,7 @@
 import zlib from "node:zlib";
 import { PROJECT_LIMITS } from "../config/limits.js";
 import { normalizeSafeRelativePath } from "../utils/paths.js";
-import { isBinaryFile, isSensitiveFile } from "./projectFileFilter.js";
+import { isBinaryFile, isSensitiveFile, isIgnoredDirectory } from "./projectFileFilter.js";
 
 /**
  * Parses a ZIP buffer and safely extracts file contents into memory.
@@ -87,6 +87,11 @@ export function extractZipBuffer(buffer) {
       safePath = normalizeSafeRelativePath(fileName);
     } catch (err) {
       console.warn(`[ZipIngestion] Skipping invalid or unsafe path "${fileName}": ${err.message}`);
+      continue;
+    }
+
+    // Do not ingest module directories (e.g. node_modules, vendor, dist)
+    if (isIgnoredDirectory(safePath)) {
       continue;
     }
 
