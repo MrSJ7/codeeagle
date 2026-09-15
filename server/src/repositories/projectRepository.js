@@ -32,6 +32,10 @@ class ProjectRepository {
     return this.activeRepository.getReviewById(id);
   }
 
+  async getLatestReview(projectId) {
+    return this.activeRepository.getLatestReview(projectId);
+  }
+
   async getReviewsByProjectId(projectId, params) {
     return this.activeRepository.getReviewsByProjectId(projectId, params);
   }

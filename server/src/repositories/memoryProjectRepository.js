@@ -101,6 +101,19 @@ class MemoryProjectRepository {
     return this.reviews.get(id) || null;
   }
 
+  async getLatestReview(projectId) {
+    const reviewIds = this.projectReviews.get(projectId) || [];
+    if (reviewIds.length > 0) {
+      const review = this.reviews.get(reviewIds[0]);
+      if (review) return review;
+    }
+    const proj = this.projects.get(projectId);
+    if (proj?.latestReviewId) {
+      return this.reviews.get(proj.latestReviewId) || null;
+    }
+    return null;
+  }
+
   async getReviewsByProjectId(projectId, { page = 1, limit = 20 } = {}) {
     const reviewIds = this.projectReviews.get(projectId) || [];
     const all = reviewIds

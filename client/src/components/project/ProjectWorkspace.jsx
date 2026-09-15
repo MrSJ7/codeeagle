@@ -41,6 +41,7 @@ export function ProjectWorkspace({
   onNavigateOverview,
   initialFileId = null,
   initialFindingId = null,
+  showToast = null,
 }) {
   const { isLight } = useTheme();
 
@@ -136,7 +137,11 @@ export function ProjectWorkspace({
         setIsPatchModalOpen(true);
       }
     } catch (err) {
-      alert(err.message || "Failed to generate refactor.");
+      if (showToast) {
+        showToast(err.message || "Failed to generate refactor.", "error");
+      } else {
+        alert(err.message || "Failed to generate refactor.");
+      }
     } finally {
       setIsGeneratingRefactor(false);
     }
@@ -165,6 +170,10 @@ export function ProjectWorkspace({
         setIsPatchModalOpen(false);
         setRefactorCandidate(null);
 
+        if (showToast) {
+          showToast("Fix applied and re-analyzed your code.");
+        }
+
         // Update overall project review snapshot in parent
         if (onUpdateReview) {
           onUpdateReview(outcome.review);
@@ -178,7 +187,11 @@ export function ProjectWorkspace({
         }
       }
     } catch (err) {
-      alert(err.message || "Failed to apply fix to file.");
+      if (showToast) {
+        showToast(err.message || "Failed to apply fix to file.", "error");
+      } else {
+        alert(err.message || "Failed to apply fix to file.");
+      }
     } finally {
       setIsPatching(false);
     }

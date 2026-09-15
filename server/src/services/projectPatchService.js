@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { applyPatch, verifyPatch } from "./patchService.js";
+import { applyPatch, verifyPatch, applyStringPatch } from "./patchService.js";
 import { applyAiPatch, verifyAiPatch } from "./aiPatchVerifier.js";
 import { analyzeCode } from "../analyzers/analyzeCode.js";
 import { computeCodeHash } from "../utils/codeHasher.js";
@@ -94,14 +94,35 @@ export async function applyProjectPatch({
     };
   }
 
-  // Apply patch according to source (STATIC vs AI)
+  // Apply patch according to source (STATIC vs AI vs Refactor Override)
   let patchOutcome;
-  const isAi = patchFinding.source === "AI";
-
-  if (isAi) {
-    patchOutcome = applyAiPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
+  if (patchOverride && typeof patchOverride === "object" && patchOverride.original && patchOverride.replacement) {
+    const original = patchOverride.original;
+    const replacement = patchOverride.replacement;
+    const firstIndex = originalSource.indexOf(original);
+    if (firstIndex === -1) {
+      const err = new Error("Original code snippet to be replaced was not found in source.");
+      err.code = "ORIGINAL_NOT_FOUND";
+      err.status = 422;
+      throw err;
+    }
+    const beforeHash = currentFileHash;
+    const patchedCode = applyStringPatch({ code: originalSource, original, replacement, firstIndex });
+    const afterHash = computeCodeHash(patchedCode);
+    patchOutcome = {
+      success: true,
+      patchedCode,
+      beforeHash,
+      afterHash,
+      rule: patchFinding.rule,
+    };
   } else {
-    patchOutcome = applyPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
+    const isAi = patchFinding.source === "AI";
+    if (isAi) {
+      patchOutcome = applyAiPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
+    } else {
+      patchOutcome = applyPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
+    }
   }
 
   if (!patchOutcome.success) {

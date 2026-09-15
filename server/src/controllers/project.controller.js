@@ -341,7 +341,10 @@ export const projectController = {
         });
       }
 
-      const review = await projectRepository.getLatestReview(projectId);
+      const review = (typeof projectRepository.getLatestReview === "function"
+        ? await projectRepository.getLatestReview(projectId)
+        : null) || (project.latestReviewId ? await projectRepository.getReviewById(project.latestReviewId) : null);
+
       const reviewFile = (review?.files || []).find((f) => f.id === fileId || f.path === fileId);
       const finding = (reviewFile?.issues || []).find((i) => i.id === findingId) ||
         (review?.findings || []).find((i) => i.id === findingId) ||

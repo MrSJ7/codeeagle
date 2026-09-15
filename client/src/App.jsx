@@ -632,6 +632,7 @@ export default function App() {
               onNavigateOverview={() => setProjectNavView('overview')}
               initialFileId={initialWorkspaceFileId}
               initialFindingId={initialWorkspaceFindingId}
+              showToast={showToast}
             />
           )}
         </>
