@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll } from 'framer-motion';
 
 /**
  * Official CodeEagle brand mark.
  * Powered by Framer Motion:
  * - Clean logo emblem with no orange highlight/halo
  * - Brand typography dismantles into pieces (character by character & word by word)
- *   that fly into the logo emblem in sequence when scrolling down
+ *   that fly directly into the logo emblem in sequence when scrolling down
  * - Characters emerge out of the emblem in sequence when scrolling back up
  */
 const PREFIX_CHARS = ['C', 'o', 'd', 'e'];
@@ -15,6 +15,7 @@ const SUBTITLE_WORDS = ['AI', 'Code', 'Review'];
 
 // Framer Motion spring variants for each individual character piece
 // Global index: 0 ('C') to 8 (last 'e')
+// Logo emblem center is ~30px to the left of the container, plus each letter's x-offset
 const letterVariants = {
   visible: (i) => ({
     x: 0,
@@ -24,24 +25,24 @@ const letterVariants = {
     filter: 'blur(0px)',
     transition: {
       type: 'spring',
-      stiffness: 400,
-      damping: 25,
-      mass: 0.7,
-      delay: i * 0.028, // Left to right emergence
+      stiffness: 420,
+      damping: 26,
+      mass: 0.6,
+      delay: i * 0.025, // Left to right emergence
     },
   }),
   hidden: (i) => ({
-    x: -30 - ((8 - i) * 3.5), // Fly to the left directly into the emblem
+    x: -30 - (i * 10.5), // Fly left directly into the emblem center
     y: 0,
     opacity: 0,
-    scale: 0.15,
-    filter: 'blur(3px)',
+    scale: 0.1,
+    filter: 'blur(2px)',
     transition: {
       type: 'spring',
-      stiffness: 340,
+      stiffness: 350,
       damping: 24,
       mass: 0.6,
-      delay: (8 - i) * 0.032, // Outermost letters fly in first!
+      delay: (8 - i) * 0.03, // Outermost letters fly in first!
     },
   }),
 };
@@ -50,26 +51,28 @@ const letterVariants = {
 const subtitleVariants = {
   visible: (i) => ({
     x: 0,
+    y: 0,
     opacity: 1,
     scale: 1,
     filter: 'blur(0px)',
     transition: {
       type: 'spring',
-      stiffness: 380,
-      damping: 25,
-      delay: 0.12 + (i * 0.03),
+      stiffness: 400,
+      damping: 26,
+      delay: 0.1 + (i * 0.03),
     },
   }),
   hidden: (i) => ({
-    x: -26 - ((2 - i) * 4),
+    x: -30 - (i * 28), // Fly directly into emblem center
+    y: 0,
     opacity: 0,
-    scale: 0.2,
-    filter: 'blur(2.5px)',
+    scale: 0.1,
+    filter: 'blur(2px)',
     transition: {
       type: 'spring',
-      stiffness: 320,
+      stiffness: 340,
       damping: 24,
-      delay: (2 - i) * 0.025, // 'Review' first, then 'Code', then 'AI'
+      delay: (2 - i) * 0.03, // 'Review' first, then 'Code', then 'AI'
     },
   }),
 };
@@ -79,16 +82,16 @@ const containerVariants = {
     maxWidth: 240,
     opacity: 1,
     transition: {
-      duration: 0.3,
+      duration: 0.35,
       ease: [0.16, 1, 0.3, 1],
     },
   },
   hidden: {
     maxWidth: 0,
-    opacity: 0,
+    opacity: 1, // Keep opacity 1 so letters remain visible while travelling across gap
     transition: {
-      duration: 0.4,
-      delay: 0.28,
+      duration: 0.45,
+      delay: 0.24,
       ease: [0.16, 1, 0.3, 1],
     },
   },
@@ -110,15 +113,23 @@ export function CodeEagleLogo({
     ? (typeof isScrolledProp === 'boolean' ? isScrolledProp : internalScrolled)
     : false;
 
+  const { scrollY } = useScroll();
+
   useEffect(() => {
     if (!scrollCollapse || typeof isScrolledProp === 'boolean') return;
-    const onScroll = () => {
-      setInternalScrolled(window.scrollY > 35);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [scrollCollapse, isScrolledProp]);
+    
+    // Check initial scroll offset
+    if (typeof window !== 'undefined') {
+      setInternalScrolled(window.scrollY > 20);
+    }
+
+    // Subscribe to Framer Motion scroll changes
+    const unsubscribe = scrollY.on('change', (latest) => {
+      setInternalScrolled(latest > 20);
+    });
+
+    return () => unsubscribe();
+  }, [scrollCollapse, isScrolledProp, scrollY]);
 
   const titleClass = pixelSize >= 32
     ? 'text-lg sm:text-xl font-bold tracking-tight font-sans'
@@ -136,9 +147,9 @@ export function CodeEagleLogo({
     <div className={`flex items-center gap-3 select-none ${className}`}>
       {/* Official CodeEagle Brand Mark (Clean, zero orange highlight halo) */}
       <motion.div
-        className="relative shrink-0 flex items-center justify-center"
+        className="relative shrink-0 flex items-center justify-center z-20"
         animate={{
-          scale: isScrolled ? [1, 1.07, 1] : 1,
+          scale: isScrolled ? [1, 1.1, 1] : 1,
         }}
         transition={{
           duration: 0.35,
@@ -153,7 +164,7 @@ export function CodeEagleLogo({
           alt="CodeEagle Logo"
           width={pixelSize}
           height={pixelSize}
-          className="rounded-[5px] object-contain shrink-0 shadow-sm relative z-10"
+          className="rounded-[5px] object-contain shrink-0 shadow-sm relative z-20"
           style={{ width: `${pixelSize}px`, height: `${pixelSize}px` }}
         />
       </motion.div>
@@ -164,7 +175,7 @@ export function CodeEagleLogo({
           variants={containerVariants}
           initial="visible"
           animate={animationState}
-          className="flex flex-col leading-tight overflow-hidden whitespace-nowrap will-change-transform"
+          className="flex flex-col leading-tight overflow-visible whitespace-nowrap will-change-transform z-10"
         >
           {/* Main Brand Title: "Code" + "Eagle" broken into animated character pieces */}
           <div className={`flex items-center ${titleClass}`}>
