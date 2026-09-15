@@ -1,0 +1,21 @@
+{
+  "name": "code-reviewer-server",
+  "version": "1.0.0",
+  "description": "Express backend for code-reviewer",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "test": "node test/analyzer.test.js && node test/gemini.test.js && node test/hybrid.test.js && node test/patch.test.js && node test/aiPatch.test.js && node test/persistence.test.js && node test/hashing.test.js && node test/api.test.js && node test/e2e.test.js && node test/failures.test.js && node test/smoke.test.js"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.29.8",
+    "@babel/traverse": "^7.29.8",
+    "@google/genai": "^2.22.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^9.10.0"
+  }
+}

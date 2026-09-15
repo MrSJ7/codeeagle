@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment variables
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+!*.env.example
+client/.env
+client/.env.*
+!client/.env.example
+server/.env
+server/.env.*
+!server/.env.example
+
+# Production builds
+dist/
+build/
+client/dist/
+client/build/
+
+# Vite and development caches
+.vite/
+.eslintcache
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS & Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

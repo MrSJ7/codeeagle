@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #F5F7F6;
+  color: #161918;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base custom scrollbar for light UI surfaces */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D5DAD7;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A6B0AA;
+}
+
+/* Dedicated dark scrollbar for the code editor surface */
+.dark-editor-scrollbar::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.dark-editor-scrollbar::-webkit-scrollbar-track {
+  background: #121514;
+}
+
+.dark-editor-scrollbar::-webkit-scrollbar-thumb {
+  background: #2D3330;
+  border-radius: 9999px;
+}
+
+.dark-editor-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3F4743;
+}

@@ -1,0 +1,29 @@
+# Render Blueprint Specification for CodeLens Backend
+# Reference: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: codelens-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_ORIGIN
+        sync: false
+        # Example: https://codelens.vercel.app
+      - key: CLIENT_URL
+        sync: false
+        # Backward compatibility alias
+      - key: GEMINI_API_KEY
+        sync: false
+        # Optional: Google Gemini API key for semantic code review
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: MONGODB_URI
+        sync: false
+        # Optional: MongoDB Atlas connection string (defaults to in-memory fallback if omitted)
