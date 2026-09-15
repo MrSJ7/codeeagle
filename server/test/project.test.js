@@ -109,7 +109,7 @@ async function runProjectTests() {
   try { resolveSafeExtractionPath("/tmp/sandbox", "../../evil.sh"); } catch { zipSlipBlocked = true; }
   assert(zipSlipBlocked, "Zip Slip extraction outside target directory rejected");
 
-  console.log("\n--- 2. File Filtering & Sensitive File Handling ---");
+  console.log("\n--- 2. File Filtering, .gitignore & Module Directory Handling ---");
   const jsClass = classifyProjectFile("src/auth.js", 1200);
   assert(jsClass.status === "ELIGIBLE" && jsClass.language === "javascript", "JavaScript file marked ELIGIBLE");
 
@@ -118,6 +118,33 @@ async function runProjectTests() {
 
   const nodeModulesClass = classifyProjectFile("node_modules/express/index.js", 5000);
   assert(nodeModulesClass.status === "SKIPPED" && nodeModulesClass.skipReason === "IGNORED_DIRECTORY", "node_modules skipped automatically");
+
+  const nestedNodeModules = classifyProjectFile("packages/app/node_modules/react/index.js", 3000);
+  assert(nestedNodeModules.status === "SKIPPED" && nestedNodeModules.skipReason === "IGNORED_DIRECTORY", "Nested node_modules skipped automatically");
+
+  const bowerClass = classifyProjectFile("bower_components/jquery/jquery.js", 8000);
+  assert(bowerClass.status === "SKIPPED" && bowerClass.skipReason === "IGNORED_DIRECTORY", "bower_components skipped automatically");
+
+  const vendorClass = classifyProjectFile("vendor/bundle.js", 8000);
+  assert(vendorClass.status === "SKIPPED" && vendorClass.skipReason === "IGNORED_DIRECTORY", "vendor directory skipped automatically");
+
+  const pnpClass = classifyProjectFile(".pnp.js", 1000);
+  assert(pnpClass.status === "SKIPPED" && pnpClass.skipReason === "IGNORED_DIRECTORY", ".pnp.js lockfile skipped automatically");
+
+  // .gitignore rule parsing and filtering
+  const gitignoreRules = [
+    { regex: /(?:^|\/)build(?:\/.*)?$/, isNegated: false },
+    { regex: /(?:^|\/)[^/]*\.min\.js(?:\/.*)?$/, isNegated: false },
+    { regex: /(?:^|\/)custom-ignore(?:\/.*)?$/, isNegated: false }
+  ];
+  const gitignoredFile1 = classifyProjectFile("src/bundle.min.js", 2000, gitignoreRules);
+  assert(gitignoredFile1.status === "SKIPPED" && gitignoredFile1.skipMessage === "Skipped via .gitignore", "*.min.js matched and skipped via .gitignore");
+
+  const gitignoredFile2 = classifyProjectFile("build/output.js", 2000, gitignoreRules);
+  assert(gitignoredFile2.status === "SKIPPED", "build/output.js skipped via .gitignore");
+
+  const gitignoredFile3 = classifyProjectFile("src/custom-ignore/feature.js", 2000, gitignoreRules);
+  assert(gitignoredFile3.status === "SKIPPED", "custom-ignore folder skipped via .gitignore");
 
   const envClass = classifyProjectFile(".env.production", 500);
   assert(envClass.status === "SKIPPED" && envClass.skipReason === "SENSITIVE_FILE", ".env file excluded from analysis for privacy");
@@ -200,6 +227,37 @@ async function runProjectTests() {
     const history = await projectRepository.getReviewsByProjectId(manifest.id);
     assert(history.reviews.length >= 2, "Project review history holds 2 distinct immutable snapshots");
   }
+
+  console.log("\n--- 7. Code Quality, Complexity & Maintainability Verification ---");
+  const qualityCode = `
+    var legacyItem = "old";
+    function badQuality(x) {
+      if (x == 5) {
+        debugger;
+        return true;
+        console.log("unreachable");
+      }
+      try {
+        doSomething();
+      } catch (err) {}
+      const config = { api: "v1", api: "v2" };
+      return config;
+    }
+  `;
+  const qualityManifest = buildProjectManifest({
+    projectName: "Quality Test App",
+    sourceType: "folder",
+    rawFiles: [{ path: "src/quality.js", size: qualityCode.length, content: qualityCode }]
+  });
+
+  const qualityReview = await executeProjectReview({ manifest: qualityManifest });
+  assert(qualityReview.findings.some(f => f.rule === "QUAL-VAR"), "Detected legacy var declaration (QUAL-VAR)");
+  assert(qualityReview.findings.some(f => f.rule === "QUAL-EQEQ"), "Detected loose equality operator (QUAL-EQEQ)");
+  assert(qualityReview.findings.some(f => f.rule === "QUAL-DEBUGGER"), "Detected debugger statement (QUAL-DEBUGGER)");
+  assert(qualityReview.findings.some(f => f.rule === "QUAL-UNREACHABLE"), "Detected unreachable code (QUAL-UNREACHABLE)");
+  assert(qualityReview.findings.some(f => f.rule === "QUAL-EMPTY-CATCH"), "Detected empty catch block (QUAL-EMPTY-CATCH)");
+  assert(qualityReview.findings.some(f => f.rule === "QUAL-DUPLICATE-KEYS"), "Detected duplicate object keys (QUAL-DUPLICATE-KEYS)");
+  assert(qualityReview.findings.some(f => f.category === "QUALITY"), "Categorized issues under QUALITY");
 
   console.log("\n=== Project Unit Test Results: " + passed + " passed, " + failed + " failed ===\n");
   if (failed > 0) { process.exit(1); }

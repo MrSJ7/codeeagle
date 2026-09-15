@@ -1,12 +1,15 @@
 import path from "node:path";
 import { PROJECT_LIMITS } from "../config/limits.js";
+import { parseGitignore, isPathGitignored } from "../utils/gitignore.js";
 
-// Directory names completely excluded from project analysis
+// Directory names completely excluded from project analysis (modules, build, cache, VCS)
 const IGNORED_DIRECTORY_NAMES = new Set([
   "node_modules",
-  ".git",
-  ".svn",
-  ".hg",
+  "bower_components",
+  "jspm_packages",
+  "vendor",
+  ".yarn",
+  ".pnp",
   "dist",
   "build",
   "coverage",
@@ -16,7 +19,6 @@ const IGNORED_DIRECTORY_NAMES = new Set([
   ".next",
   ".nuxt",
   "out",
-  "vendor",
   "tmp",
   "temp",
   ".turbo",
@@ -24,6 +26,13 @@ const IGNORED_DIRECTORY_NAMES = new Set([
   ".netlify",
   ".idea",
   ".vscode",
+  ".git",
+  ".svn",
+  ".hg",
+  "target",
+  "bin",
+  "obj",
+  "lib-cov",
 ]);
 
 // Lockfiles and generated metadata to skip from code analysis
@@ -32,6 +41,8 @@ const IGNORED_FILE_NAMES = new Set([
   "yarn.lock",
   "pnpm-lock.yaml",
   "bun.lockb",
+  ".pnp.js",
+  ".pnp.cjs",
   "npm-debug.log",
   "yarn-debug.log",
   "yarn-error.log",
@@ -96,10 +107,29 @@ export function isBinaryFile(filename) {
 }
 
 /**
+ * Extracts and compiles gitignore rules from project files list.
+ * @param {Array<{ path: string, content?: string | null }>} rawFiles
+ * @returns {Array<{ regex: RegExp, isNegated: boolean, original: string }>}
+ */
+export function extractProjectGitignoreRules(rawFiles = []) {
+  const rules = [];
+  for (const file of rawFiles) {
+    if (file.path === '.gitignore' || file.path.endsWith('/.gitignore')) {
+      if (typeof file.content === 'string') {
+        const parsed = parseGitignore(file.content);
+        rules.push(...parsed);
+      }
+    }
+  }
+  return rules;
+}
+
+/**
  * Classifies a file inside a project.
  *
  * @param {string} relativePath POSIX relative path
  * @param {number} size File size in bytes
+ * @param {Array} [gitignoreRules] Compiled gitignore rules
  * @returns {{
  *   status: "ELIGIBLE" | "SKIPPED",
  *   language: string,
@@ -108,11 +138,22 @@ export function isBinaryFile(filename) {
  *   skipMessage: string | null
  * }}
  */
-export function classifyProjectFile(relativePath, size = 0) {
+export function classifyProjectFile(relativePath, size = 0, gitignoreRules = []) {
   const filename = path.basename(relativePath);
   const ext = path.extname(filename).toLowerCase();
 
-  // 1. Check ignored directory
+  // 1. Check custom .gitignore patterns if present
+  if (isPathGitignored(relativePath, gitignoreRules)) {
+    return {
+      status: "SKIPPED",
+      language: "ignored",
+      extension: ext,
+      skipReason: "IGNORED_DIRECTORY",
+      skipMessage: "Skipped via .gitignore",
+    };
+  }
+
+  // 2. Check ignored directory
   if (isIgnoredDirectory(relativePath)) {
     return {
       status: "SKIPPED",
@@ -123,7 +164,7 @@ export function classifyProjectFile(relativePath, size = 0) {
     };
   }
 
-  // 2. Check ignored lockfile / metadata
+  // 3. Check ignored lockfile / metadata
   if (IGNORED_FILE_NAMES.has(filename)) {
     return {
       status: "SKIPPED",
@@ -134,7 +175,7 @@ export function classifyProjectFile(relativePath, size = 0) {
     };
   }
 
-  // 3. Sensitive file check
+  // 4. Sensitive file check
   if (isSensitiveFile(filename)) {
     return {
       status: "SKIPPED",
@@ -145,7 +186,7 @@ export function classifyProjectFile(relativePath, size = 0) {
     };
   }
 
-  // 4. Binary check
+  // 5. Binary check
   if (isBinaryFile(filename)) {
     return {
       status: "SKIPPED",

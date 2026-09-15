@@ -293,6 +293,122 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         }
       }
     },
+
+    // Quality Rule: Leftover debugger statement
+    DebuggerStatement(path) {
+      const line = path.node.loc?.start.line || 1;
+      const meta = RULE_REGISTRY['QUAL-DEBUGGER'];
+      addIssue({
+        id: `QUAL-DEBUGGER-${line}`,
+        rule: meta.rule,
+        source: 'STATIC',
+        severity: meta.defaultSeverity,
+        category: meta.category,
+        title: meta.title,
+        line,
+        endLine: line,
+        description: meta.description,
+        recommendation: meta.recommendation,
+        confidence: 1.0,
+        fix: null,
+      });
+    },
+
+    // Quality Rule: Loose equality check (== or !=)
+    BinaryExpression(path) {
+      if (path.node.operator === '==' || path.node.operator === '!=') {
+        // Exclude idiomatic null checks if desired, or flag loose comparison
+        const line = path.node.loc?.start.line || 1;
+        const meta = RULE_REGISTRY['QUAL-EQEQ'];
+        const op = path.node.operator;
+        const strictOp = op === '==' ? '===' : '!==';
+
+        addIssue({
+          id: `QUAL-EQEQ-${line}`,
+          rule: meta.rule,
+          source: 'STATIC',
+          severity: meta.defaultSeverity,
+          category: meta.category,
+          title: `Loose equality operator '${op}' should be strict '${strictOp}'`,
+          line,
+          endLine: line,
+          description: meta.description,
+          recommendation: `Replace '${op}' with '${strictOp}'.`,
+          confidence: 0.9,
+          fix: null,
+        });
+      }
+    },
+
+    // Quality Rule: Duplicate keys in object literal
+    ObjectExpression(path) {
+      const seenKeys = new Set();
+      for (const prop of path.node.properties) {
+        if (prop.type === 'ObjectProperty' && !prop.computed) {
+          const keyName = prop.key.type === 'Identifier' ? prop.key.name : (prop.key.type === 'StringLiteral' ? prop.key.value : null);
+          if (keyName) {
+            if (seenKeys.has(keyName)) {
+              const line = prop.loc?.start.line || 1;
+              const meta = RULE_REGISTRY['QUAL-DUPLICATE-KEYS'];
+              addIssue({
+                id: `QUAL-DUPLICATE-KEYS-${line}`,
+                rule: meta.rule,
+                source: 'STATIC',
+                severity: meta.defaultSeverity,
+                category: meta.category,
+                title: `Duplicate key '${keyName}' in object literal`,
+                line,
+                endLine: line,
+                description: `Property '${keyName}' is defined multiple times in this object literal. Later keys overwrite earlier values.`,
+                recommendation: meta.recommendation,
+                confidence: 1.0,
+                fix: null,
+              });
+            } else {
+              seenKeys.add(keyName);
+            }
+          }
+        }
+      }
+    },
+
+    // Quality Rule: Unreachable code after terminal statement
+    BlockStatement(path) {
+      const body = path.node.body;
+      let terminatingLine = null;
+
+      for (let i = 0; i < body.length; i++) {
+        const stmt = body[i];
+        if (terminatingLine !== null) {
+          const line = stmt.loc?.start.line || terminatingLine + 1;
+          const meta = RULE_REGISTRY['QUAL-UNREACHABLE'];
+          addIssue({
+            id: `QUAL-UNREACHABLE-${line}`,
+            rule: meta.rule,
+            source: 'STATIC',
+            severity: meta.defaultSeverity,
+            category: meta.category,
+            title: meta.title,
+            line,
+            endLine: stmt.loc?.end.line || line,
+            description: `Statements after return/throw on line ${terminatingLine} are unreachable and will never execute.`,
+            recommendation: meta.recommendation,
+            confidence: 1.0,
+            fix: null,
+          });
+          break; // Flag once per unreachable sequence
+        }
+
+        if (
+          stmt.type === 'ReturnStatement' ||
+          stmt.type === 'ThrowStatement' ||
+          stmt.type === 'BreakStatement' ||
+          stmt.type === 'ContinueStatement'
+        ) {
+          terminatingLine = stmt.loc?.start.line || 1;
+        }
+      }
+    },
   });
 
   return issues;

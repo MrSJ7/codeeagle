@@ -127,6 +127,42 @@ export const RULE_REGISTRY = {
     description: 'Subscribing to DOM/window events without unregistering on unmount can leak memory.',
     recommendation: 'Return a cleanup function from useEffect that invokes removeEventListener.',
   },
+  'QUAL-UNREACHABLE': {
+    rule: 'QUAL-UNREACHABLE',
+    category: 'QUALITY',
+    severity: 'MEDIUM',
+    defaultSeverity: 'MEDIUM',
+    title: 'Unreachable code detected',
+    description: 'Statements placed after return, throw, break, or continue will never be executed.',
+    recommendation: 'Remove redundant statements or fix control flow branches.',
+  },
+  'QUAL-DUPLICATE-KEYS': {
+    rule: 'QUAL-DUPLICATE-KEYS',
+    category: 'QUALITY',
+    severity: 'HIGH',
+    defaultSeverity: 'HIGH',
+    title: 'Duplicate key in object literal',
+    description: 'Multiple properties with the same name in an object literal overwrite previous definitions silently.',
+    recommendation: 'Remove or rename duplicate object keys.',
+  },
+  'QUAL-DEBUGGER': {
+    rule: 'QUAL-DEBUGGER',
+    category: 'QUALITY',
+    severity: 'MEDIUM',
+    defaultSeverity: 'MEDIUM',
+    title: 'Leftover debugger statement in source',
+    description: 'Debugger statements halt execution in browser/runtime environments.',
+    recommendation: 'Remove debugger statements before deploying to production.',
+  },
+  'QUAL-EQEQ': {
+    rule: 'QUAL-EQEQ',
+    category: 'QUALITY',
+    severity: 'LOW',
+    defaultSeverity: 'LOW',
+    title: 'Use of loose equality (== or !=)',
+    description: 'Loose equality performs implicit type coercion which can cause subtle logic bugs.',
+    recommendation: 'Use strict equality (=== or !==) instead.',
+  },
 };
 
 /**

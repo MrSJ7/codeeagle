@@ -1,6 +1,6 @@
 import path from "node:path";
 import crypto from "node:crypto";
-import { classifyProjectFile } from "./projectFileFilter.js";
+import { classifyProjectFile, extractProjectGitignoreRules } from "./projectFileFilter.js";
 import { computeProjectSourceHash } from "../utils/paths.js";
 import { computeCodeHash } from "../utils/codeHasher.js";
 
@@ -23,6 +23,9 @@ export function buildProjectManifest({
   const projectId = `proj_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
   const files = [];
 
+  // Extract .gitignore rules from repository/project files if present
+  const gitignoreRules = extractProjectGitignoreRules(rawFiles);
+
   let eligibleCount = 0;
   let skippedCount = 0;
   let totalLines = 0;
@@ -31,7 +34,7 @@ export function buildProjectManifest({
   for (let i = 0; i < rawFiles.length; i++) {
     const raw = rawFiles[i];
     const fileId = `file_${i + 1}_${crypto.randomBytes(3).toString("hex")}`;
-    const classification = classifyProjectFile(raw.path, raw.size);
+    const classification = classifyProjectFile(raw.path, raw.size, gitignoreRules);
 
     const isEligible = classification.status === "ELIGIBLE" && typeof raw.content === "string";
     const content = raw.content || null;
