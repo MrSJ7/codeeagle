@@ -525,48 +525,55 @@ export function LandingPage({
         </div>
 
         {/* Technical Flowchart */}
-        <div className="p-6 rounded-[8px] bg-obsidian-900 border border-obsidian-800">
-          <div className="grid grid-cols-1 md:grid-cols-7 gap-3 items-center font-mono text-xs text-center">
-            {/* Step 1 */}
-            <div className="p-3 rounded-[5px] bg-obsidian-950 border border-obsidian-750 space-y-1">
-              <div className="text-brand-400 font-bold text-[10px]">INPUT</div>
-              <div className="text-obsidian-200 font-semibold">Source Code</div>
-              <div className="text-[10px] text-obsidian-500">JS / JSX</div>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <FeatureCard
+            icon={<FileCode className="w-5 h-5 text-brand-500" />}
+            kicker="01 / INPUT"
+            title="Source Code"
+            description="JavaScript and JSX syntax streams ingested directly into memory without telemetry."
+            footer={
+              <span className="font-mono text-[10px] text-obsidian-400">
+                Format: JS · JSX · ES2024
+              </span>
+            }
+          />
 
-            <div className="hidden md:flex justify-center text-obsidian-600">
-              <ArrowRight className="w-4 h-4" />
-            </div>
+          <FeatureCard
+            icon={<Cpu className="w-5 h-5 text-brand-500" />}
+            kicker="02 / PARSER"
+            title="Babel AST Traversal"
+            description="Deconstructs code into program nodes, eliminating regex string matching false positives."
+            footer={
+              <span className="font-mono text-[10px] text-obsidian-400">
+                Engine: @babel/parser
+              </span>
+            }
+          />
 
-            {/* Step 2 */}
-            <div className="p-3 rounded-[5px] bg-obsidian-950 border border-obsidian-750 space-y-1">
-              <div className="text-brand-400 font-bold text-[10px]">PARSER</div>
-              <div className="text-obsidian-200 font-semibold">Babel AST</div>
-              <div className="text-[10px] text-obsidian-500">AST Traversal</div>
-            </div>
+          <FeatureCard
+            icon={<Sparkles className="w-5 h-5 text-brand-500" />}
+            kicker="03 / ANALYZERS"
+            title="13 Rules + Gemini AI"
+            description="Deterministic rules evaluate AST nodes while Gemini models nuanced semantic control flow."
+            className="border-brand-500/40 bg-brand-500/[0.03]"
+            footer={
+              <span className="font-mono text-[10px] text-brand-400">
+                Hybrid: Deterministic + AI
+              </span>
+            }
+          />
 
-            <div className="hidden md:flex justify-center text-obsidian-600">
-              <ArrowRight className="w-4 h-4" />
-            </div>
-
-            {/* Step 3 */}
-            <div className="p-3 rounded-[5px] bg-obsidian-950 border border-brand-500/40 space-y-1 bg-brand-500/5">
-              <div className="text-brand-400 font-bold text-[10px]">ANALYZERS</div>
-              <div className="text-obsidian-100 font-bold">13 AST Rules</div>
-              <div className="text-[10px] text-brand-400/80">+ Gemini AI</div>
-            </div>
-
-            <div className="hidden md:flex justify-center text-obsidian-600">
-              <ArrowRight className="w-4 h-4" />
-            </div>
-
-            {/* Step 4 */}
-            <div className="p-3 rounded-[5px] bg-obsidian-950 border border-obsidian-750 space-y-1">
-              <div className="text-brand-400 font-bold text-[10px]">OUTPUT</div>
-              <div className="text-obsidian-200 font-semibold">Verified Patch</div>
-              <div className="text-[10px] text-obsidian-500">SHA-256 Guard</div>
-            </div>
-          </div>
+          <FeatureCard
+            icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
+            kicker="04 / OUTPUT"
+            title="Verified Unified Diff"
+            description="Cryptographic SHA-256 single-authority hashes validate edits before patch execution."
+            footer={
+              <span className="font-mono text-[10px] text-obsidian-400">
+                Guard: SHA-256 Checksum
+              </span>
+            }
+          />
         </div>
 
         {/* CodeEagle Technical Pillars Bento Grid */}
@@ -652,36 +659,60 @@ export function LandingPage({
 
       {/* 8. Section 08: Technical Trust & Real Capabilities */}
       <section id="integrity" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-obsidian-850 scroll-mt-24">
-        <div className="p-8 rounded-[8px] bg-obsidian-900 border border-obsidian-800 space-y-6">
-          <div className="max-w-2xl space-y-2">
-            <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
-              Technical Integrity
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-obsidian-50">
-              Built on Concrete Engineering Principles
-            </h2>
-            <p className="text-xs sm:text-sm text-obsidian-400 leading-relaxed">
-              CodeEagle does not invent fake statistics, fake repositories, or fake AI capabilities. Every review is derived strictly from real AST parsing and contextual reasoning.
-            </p>
+        <div className="max-w-3xl mb-12">
+          <div className="text-[11px] font-mono text-brand-500 uppercase tracking-wider font-semibold">
+            Technical Integrity
           </div>
+          <h2 className="text-3xl font-bold tracking-tight text-obsidian-50 mt-1">
+            Built on Concrete Engineering Principles
+          </h2>
+          <p className="text-sm text-obsidian-400 mt-2">
+            CodeEagle does not invent fake statistics, fake repositories, or fake AI capabilities. Every review is derived strictly from real AST parsing and contextual reasoning.
+          </p>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-obsidian-800 font-mono">
-            <div>
-              <div className="text-2xl font-bold text-brand-400">13</div>
-              <div className="text-xs text-obsidian-200 font-semibold mt-1">Deterministic AST Rules</div>
-              <div className="text-[11px] text-obsidian-500 mt-0.5">Babel-powered AST static verification</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-brand-400">SHA-256</div>
-              <div className="text-xs text-obsidian-200 font-semibold mt-1">Single-Authority Hash Guard</div>
-              <div className="text-[11px] text-obsidian-500 mt-0.5">Protects against stale source corruption</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-brand-400">0 ms</div>
-              <div className="text-xs text-obsidian-200 font-semibold mt-1">Local AST Execution</div>
-              <div className="text-[11px] text-obsidian-500 mt-0.5">Instant static analysis before network calls</div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FeatureCard
+            icon={<ShieldCheck className="w-5 h-5 text-brand-500" />}
+            kicker="STATIC ENGINE"
+            badge={<span className="font-mono text-xl font-bold text-brand-400">13</span>}
+            title="Deterministic AST Rules"
+            description="Babel-powered AST static verification detects hardcoded secrets, SQL injections, and prototype pollution with zero false positives."
+            footer={
+              <span className="font-mono text-[10px] text-obsidian-400 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+                Deterministic AST static verification
+              </span>
+            }
+          />
+
+          <FeatureCard
+            icon={<Hash className="w-5 h-5 text-brand-500" />}
+            kicker="INTEGRITY GUARD"
+            badge={<span className="font-mono text-base font-bold text-brand-400">SHA-256</span>}
+            title="Single-Authority Hash Guard"
+            description="Cryptographic checksum validation guarantees string mutations match the authoritative buffer, preventing stale source corruption."
+            footer={
+              <span className="font-mono text-[10px] text-obsidian-400 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Protects against stale source corruption
+              </span>
+            }
+          />
+
+          <FeatureCard
+            icon={<Zap className="w-5 h-5 text-brand-500" />}
+            kicker="LOCAL LATENCY"
+            badge={<span className="font-mono text-xl font-bold text-brand-400">0 ms</span>}
+            title="Local AST Execution"
+            description="Static analyzer rules execute immediately in memory, returning instant baseline diagnostics before outbound network requests."
+            footer={
+              <span className="font-mono text-[10px] text-obsidian-400 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                Instant static analysis before network calls
+              </span>
+            }
+          />
         </div>
       </section>
 
