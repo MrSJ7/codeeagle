@@ -37,3 +37,8 @@ yarn-error.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Impeccable local config
+.impeccable/*.local.json
+.impeccable/live/
+

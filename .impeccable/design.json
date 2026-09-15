@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-15T03:00:00.000Z",
+  "title": "Design System: CodeEagle",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Emerald Brand", "canonical": "#0F9F6E", "tonalRamp": ["#044430", "#065F42", "#087A54", "#0F9F6E", "#10B981", "#34D399", "#A7F3D0", "#ECFDF5"] },
+      "shell": { "role": "neutral", "displayName": "Mineral Shell", "canonical": "#F5F7F6", "tonalRamp": ["#161918", "#2E3330", "#5E6963", "#A6B0AA", "#D5DAD7", "#E8EEE9", "#F0F2F1", "#F5F7F6"] },
+      "surface": { "role": "neutral", "displayName": "Elevated Surface", "canonical": "#FFFFFF", "tonalRamp": ["#161918", "#333333", "#666666", "#999999", "#CCCCCC", "#E5E5E5", "#F5F5F5", "#FFFFFF"] },
+      "code-bg": { "role": "neutral", "displayName": "Carbon Code Canvas", "canonical": "#171A19", "tonalRamp": ["#0E100F", "#121514", "#171A19", "#242826", "#2D3330", "#3F4743", "#5E6963", "#E8EEE9"] },
+      "severity-critical": { "role": "tertiary", "displayName": "Critical Severity", "canonical": "#D92D20", "tonalRamp": ["#4D0A05", "#7A120B", "#B42318", "#D92D20", "#F04438", "#FDA29B", "#FEE4E2", "#FEF3F2"] },
+      "severity-high": { "role": "tertiary", "displayName": "High Severity", "canonical": "#E87B21", "tonalRamp": ["#4E1D02", "#7E2E05", "#B54708", "#E87B21", "#FB6514", "#FEC84B", "#FEF0C7", "#FFFAEB"] },
+      "severity-medium": { "role": "tertiary", "displayName": "Medium Severity", "canonical": "#C58B00", "tonalRamp": ["#4E3502", "#7A5405", "#A67408", "#C58B00", "#EAAA08", "#FEDF89", "#FEF7C3", "#FFFCF0"] },
+      "severity-low": { "role": "tertiary", "displayName": "Low Severity", "canonical": "#4D78A8", "tonalRamp": ["#102A45", "#1D446C", "#2E5F94", "#4D78A8", "#6895C4", "#A4C1DF", "#D5E3F0", "#F0F5FA"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Landing hero headlines." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings and modal titles." },
+      "title": { "displayName": "Title", "purpose": "Card headers and finding rule titles." },
+      "body": { "displayName": "Body", "purpose": "Primary narrative and finding descriptions." },
+      "label": { "displayName": "Label", "purpose": "Severity badges, engine chips, filter pills." },
+      "mono": { "displayName": "Monospace", "purpose": "Code editor, diffs, metrics, and line numbers." }
+    },
+    "shadows": [
+      { "name": "shadow-xs", "value": "0 1px 2px 0 rgba(0, 0, 0, 0.05)", "purpose": "Subtle button resting elevation." },
+      { "name": "shadow-modal", "value": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)", "purpose": "Floating dialog and patch preview elevation." }
+    ],
+    "motion": [
+      { "name": "transition-standard", "value": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Hover transitions for buttons and cards." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Used for Run Review and Apply Verified Patch actions.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><polygon points=\"5 3 19 12 5 21 5 3\"/></svg><span>Run Review</span></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; background-color: #0F9F6E; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 8px; border: none; cursor: pointer; transition: background-color 150ms ease; } .ds-btn-primary:hover { background-color: #087A54; }"
+    },
+    {
+      "name": "Severity Badge",
+      "kind": "chip",
+      "refersTo": "chip-severity",
+      "description": "Compact uppercase badge denoting finding severity.",
+      "html": "<span class=\"ds-badge-critical\">CRITICAL</span>",
+      "css": ".ds-badge-critical { display: inline-flex; align-items: center; font-family: Inter, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #D92D20; background-color: #FEF3F2; border: 1px solid rgba(217, 45, 32, 0.2); padding: 2px 6px; border-radius: 4px; }"
+    },
+    {
+      "name": "Engine Source Chip",
+      "kind": "chip",
+      "refersTo": "chip-engine",
+      "description": "Distinguishes deterministic AST findings from AI semantic reasoning.",
+      "html": "<span class=\"ds-chip-ast\">AST</span>",
+      "css": ".ds-chip-ast { display: inline-flex; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: #4338CA; background-color: #EEF2FF; border: 1px solid #C7D2FE; padding: 1px 5px; border-radius: 4px; }"
+    },
+    {
+      "name": "Finding Card Container",
+      "kind": "card",
+      "refersTo": "card-surface",
+      "description": "Light surface container for individual PR review findings.",
+      "html": "<div class=\"ds-card-finding\"><div class=\"ds-card-finding-header\"><span class=\"ds-line-ref\">L14</span><span class=\"ds-title\">SQL Injection Hazard</span></div><p class=\"ds-desc\">Unsanitized user input concatenated into SQL query.</p></div>",
+      "css": ".ds-card-finding { background-color: #FFFFFF; border: 1px solid #E7E5E4; border-left: 3px solid #D92D20; border-radius: 8px; padding: 12px 16px; font-family: Inter, sans-serif; } .ds-card-finding-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; } .ds-line-ref { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #5E6963; } .ds-title { font-size: 13px; font-weight: 600; color: #161918; } .ds-desc { font-size: 12px; color: #5E6963; margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Precision Cockpit",
+    "overview": "CodeEagle is designed as an authoritative, high-density developer instrument. It avoids the visual cliches of generic AI dashboards in favor of the disciplined restraint of premier developer tooling like GitHub Pull Request reviews, JetBrains IDEs, and Linear.",
+    "keyCharacteristics": [
+      "High Information Density with compact 48px header and high-visibility viewport",
+      "Quiet Confidence with emerald green reserved strictly for actions and verified states",
+      "Micro-Precision Hairline Borders separating light commentary from dark code surfaces",
+      "Dual Typography with Inter for UI analysis and JetBrains Mono for code and metrics"
+    ],
+    "rules": [
+      { "name": "The Dual-Canvas Rule", "body": "Code is always rendered on dark carbon surfaces (#171A19); analytical commentary, review findings, and administrative controls are always rendered on light mineral surfaces (#FFFFFF on #F5F7F6). Neither canvas invades the other.", "section": "colors" },
+      { "name": "The Rarity Rule", "body": "Emerald primary green (#0F9F6E) is applied to less than 5% of any view. Its visual energy is saved for moments of action (running a review) and resolution (successful patch verification).", "section": "colors" },
+      { "name": "The Semantic Severity Rule", "body": "Severity colors are strictly reserved for diagnostic findings and score badges. Never use red or orange for brand accents, decorative borders, or arbitrary icons.", "section": "colors" },
+      { "name": "The Code-Only Monospace Rule", "body": "Monospace typography (JetBrains Mono) is strictly confined to physical source code, line numbers, file names, commit hashes, and quantitative metrics. Explanations, review rationale, and user guidance must remain in Inter.", "section": "typography" },
+      { "name": "The Tabular Numbers Rule", "body": "All numerical indicators (overall scores, subcategory points, finding counts, line ranges) must render with tabular figures (font-variant-numeric: tabular-nums) to prevent layout jitter during re-audits.", "section": "typography" },
+      { "name": "The Hairline Border Rule", "body": "Surfaces are separated by crisp 1px borders, never by blurry drop shadows. Shadows appear only on elevated floating overlays (modals and slide-out drawers) to denote modal capture.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do maintain the strict Dual-Canvas distinction: dark #171A19 for code inspection, light #FFFFFF on #F5F7F6 for review analysis.",
+      "Do display engine source chips (AST vs AI) on every finding card to make provenance explicit.",
+      "Do use JetBrains Mono for all line numbers, file names, metrics, and code snippets.",
+      "Do keep line numbers clickable, smoothly scrolling and focusing the editor to the exact offending line.",
+      "Do provide instant feedback when code edits make existing analysis results stale (displaying Re-run Review warning state).",
+      "Do enforce single-file focus and compact density so developers can audit without scrolling through endless whitespace."
+    ],
+    "donts": [
+      "Don't use neon gradients, playful emojis, or conversational chatbot dialog balloons in review findings.",
+      "Don't show ungrounded patches or raw LLM completions without SHA-256 validation and line verification.",
+      "Don't hide deterministic AST static analysis behind a generic 'AI thinking' spinner.",
+      "Don't use Monaco editor or heavy browser-side LSP bundles that degrade initial page load performance.",
+      "Don't use low-contrast text (ensure all secondary labels maintain at least WCAG AA 4.5:1 contrast ratio against backgrounds).",
+      "Don't invent fake user testimonials or enterprise customer logos."
+    ]
+  }
+}
