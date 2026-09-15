@@ -18,7 +18,7 @@ export function Navbar({
   const isRunning = isReviewing || isAuditing;
 
   return (
-    <header className="h-12 bg-white border-b border-stone-200/80 px-4 sm:px-6 flex items-center justify-between select-none shrink-0 z-20">
+    <header className="h-12 bg-white border-b border-slate-200/90 px-4 sm:px-6 flex items-center justify-between select-none shrink-0 z-20">
       {/* Left: CodeEagle Brand Mark & Navigation Tabs */}
       <div className="flex items-center gap-5">
         <button
@@ -31,17 +31,17 @@ export function Navbar({
         </button>
 
         {/* View Switcher / Tabs */}
-        <nav className="flex items-center gap-1 pl-4 border-l border-stone-200">
+        <nav className="flex items-center gap-1 pl-4 border-l border-slate-200">
           <button
             type="button"
             onClick={onNavigateHome}
-            className="px-2.5 py-1 rounded-[6px] text-xs font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-50 transition-colors"
+            className="px-2.5 py-1 rounded-[6px] text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
           >
             Product
           </button>
           <button
             type="button"
-            className="px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-stone-100 text-stone-900 border border-stone-200/60 transition-colors"
+            className="px-2.5 py-1 rounded-[6px] text-xs font-semibold bg-slate-100 text-slate-900 border border-slate-200/80 transition-colors"
           >
             Review
           </button>
@@ -51,14 +51,14 @@ export function Navbar({
             aria-label={isHistoryOpen ? 'Close review history' : 'Open review history'}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-xs font-medium border transition-colors ${
               isHistoryOpen
-                ? 'bg-stone-100 text-stone-900 border-stone-300'
-                : 'text-stone-500 hover:text-stone-900 hover:bg-stone-50 border-transparent'
+                ? 'bg-slate-100 text-slate-900 border-slate-300'
+                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border-transparent'
             }`}
           >
-            <History className="w-3.5 h-3.5 text-stone-500" />
+            <History className="w-3.5 h-3.5 text-slate-500" />
             <span>History</span>
             {typeof historyCount === 'number' && historyCount > 0 && (
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-stone-200 text-stone-700">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 font-medium">
                 {historyCount}
               </span>
             )}
@@ -71,12 +71,12 @@ export function Navbar({
         {/* Subtle AI Status Dot */}
         <div
           title={isAiConfigured ? 'Google Gemini semantic analysis enabled' : 'Deterministic static AST analysis'}
-          className="text-xs font-sans text-stone-600 flex items-center gap-1.5 select-none"
+          className="text-xs font-sans text-slate-600 flex items-center gap-1.5 select-none"
         >
           <span>{isAiConfigured ? 'AI' : 'Static'}</span>
           <span
             className={`w-2 h-2 rounded-full ${
-              isAiConfigured ? 'bg-[#0F9F6E]' : 'bg-stone-400'
+              isAiConfigured ? 'bg-[#0F9F6E]' : 'bg-slate-400'
             }`}
             aria-hidden="true"
           />
@@ -89,9 +89,9 @@ export function Navbar({
           aria-label={isStale ? 'Re-run code review' : 'Run code review'}
           className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-[8px] text-xs font-semibold transition-all shadow-xs ${
             isRunning
-              ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
               : isStale
-              ? 'bg-[#E87B21] hover:bg-[#C56715] text-white ring-2 ring-orange-500/20'
+              ? 'bg-[#EA580C] hover:bg-[#C2410C] text-white ring-2 ring-orange-500/20'
               : 'bg-[#0F9F6E] hover:bg-[#087A54] active:bg-[#065F42] text-white'
           }`}
         >

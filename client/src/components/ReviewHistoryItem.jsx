@@ -80,33 +80,33 @@ export function ReviewHistoryItem({
             e.stopPropagation();
             onDelete(reviewId);
           }}
-          className="opacity-0 group-hover:opacity-100 p-1 rounded text-stone-400 hover:text-[#D92D20] hover:bg-red-50 transition-all focus:opacity-100 shrink-0"
+          className="opacity-0 group-hover:opacity-100 p-1 rounded text-slate-400 hover:text-red-600 hover:bg-slate-100 transition-all focus:opacity-100 shrink-0"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
 
       {/* Metadata tags */}
-      <div className="flex items-center justify-between text-[10px] font-mono text-stone-500 pt-1.5 border-t border-stone-100">
+      <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 pt-1.5 border-t border-slate-100">
         <div className="flex items-center gap-2">
           {/* Issue count */}
           <span className="flex items-center gap-1">
             {issueCount === 0 ? (
               <CheckCircle2 className="w-3 h-3 text-[#0F9F6E]" />
             ) : (
-              <AlertCircle className="w-3 h-3 text-[#E87B21]" />
+              <AlertCircle className="w-3 h-3 text-[#EA580C]" />
             )}
-            <span className={issueCount === 0 ? 'text-[#087A54] font-medium' : 'text-stone-700'}>
+            <span className={issueCount === 0 ? 'text-[#087A54] font-medium' : 'text-slate-700'}>
               {issueCount} {issueCount === 1 ? 'issue' : 'issues'}
             </span>
           </span>
 
           {/* Engine badge */}
           <span
-            className={`px-1.5 py-0.2 rounded text-[9px] uppercase font-semibold border ${
+            className={`px-1.5 py-0.5 rounded text-[10px] uppercase font-semibold border ${
               isHybrid
                 ? 'bg-purple-50 text-purple-700 border-purple-200'
-                : 'bg-stone-100 text-stone-600 border-stone-200'
+                : 'bg-slate-100 text-slate-600 border-slate-200'
             }`}
           >
             {isHybrid ? 'Hybrid' : 'Static'}
@@ -114,14 +114,14 @@ export function ReviewHistoryItem({
         </div>
 
         {/* Timestamp */}
-        <span className="text-stone-400 text-[10px] truncate max-w-[130px]" title={createdAt}>
+        <span className="text-slate-500 text-[11px] truncate max-w-[130px]" title={createdAt}>
           {formatDate(createdAt)}
         </span>
       </div>
 
       {/* Selected marker pill */}
       {isSelected && (
-        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 text-[9px] font-mono font-medium text-[#087A54] bg-[#DDF7EC] border border-[#0F9F6E]/40 px-1.5 py-0.2 rounded">
+        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 text-[10px] font-mono font-medium text-[#087A54] bg-[#DCFCE7] border border-[#0F9F6E]/40 px-1.5 py-0.5 rounded">
           Active
         </div>
       )}

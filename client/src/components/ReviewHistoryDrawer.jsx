@@ -151,7 +151,7 @@ export function ReviewHistoryDrawer({
                 <h2 className="text-xs font-semibold text-stone-900 uppercase tracking-wide font-mono">
                   Review History
                 </h2>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-stone-100 text-stone-600 border border-stone-200">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
                   {pagination.total} {pagination.total === 1 ? 'review' : 'reviews'}
                 </span>
               </div>

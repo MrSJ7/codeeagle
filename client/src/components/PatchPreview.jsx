@@ -52,7 +52,7 @@ export function PatchPreview({
             <div>
               <h3 id="patch-preview-title" className="text-xs font-semibold text-stone-900 flex items-center gap-2">
                 <span>Preview AI Patch</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-stone-100 text-stone-600 border border-stone-200">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200">
                   {issue.rule}
                 </span>
               </h3>

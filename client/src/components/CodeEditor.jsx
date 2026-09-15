@@ -97,27 +97,27 @@ export function CodeEditor({
     switch (activeSeverity) {
       case 'CRITICAL':
         return {
-          gutter: 'bg-[#D92D20]/25 text-red-200 font-bold border-l-2 border-[#D92D20]',
-          overlay: 'bg-[#D92D20]/10 border-l-2 border-[#D92D20]',
-          badge: 'bg-[#D92D20]/20 text-red-300 border-[#D92D20]/40',
+          gutter: 'bg-[#DC2626]/20 text-red-300 font-bold border-l border-[#DC2626]',
+          overlay: 'bg-[#DC2626]/12 border-l border-[#DC2626]',
+          badge: 'bg-[#DC2626]/20 text-red-300 border-[#DC2626]/40',
         };
       case 'HIGH':
         return {
-          gutter: 'bg-[#E87B21]/25 text-orange-200 font-bold border-l-2 border-[#E87B21]',
-          overlay: 'bg-[#E87B21]/10 border-l-2 border-[#E87B21]',
-          badge: 'bg-[#E87B21]/20 text-orange-300 border-[#E87B21]/40',
+          gutter: 'bg-[#EA580C]/20 text-orange-300 font-bold border-l border-[#EA580C]',
+          overlay: 'bg-[#EA580C]/12 border-l border-[#EA580C]',
+          badge: 'bg-[#EA580C]/20 text-orange-300 border-[#EA580C]/40',
         };
       case 'MEDIUM':
         return {
-          gutter: 'bg-[#C58B00]/25 text-amber-200 font-bold border-l-2 border-[#C58B00]',
-          overlay: 'bg-[#C58B00]/10 border-l-2 border-[#C58B00]',
-          badge: 'bg-[#C58B00]/20 text-amber-300 border-[#C58B00]/40',
+          gutter: 'bg-[#D97706]/20 text-amber-300 font-bold border-l border-[#D97706]',
+          overlay: 'bg-[#D97706]/12 border-l border-[#D97706]',
+          badge: 'bg-[#D97706]/20 text-amber-300 border-[#D97706]/40',
         };
       default:
         return {
-          gutter: 'bg-[#4D78A8]/25 text-blue-200 font-bold border-l-2 border-[#4D78A8]',
-          overlay: 'bg-[#4D78A8]/10 border-l-2 border-[#4D78A8]',
-          badge: 'bg-[#4D78A8]/20 text-blue-300 border-[#4D78A8]/40',
+          gutter: 'bg-[#2563EB]/20 text-blue-300 font-bold border-l border-[#2563EB]',
+          overlay: 'bg-[#2563EB]/12 border-l border-[#2563EB]',
+          badge: 'bg-[#2563EB]/20 text-blue-300 border-[#2563EB]/40',
         };
     }
   };
@@ -125,19 +125,19 @@ export function CodeEditor({
   const highlightStyles = getHighlightColor();
 
   return (
-    <div className="flex flex-col h-full bg-[#171A19] border-r border-stone-200/90 overflow-hidden select-none">
+    <div className="flex flex-col h-full bg-[#16191D] border-r border-slate-200/90 overflow-hidden select-none">
       {/* Editor Header Bar */}
-      <div className="h-10 px-4 bg-[#121514] border-b border-[#242826] flex items-center justify-between text-xs shrink-0 select-none">
+      <div className="h-10 px-4 bg-[#111316] border-b border-[#21262D] flex items-center justify-between text-xs shrink-0 select-none">
         {/* Left: File metadata */}
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 font-mono text-[#E8EEE9] font-medium">
+          <div className="flex items-center gap-1.5 font-mono text-[#E6EDF3] font-semibold">
             <FileCode className="w-3.5 h-3.5 text-[#0F9F6E]" />
             <span>{filename}</span>
           </div>
-          <span className="text-[#3A403C]">•</span>
-          <span className="text-[11px] font-mono text-[#8F9E94]">{language}</span>
-          <span className="text-[#3A403C]">•</span>
-          <span className="text-[11px] font-mono text-[#8F9E94]">{lineCount} lines</span>
+          <span className="text-[#6E7681]">•</span>
+          <span className="text-[11px] font-mono text-[#8B949E]">{language}</span>
+          <span className="text-[#6E7681]">•</span>
+          <span className="text-[11px] font-mono text-[#8B949E]">{lineCount} lines</span>
 
           {/* Active Highlight Badge */}
           {activeStartLine && (
@@ -155,35 +155,36 @@ export function CodeEditor({
           {/* Review Status Pill */}
           <div className="text-[11px] font-medium flex items-center gap-1.5 font-mono">
             {isStale ? (
-              <span className="flex items-center gap-1 text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-500/30">
+              <span className="flex items-center gap-1 text-amber-300 bg-amber-950/50 px-2 py-0.5 rounded border border-amber-500/40">
                 <AlertTriangle className="w-3 h-3" />
                 Review stale
               </span>
+            ) : reviewStatus === 'ANALYZING' ? (
+              <span className="flex items-center gap-1 text-[#34D399] bg-[#0F9F6E]/20 px-2 py-0.5 rounded border border-[#0F9F6E]/40">
+                <Sparkles className="w-3 h-3 text-[#34D399] animate-spin" />
+                Analyzing
+              </span>
             ) : reviewStatus === 'SUCCESS' ? (
-              <span className="flex items-center gap-1 text-[#0F9F6E] bg-[#0F9F6E]/10 px-2 py-0.5 rounded border border-[#0F9F6E]/30">
+              <span className="flex items-center gap-1 text-[#34D399] bg-[#0F9F6E]/15 px-2 py-0.5 rounded border border-[#0F9F6E]/30">
                 <CheckCircle2 className="w-3 h-3" />
                 Reviewed
               </span>
-            ) : reviewStatus === 'ANALYZING' ? (
-              <span className="flex items-center gap-1 text-[#0F9F6E] bg-[#0F9F6E]/10 px-2 py-0.5 rounded border border-[#0F9F6E]/30 animate-pulse">
-                Analyzing...
-              </span>
             ) : (
-              <span className="text-[#5E6963] text-[10px]">Ready</span>
+              <span className="text-[#8B949E]">Ready to review</span>
             )}
           </div>
 
-          {/* Example Presets Dropdown */}
-          {presets && presets.length > 0 && onSelectPreset && (
+          {/* Examples Preset Dropdown */}
+          {presets.length > 0 && (
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setIsPresetOpen(!isPresetOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#1C201E] hover:bg-[#242826] text-[#C4CEC7] hover:text-[#E8EEE9] border border-[#2D3330] text-[11px] font-medium transition-colors"
-                title="Load sample code"
+                onClick={() => setIsPresetOpen((prev) => !prev)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#1C2128] hover:bg-[#262C36] text-[#C9D1D9] border border-[#30363D] text-xs font-mono font-medium transition-colors"
+                title="Load sample code scenario"
               >
                 <span>Examples</span>
-                <ChevronDown className="w-3 h-3 text-[#7D8A82]" />
+                <ChevronDown className="w-3 h-3 text-[#8B949E]" />
               </button>
 
               {isPresetOpen && (
@@ -191,11 +192,10 @@ export function CodeEditor({
                   <div
                     className="fixed inset-0 z-20"
                     onClick={() => setIsPresetOpen(false)}
-                    aria-hidden="true"
                   />
-                  <div className="absolute right-0 mt-1 w-64 bg-[#171A19] border border-[#2D3330] rounded-md shadow-xl py-1 z-30 font-sans">
-                    <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider font-semibold text-[#7D8A82] border-b border-[#242826]">
-                      Sample Code
+                  <div className="absolute right-0 mt-1.5 w-60 bg-[#161B22] border border-[#30363D] rounded-lg shadow-xl z-30 py-1 font-sans text-xs">
+                    <div className="px-3 py-1.5 text-[10px] font-mono text-[#8B949E] uppercase tracking-wider border-b border-[#21262D]">
+                      Sample Scenarios
                     </div>
                     {presets.map((preset) => (
                       <button
@@ -205,18 +205,19 @@ export function CodeEditor({
                           onSelectPreset(preset.id);
                           setIsPresetOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-2 text-xs transition-colors flex flex-col ${
-                          selectedPresetId === preset.id
-                            ? 'bg-[#0F9F6E]/15 text-[#34D399] font-semibold'
-                            : 'text-[#C4CEC7] hover:bg-[#202422] hover:text-white'
+                        className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-[#1F242C] transition-colors ${
+                          selectedPresetId === preset.id ? 'bg-[#0F9F6E]/15 text-[#34D399]' : 'text-[#C9D1D9]'
                         }`}
                       >
-                        <span>{preset.name}</span>
-                        {preset.description && (
-                          <span className="text-[10px] text-[#7D8A82] font-normal mt-0.5 line-clamp-1">
-                            {preset.description}
-                          </span>
-                        )}
+                        <div className="font-semibold text-xs flex items-center justify-between">
+                          <span>{preset.name}</span>
+                          {selectedPresetId === preset.id && (
+                            <span className="text-[10px] font-mono text-[#34D399]">Active</span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-[#8B949E] truncate">
+                          {preset.description}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -227,51 +228,52 @@ export function CodeEditor({
         </div>
       </div>
 
-      {/* Editor Surface with Line Highlighting & Synchronized Gutter */}
-      <div className="relative flex-1 flex overflow-hidden font-mono text-xs leading-6 bg-[#171A19]">
-        {/* Line Numbers Gutter with Inline Finding Indicators */}
+      {/* Editor Body: Gutter + Synchronized Textarea */}
+      <div className="relative flex-1 flex overflow-hidden font-mono text-xs leading-6">
+        {/* Line Numbers Gutter */}
         <div
           ref={gutterRef}
+          className="w-12 py-3 bg-[#111316] border-r border-[#21262D] text-[#8B949E] text-right pr-3 select-none overflow-hidden shrink-0"
           aria-hidden="true"
-          className="w-14 bg-[#121514] text-[#5E6963] select-none text-right pr-2.5 py-3 border-r border-[#242826] overflow-hidden font-mono shrink-0"
         >
-          {lines.map((_, i) => {
-            const lineNum = i + 1;
-            const isTargeted =
+          {lines.map((_, index) => {
+            const lineNum = index + 1;
+            const isTargetLine =
               activeStartLine !== null &&
               lineNum >= activeStartLine &&
               lineNum <= (activeEndLine || activeStartLine);
-
             const lineIssue = issuesByLine.get(lineNum);
-            const dotColor =
-              lineIssue?.severity === 'CRITICAL'
-                ? 'text-[#D92D20]'
-                : lineIssue?.severity === 'HIGH'
-                ? 'text-[#E87B21]'
-                : lineIssue?.severity === 'MEDIUM'
-                ? 'text-[#C58B00]'
-                : lineIssue?.severity === 'LOW'
-                ? 'text-[#4D78A8]'
-                : null;
+
+            let gutterItemClass = 'h-6 relative flex items-center justify-end font-mono';
+            if (isTargetLine) {
+              gutterItemClass += ` ${highlightStyles.gutter}`;
+            }
 
             return (
               <div
                 key={lineNum}
+                className={gutterItemClass}
                 onClick={() => {
                   if (lineIssue && onSelectIssue) {
                     onSelectIssue(lineIssue.id);
                   }
                 }}
-                className={`h-6 flex items-center justify-end gap-1.5 transition-colors ${
-                  isTargeted ? highlightStyles.gutter + ' -mr-2.5 pr-2.5' : ''
-                } ${lineIssue ? 'cursor-pointer hover:text-[#E8EEE9]' : ''}`}
+                style={{ cursor: lineIssue ? 'pointer' : 'default' }}
                 title={lineIssue ? `${lineIssue.severity}: ${lineIssue.title}` : undefined}
               >
-                {/* Inline finding marker dot */}
+                {/* Issue Indicator Pip */}
                 {lineIssue && (
-                  <span className={`text-[9px] ${dotColor} leading-none select-none`} aria-hidden="true">
-                    ●
-                  </span>
+                  <span
+                    className={`absolute left-2 w-1.5 h-1.5 rounded-full ${
+                      lineIssue.severity === 'CRITICAL'
+                        ? 'bg-[#DC2626]'
+                        : lineIssue.severity === 'HIGH'
+                        ? 'bg-[#EA580C]'
+                        : lineIssue.severity === 'MEDIUM'
+                        ? 'bg-[#D97706]'
+                        : 'bg-[#2563EB]'
+                    }`}
+                  />
                 )}
                 <span>{lineNum}</span>
               </div>
@@ -279,41 +281,47 @@ export function CodeEditor({
           })}
         </div>
 
-        {/* Line Highlight Overlay Layer (Behind Textarea, Pointer-Events None) */}
-        <div
-          ref={overlayRef}
-          aria-hidden="true"
-          className="absolute inset-y-0 left-14 right-0 pointer-events-none overflow-hidden py-3 font-mono text-xs leading-6"
-        >
-          {lines.map((_, i) => {
-            const lineNum = i + 1;
-            const isTargeted =
-              activeStartLine !== null &&
-              lineNum >= activeStartLine &&
-              lineNum <= (activeEndLine || activeStartLine);
+        {/* Code Canvas Container */}
+        <div className="relative flex-1 h-full overflow-hidden bg-[#16191D]">
+          {/* Highlight Background Layer */}
+          <div
+            ref={overlayRef}
+            className="absolute inset-0 py-3 pointer-events-none overflow-hidden select-none"
+            aria-hidden="true"
+          >
+            {lines.map((_, index) => {
+              const lineNum = index + 1;
+              const isTargetLine =
+                activeStartLine !== null &&
+                lineNum >= activeStartLine &&
+                lineNum <= (activeEndLine || activeStartLine);
 
-            return (
-              <div
-                key={lineNum}
-                className={`h-6 w-full ${isTargeted ? highlightStyles.overlay : ''}`}
-              />
-            );
-          })}
+              return (
+                <div
+                  key={lineNum}
+                  className={`h-6 w-full ${isTargetLine ? highlightStyles.overlay : ''}`}
+                />
+              );
+            })}
+          </div>
+
+          {/* Editable Textarea Surface */}
+          <textarea
+            ref={textareaRef}
+            value={code}
+            onChange={(e) => onChange(e.target.value)}
+            onScroll={handleScroll}
+            onKeyDown={handleKeyDown}
+            spellCheck={false}
+            autoCapitalize="off"
+            autoComplete="off"
+            autoCorrect="off"
+            aria-label={`Code editor for ${filename}`}
+            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-[#E6EDF3] resize-none outline-hidden font-mono text-xs leading-6 selection:bg-[#264F78] selection:text-white dark-editor-scrollbar overflow-auto z-10"
+            style={{ tabSize: 2 }}
+          />
         </div>
-
-        {/* Code Input Textarea */}
-        <textarea
-          ref={textareaRef}
-          value={code}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onScroll={handleScroll}
-          spellCheck="false"
-          className="dark-editor-scrollbar relative z-10 flex-1 h-full w-full bg-transparent text-[#E8EEE9] p-3 pl-3 resize-none focus:outline-none font-mono text-xs leading-6 overflow-auto whitespace-pre tab-4 selection:bg-[#0F9F6E]/30 selection:text-[#E8EEE9]"
-          placeholder="// Paste JavaScript or JSX source code here..."
-        />
       </div>
     </div>
   );
 }
-

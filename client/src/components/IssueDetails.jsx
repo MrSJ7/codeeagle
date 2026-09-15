@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   Loader2,
   CheckCircle2,
+  Maximize2,
 } from 'lucide-react';
 import { SeverityBadge } from './SeverityBadge.jsx';
 
@@ -28,16 +29,16 @@ export function IssueDetails({
     return (
       <section
         aria-label="Finding remediation"
-        className={`bg-[#FAFAF9] flex flex-col items-center justify-center p-8 text-center text-stone-400 h-full select-none ${className}`}
+        className={`bg-slate-50 flex flex-col items-center justify-center p-8 text-center text-slate-400 h-full select-none ${className}`}
       >
-        <div className="w-9 h-9 rounded-full bg-white border border-stone-200/80 flex items-center justify-center mb-2.5 text-stone-400 shadow-2xs">
-          <Info className="w-4 h-4" />
+        <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center mb-3 text-slate-400 shadow-xs">
+          <Info className="w-5 h-5" />
         </div>
-        <h3 className="text-xs font-semibold text-stone-700 font-sans mb-1">
+        <h3 className="text-sm font-bold text-slate-800 font-sans mb-1">
           No finding selected
         </h3>
-        <p className="text-[11px] text-stone-500 max-w-xs leading-relaxed">
-          Select an issue from the rail to view remediation rationale, security impact, and verified patches.
+        <p className="text-xs text-slate-500 max-w-xs leading-relaxed font-sans">
+          Select an issue from the findings queue to inspect its rationale, security impact, and verified fix.
         </p>
       </section>
     );
@@ -78,46 +79,48 @@ export function IssueDetails({
       className={`bg-white flex flex-col h-full overflow-hidden select-none ${className}`}
     >
       {/* Finding Header - PR Review Comment Style */}
-      <div className="px-5 py-4 border-b border-stone-200/90 shrink-0 bg-[#FAFAF9]">
+      <div className="px-5 py-4 border-b border-slate-200/90 shrink-0 bg-slate-50/70">
         <div className="flex items-center justify-between gap-2 mb-2">
           {/* Severity + Category Pill */}
           <div className="flex items-center gap-2">
             <SeverityBadge severity={issue.severity} />
-            <span className="text-[10px] font-mono uppercase tracking-wider font-medium text-stone-500 px-1.5 py-0.5 rounded bg-white border border-stone-200/80">
+            <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-slate-600 px-2 py-0.5 rounded bg-white border border-slate-200">
               {issue.category}
             </span>
           </div>
 
           {/* Source Attribution Tag */}
           <span
-            className={`text-[9px] font-mono uppercase font-semibold px-2 py-0.5 rounded border ${
+            className={`text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded border ${
               isAi
                 ? 'bg-purple-50 text-purple-700 border-purple-200'
-                : 'bg-stone-100 text-stone-600 border-stone-200'
+                : 'bg-slate-100 text-slate-700 border-slate-200'
             }`}
           >
-            {isAi ? 'AI Semantic' : 'Static Rule'}
+            {isAi ? 'AI Semantic' : 'Static AST'}
           </span>
         </div>
 
         {/* Title */}
-        <h2 className="text-[13px] font-semibold text-stone-900 leading-snug font-sans">
+        <h2 className="text-sm font-bold text-slate-900 leading-snug font-sans">
           {issue.title}
         </h2>
 
         {/* Location Breadcrumb */}
-        <div className="flex items-center gap-2 text-[11px] font-mono text-stone-500 mt-1.5">
-          <span className="text-stone-800 font-medium">{filename}:{issue.line}{issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}</span>
+        <div className="flex items-center gap-2 text-xs font-mono text-slate-500 mt-1.5">
+          <span className="text-slate-800 font-semibold">
+            {filename}:{issue.line}{issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
+          </span>
           {typeof issue.confidence === 'number' && (
             <>
-              <span className="text-stone-300">•</span>
-              <span className="text-stone-500">{Math.round(issue.confidence * 100)}% confidence</span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-600">{Math.round(issue.confidence * 100)}% confidence</span>
             </>
           )}
           {issue.rule && (
             <>
-              <span className="text-stone-300">•</span>
-              <span className="text-stone-400 font-mono text-[10px]">{issue.rule}</span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-600 font-mono text-[11px]">{issue.rule}</span>
             </>
           )}
         </div>
@@ -127,22 +130,22 @@ export function IssueDetails({
       <div className="flex-1 overflow-y-auto p-5 space-y-4 font-sans text-xs">
         {/* Section 1: Why This Matters */}
         <div>
-          <h3 className="text-[10px] font-mono font-bold uppercase tracking-wider text-stone-500 mb-1.5 flex items-center gap-1.5">
+          <h3 className="text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
             <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
             <span>Why this matters</span>
           </h3>
-          <div className="p-3 rounded bg-stone-50/80 border border-stone-200/70 text-stone-700 leading-relaxed text-xs">
+          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-700 leading-relaxed text-xs">
             {issue.description}
           </div>
         </div>
 
         {/* Section 2: Recommendation */}
         <div>
-          <h3 className="text-[10px] font-mono font-bold uppercase tracking-wider text-stone-500 mb-1.5 flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5 text-stone-500" />
+          <h3 className="text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+            <Wrench className="w-3.5 h-3.5 text-slate-500" />
             <span>Recommendation</span>
           </h3>
-          <div className="p-3 rounded bg-stone-50/80 border border-stone-200/70 text-stone-700 leading-relaxed text-xs">
+          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-700 leading-relaxed text-xs">
             {issue.recommendation}
           </div>
         </div>
@@ -150,37 +153,37 @@ export function IssueDetails({
         {/* Section 3: Suggested Fix Diff View */}
         {hasFix && issue.fix?.replacement && (
           <div>
-            <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase tracking-wider text-stone-500 mb-1.5">
-              <span className="flex items-center gap-1 text-[#0F9F6E]">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-800 mb-1.5">
+              <span className="flex items-center gap-1 text-[#087A54]">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#0F9F6E]" />
                 <span>Suggested Change</span>
               </span>
-              <span className="text-[10px] font-mono text-stone-400 lowercase font-normal">
+              <span className="text-[11px] font-mono text-slate-500 font-normal">
                 {issue.fix.original ? 'inline diff' : 'replacement'}
               </span>
             </div>
 
             {/* PR-style Diff Box */}
-            <div className="rounded border border-[#242826] bg-[#171A19] overflow-hidden font-mono text-[11px] leading-relaxed">
-              <div className="px-3 py-1 bg-[#121514] border-b border-[#242826] flex items-center justify-between text-[10px] text-[#8F9E94]">
-                <span className="font-semibold uppercase tracking-wider text-[#A0AEA4]">
+            <div className="rounded-lg border border-[#21262D] bg-[#16191D] overflow-hidden font-mono text-xs leading-relaxed shadow-xs">
+              <div className="px-3 py-1.5 bg-[#111316] border-b border-[#21262D] flex items-center justify-between text-[11px] text-[#8B949E]">
+                <span className="font-semibold uppercase tracking-wider text-slate-300">
                   {filename}
                 </span>
                 <span>
                   Lines {issue.line}{issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
                 </span>
               </div>
-              <div className="p-3 overflow-x-auto dark-editor-scrollbar space-y-0.5">
+              <div className="p-3 overflow-x-auto dark-editor-scrollbar space-y-1">
                 {originalLines.length > 0 &&
                   originalLines.map((line, idx) => (
-                    <div key={`orig-${idx}`} className="text-red-300 bg-red-950/30 px-1.5 py-0.5 -mx-1 rounded-xs flex items-baseline">
-                      <span className="text-red-400 select-none mr-2 font-bold text-xs">-</span>
+                    <div key={`orig-${idx}`} className="text-red-300 bg-red-950/40 px-2 py-0.5 rounded flex items-baseline">
+                      <span className="text-red-400 select-none mr-2 font-bold">-</span>
                       <span className="whitespace-pre">{line}</span>
                     </div>
                   ))}
                 {replacementLines.map((line, idx) => (
-                  <div key={`repl-${idx}`} className="text-[#34D399] bg-[#0F9F6E]/15 px-1.5 py-0.5 -mx-1 rounded-xs flex items-baseline">
-                    <span className="text-[#0F9F6E] select-none mr-2 font-bold text-xs">+</span>
+                  <div key={`repl-${idx}`} className="text-[#34D399] bg-[#0F9F6E]/20 px-2 py-0.5 rounded flex items-baseline">
+                    <span className="text-[#34D399] select-none mr-2 font-bold">+</span>
                     <span className="whitespace-pre">{line}</span>
                   </div>
                 ))}
@@ -191,11 +194,11 @@ export function IssueDetails({
 
         {/* Stale Warning Notice */}
         {isStale && (
-          <div className="flex items-start gap-2 p-2.5 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[11px] leading-relaxed">
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed">
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
             <div>
-              <p className="font-semibold text-amber-900">Source code has been modified</p>
-              <p className="text-[10px] text-amber-800 mt-0.5">
+              <p className="font-bold text-amber-950">Source code has been modified</p>
+              <p className="text-[11px] text-amber-800 mt-0.5">
                 Run review again before applying patches to ensure line numbers and source hashes match.
               </p>
             </div>
@@ -204,19 +207,19 @@ export function IssueDetails({
       </div>
 
       {/* Finding Footer Actions */}
-      <div className="px-5 py-3 border-t border-stone-200/90 bg-[#FAFAF9] flex items-center justify-between gap-2 shrink-0 select-none">
+      <div className="px-5 py-3 border-t border-slate-200/90 bg-slate-50/80 flex items-center justify-between gap-2 shrink-0 select-none">
         {/* Copy snippet button */}
         {hasFix && issue.fix?.replacement ? (
           <button
             type="button"
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 text-xs font-medium transition-colors shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium transition-colors shadow-2xs"
             title="Copy fix snippet to clipboard"
           >
             {copyStatus === 'copied' ? (
               <>
                 <Check className="w-3.5 h-3.5 text-[#0F9F6E]" />
-                <span>Copied</span>
+                <span className="font-semibold text-[#087A54]">Copied</span>
               </>
             ) : copyStatus === 'failed' ? (
               <>
@@ -225,13 +228,13 @@ export function IssueDetails({
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 text-stone-400" />
+                <Copy className="w-3.5 h-3.5 text-slate-400" />
                 <span>Copy Fix</span>
               </>
             )}
           </button>
         ) : (
-          <span className="text-[11px] text-stone-400 font-mono">Manual review required</span>
+          <span className="text-xs text-slate-500 font-mono">Manual review required</span>
         )}
 
         {/* Patch Action Button */}
@@ -243,7 +246,7 @@ export function IssueDetails({
               onClick={() => onApplyPatch(issue)}
               disabled={isStale || isApplyingPatch}
               title={isStale ? 'Re-run review before applying patch' : 'Apply patch to editor'}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-[#0F9F6E] hover:bg-[#087A54] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-2xs transition-colors"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-[#0F9F6E] hover:bg-[#087A54] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-xs transition-colors"
             >
               {isApplyingPatch ? (
                 <>
@@ -252,7 +255,7 @@ export function IssueDetails({
                 </>
               ) : (
                 <>
-                  <Wrench className="w-3.5 h-3.5 text-white/80" />
+                  <Wrench className="w-3.5 h-3.5 text-white/90" />
                   <span>Apply Patch</span>
                 </>
               )}
@@ -263,15 +266,15 @@ export function IssueDetails({
           {hasFix && isAi && (
             <div>
               {isStale ? (
-                <span className="text-[10px] font-mono text-amber-800 bg-amber-50 px-2 py-1 rounded border border-amber-200">
+                <span className="text-[11px] font-mono text-amber-800 bg-amber-50 px-2 py-1 rounded border border-amber-200">
                   Source changed
                 </span>
               ) : typeof issue.confidence === 'number' && issue.confidence < 0.8 ? (
-                <span className="text-[10px] font-mono text-stone-500 bg-stone-100 px-2 py-1 rounded border border-stone-200">
+                <span className="text-[11px] font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">
                   Low confidence ({Math.round(issue.confidence * 100)}%)
                 </span>
               ) : !issue.fix?.original ? (
-                <span className="text-[10px] font-mono text-stone-500 bg-stone-100 px-2 py-1 rounded border border-stone-200">
+                <span className="text-[11px] font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">
                   Manual fix only
                 </span>
               ) : (
@@ -279,7 +282,7 @@ export function IssueDetails({
                   type="button"
                   onClick={() => onPreviewAiPatch && onPreviewAiPatch(issue)}
                   disabled={isVerifyingAiPatch || isApplyingPatch}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-[#0F9F6E] hover:bg-[#087A54] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-2xs transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-[#0F9F6E] hover:bg-[#087A54] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-xs transition-colors"
                 >
                   {isVerifyingAiPatch ? (
                     <>
@@ -288,8 +291,8 @@ export function IssueDetails({
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-3.5 h-3.5 text-white/80" />
-                      <span>Preview Fix</span>
+                      <Sparkles className="w-3.5 h-3.5 text-white/90" />
+                      <span>Apply Patch</span>
                     </>
                   )}
                 </button>
@@ -301,4 +304,3 @@ export function IssueDetails({
     </section>
   );
 }
-
