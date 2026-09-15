@@ -63,7 +63,7 @@ export function Navbar({
               className="flex items-center hover:opacity-90 transition-opacity cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[4px]"
               title="CodeEagle — AI Code Review"
             >
-              <CodeEagleLogo size={24} withText={true} withSubtitle={true} scrollCollapse={true} />
+              <CodeEagleLogo size={36} withText={true} withSubtitle={true} scrollCollapse={true} />
             </button>
 
             {/* Center / Primary Marketing Navigation */}
@@ -132,7 +132,7 @@ export function Navbar({
           className="flex items-center hover:opacity-85 transition-opacity cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[4px]"
           title="Return to Product Introduction"
         >
-          <CodeEagleLogo size={20} withText={true} withSubtitle={true} />
+          <CodeEagleLogo size={28} withText={true} withSubtitle={true} />
         </button>
 
         <div className="h-4 w-px bg-[#262626] hidden sm:block shrink-0" />

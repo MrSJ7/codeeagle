@@ -778,7 +778,7 @@ export function LandingPage({
             {/* Left Col: Brand + Tagline */}
             <div className="md:col-span-5 space-y-4">
               <div className="flex items-center gap-2.5">
-                <CodeEagleLogo size={24} withText={true} withSubtitle={true} />
+                <CodeEagleLogo size={36} withText={true} withSubtitle={true} />
               </div>
               <p className="text-sm text-[#74716C] max-w-sm leading-relaxed">
                 AI-powered code review that finds real problems and helps you fix them.
