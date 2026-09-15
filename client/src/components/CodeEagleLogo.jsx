@@ -1,24 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 /**
- * Official CodeEagle brand mark using the provided asset.
+ * Official CodeEagle brand mark.
  * Eagle head with glowing amber beak, eye, and <> code emblem.
- * Supports framer-motion scroll-triggered collapse where text animates into the emblem.
+ * Supports piece-by-piece scroll collapse where each letter and subtitle chunk
+ * animates sequentially directly into the emblem as the user scrolls.
  */
+const PREFIX_CHARS = ['C', 'o', 'd', 'e'];
+const SUFFIX_CHARS = ['E', 'a', 'g', 'l', 'e'];
+const SUBTITLE_WORDS = ['AI', 'Code', 'Review'];
+
 export function CodeEagleLogo({
-  size = 24,
+  size = 30,
   withText = false,
   withSubtitle = false,
   dark = true,
   className = '',
   scrollCollapse = false,
-  isScrolled = null,
 }) {
   const pixelSize = typeof size === 'number' ? size : size === 'lg' ? 36 : size === 'sm' ? 22 : 30;
 
-  const [internalScrolled, setInternalScrolled] = useState(false);
-  const activeScrolled = scrollCollapse ? (typeof isScrolled === 'boolean' ? isScrolled : internalScrolled) : false;
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    if (!scrollCollapse) return;
+    let rafId = null;
+    const onScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [scrollCollapse]);
+
+  // Normalized scroll progress between 0 (top of page) and 1 (fully collapsed into logo)
+  const maxScrollDistance = 140;
+  const progress = scrollCollapse ? Math.min(1, Math.max(0, scrollY / maxScrollDistance)) : 0;
 
   const titleClass = pixelSize >= 32
     ? 'text-lg sm:text-xl font-bold tracking-tight font-sans'
@@ -27,22 +51,64 @@ export function CodeEagleLogo({
     : 'text-sm font-semibold tracking-tight font-sans';
 
   const subtitleClass = pixelSize >= 32
-    ? 'text-xs font-semibold tracking-wider uppercase font-sans mt-0.5'
-    : 'text-[11px] font-semibold tracking-wider uppercase font-sans mt-0.5';
+    ? 'text-xs font-semibold tracking-wider uppercase font-sans'
+    : 'text-[11px] font-semibold tracking-wider uppercase font-sans';
 
-  useEffect(() => {
-    if (!scrollCollapse || typeof isScrolled === 'boolean') return;
-    const handleScroll = () => {
-      setInternalScrolled(window.scrollY > 40);
+  // Helper to compute character/piece motion styles:
+  // pieceIndex: 0 = 'C' (collapses last), 8 = last 'e' (collapses first)
+  const getCharStyle = (globalIndex) => {
+    if (!scrollCollapse) return {};
+
+    // 9 letters total: index 8 goes in first (rev = 0), index 0 goes in last (rev = 8)
+    const rev = 8 - globalIndex;
+    const start = 0.1 + (rev * 0.08);
+    const end = Math.min(1, start + 0.16);
+
+    let local = 0;
+    if (progress >= end) local = 1;
+    else if (progress > start) local = (progress - start) / (end - start);
+
+    if (local === 0) return {};
+
+    return {
+      opacity: Math.max(0, 1 - local),
+      transform: `translate3d(${-local * (28 + rev * 4)}px, 0, 0) scale(${1 - local * 0.65})`,
+      filter: `blur(${local * 3}px)`,
+      display: local >= 1 ? 'none' : 'inline-block',
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [scrollCollapse, isScrolled]);
+  };
+
+  // Subtitle words collapse even earlier: 'Review' -> 'Code' -> 'AI'
+  const getSubtitleWordStyle = (wordIndex) => {
+    if (!scrollCollapse) return {};
+
+    const rev = 2 - wordIndex; // 0 for 'Review', 1 for 'Code', 2 for 'AI'
+    const start = rev * 0.08;
+    const end = start + 0.14;
+
+    let local = 0;
+    if (progress >= end) local = 1;
+    else if (progress > start) local = (progress - start) / (end - start);
+
+    if (local === 0) return {};
+
+    return {
+      opacity: Math.max(0, 1 - local),
+      transform: `translate3d(${-local * 24}px, 0, 0) scale(${1 - local * 0.5})`,
+      filter: `blur(${local * 2}px)`,
+      display: local >= 1 ? 'none' : 'inline-block',
+    };
+  };
+
+  // Container width smoothly contracts as the letters tuck in
+  const isFullyCollapsed = progress >= 0.98;
+  const containerMaxWidth = scrollCollapse
+    ? `${Math.max(0, (1 - Math.max(0, (progress - 0.6) / 0.4)) * 220)}px`
+    : 'none';
 
   return (
     <div className={`flex items-center gap-3 select-none ${className}`}>
-      {/* Official CodeEagle Brand Mark with Framer Motion Depth */}
+      {/* Official CodeEagle Brand Mark (Clean, zero orange highlight halo) */}
       <motion.div
         className="relative shrink-0 flex items-center justify-center"
         whileHover={{ scale: 1.05 }}
@@ -57,46 +123,60 @@ export function CodeEagleLogo({
           className="rounded-[5px] object-contain shrink-0 shadow-sm relative z-10"
           style={{ width: `${pixelSize}px`, height: `${pixelSize}px` }}
         />
-
-        {/* Ambient Amber Glow Halo */}
-        <motion.div
-          className="absolute inset-0 rounded-[5px] bg-brand-500/25 blur-[6px] -z-0 pointer-events-none"
-          animate={{
-            opacity: activeScrolled ? [0.35, 0.75, 0.35] : 0.25,
-            scale: activeScrolled ? [1, 1.18, 1] : 1,
-          }}
-          transition={{
-            duration: activeScrolled ? 2.2 : 0.3,
-            repeat: activeScrolled ? Infinity : 0,
-            ease: 'easeInOut',
-          }}
-        />
       </motion.div>
 
-      {/* Animated Brand Typography Lockup */}
-      {withText && (
-        <AnimatePresence initial={false}>
-          {!activeScrolled && (
-            <motion.div
-              key="brand-text"
-              initial={{ opacity: 0, x: -10, width: 0, filter: 'blur(4px)' }}
-              animate={{ opacity: 1, x: 0, width: 'auto', filter: 'blur(0px)' }}
-              exit={{ opacity: 0, x: -14, width: 0, filter: 'blur(4px)' }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col leading-tight overflow-hidden whitespace-nowrap"
-            >
-              <div className={`flex items-center ${titleClass}`}>
-                <span className={dark ? 'text-obsidian-50' : 'text-obsidian-900'}>Code</span>
-                <span className="text-brand-500 font-bold ml-0.5">Eagle</span>
-              </div>
-              {withSubtitle && (
-                <span className={`${subtitleClass} ${dark ? 'text-obsidian-400' : 'text-obsidian-500'}`}>
-                  AI Code Review
+      {/* Brand Typography Lockup that enters logo in pieces on scroll */}
+      {withText && !isFullyCollapsed && (
+        <div
+          className="flex flex-col leading-tight overflow-hidden whitespace-nowrap will-change-transform"
+          style={{ maxWidth: containerMaxWidth }}
+        >
+          {/* Main Brand Title: "Code" + "Eagle" broken into animated character pieces */}
+          <div className={`flex items-center ${titleClass}`}>
+            <span className={dark ? 'text-obsidian-50' : 'text-obsidian-900'}>
+              {PREFIX_CHARS.map((char, i) => (
+                <span
+                  key={`prefix-${i}`}
+                  className="inline-block transition-transform duration-75"
+                  style={getCharStyle(i)}
+                >
+                  {char}
                 </span>
-              )}
-            </motion.div>
+              ))}
+            </span>
+
+            <span className="text-brand-500 font-bold ml-0.5">
+              {SUFFIX_CHARS.map((char, i) => (
+                <span
+                  key={`suffix-${i}`}
+                  className="inline-block transition-transform duration-75"
+                  style={getCharStyle(4 + i)}
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
+          </div>
+
+          {/* Subtitle: "AI Code Review" broken into word pieces */}
+          {withSubtitle && (
+            <div
+              className={`flex items-center gap-1 mt-0.5 ${subtitleClass} ${
+                dark ? 'text-obsidian-400' : 'text-obsidian-500'
+              }`}
+            >
+              {SUBTITLE_WORDS.map((word, i) => (
+                <span
+                  key={`sub-${i}`}
+                  className="inline-block transition-transform duration-75"
+                  style={getSubtitleWordStyle(i)}
+                >
+                  {word}
+                </span>
+              ))}
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       )}
     </div>
   );
