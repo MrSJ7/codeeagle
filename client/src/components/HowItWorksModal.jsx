@@ -27,16 +27,16 @@ export function HowItWorksModal({ isOpen, onClose, onStartReview }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 bg-obsidian-850 border-b border-obsidian-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-obsidian-850 border-b border-slate-200 dark:border-obsidian-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-[4px] bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400">
+            <div className="w-7 h-7 rounded-[4px] bg-blue-50 dark:bg-brand-500/15 border border-blue-200 dark:border-brand-500/30 flex items-center justify-center text-blue-600 dark:text-brand-400">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <h2 id="how-it-works-title" className="text-sm font-bold text-obsidian-100">
+              <h2 id="how-it-works-title" className="text-sm font-bold text-slate-900 dark:text-obsidian-100">
                 How CodeEagle Reviews Your Code
               </h2>
-              <p className="text-[11px] text-obsidian-400 font-medium">
+              <p className="text-[11px] text-slate-500 dark:text-obsidian-400 font-medium">
                 Deterministic compiler checks + contextual AI reasoning
               </p>
             </div>
@@ -44,7 +44,7 @@ export function HowItWorksModal({ isOpen, onClose, onStartReview }) {
 
           <button
             onClick={onClose}
-            className="p-1 rounded-[4px] text-obsidian-400 hover:text-obsidian-100 hover:bg-obsidian-800 transition-colors cursor-pointer"
+            className="p-1 rounded-[4px] text-slate-500 dark:text-obsidian-400 hover:text-slate-900 dark:hover:text-obsidian-100 hover:bg-slate-100 dark:hover:bg-obsidian-800 transition-colors cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="w-4 h-4" />
@@ -52,14 +52,14 @@ export function HowItWorksModal({ isOpen, onClose, onStartReview }) {
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-6 overflow-y-auto text-xs text-obsidian-300 leading-relaxed">
+        <div className="p-6 space-y-6 overflow-y-auto text-sm text-slate-600 dark:text-obsidian-300 leading-relaxed">
           {/* Step 1: AST */}
           <div className="flex items-start gap-3.5">
-            <div className="w-7 h-7 rounded-[4px] bg-obsidian-850 border border-obsidian-750 flex items-center justify-center font-mono font-bold text-brand-400 text-xs shrink-0 mt-0.5">
+            <div className="w-7 h-7 rounded-[4px] bg-blue-50 dark:bg-obsidian-850 border border-blue-200 dark:border-obsidian-750 flex items-center justify-center font-mono font-bold text-blue-600 dark:text-brand-400 text-xs shrink-0 mt-0.5">
               01
             </div>
             <div className="space-y-1">
-              <h3 className="text-xs font-bold text-obsidian-100">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-obsidian-100">
                 Deterministic AST Static Analysis
               </h3>
               <p>
@@ -70,11 +70,11 @@ export function HowItWorksModal({ isOpen, onClose, onStartReview }) {
 
           {/* Step 2: Gemini */}
           <div className="flex items-start gap-3.5">
-            <div className="w-7 h-7 rounded-[4px] bg-obsidian-850 border border-obsidian-750 flex items-center justify-center font-mono font-bold text-brand-400 text-xs shrink-0 mt-0.5">
+            <div className="w-7 h-7 rounded-[4px] bg-blue-50 dark:bg-obsidian-850 border border-blue-200 dark:border-obsidian-750 flex items-center justify-center font-mono font-bold text-blue-600 dark:text-brand-400 text-xs shrink-0 mt-0.5">
               02
             </div>
             <div className="space-y-1">
-              <h3 className="text-xs font-bold text-obsidian-100">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-obsidian-100">
                 Contextual AI Reasoning (Google Gemini)
               </h3>
               <p>
@@ -85,11 +85,11 @@ export function HowItWorksModal({ isOpen, onClose, onStartReview }) {
 
           {/* Step 3: Patch Verification */}
           <div className="flex items-start gap-3.5">
-            <div className="w-7 h-7 rounded-[4px] bg-obsidian-850 border border-obsidian-750 flex items-center justify-center font-mono font-bold text-brand-400 text-xs shrink-0 mt-0.5">
+            <div className="w-7 h-7 rounded-[4px] bg-blue-50 dark:bg-obsidian-850 border border-blue-200 dark:border-obsidian-750 flex items-center justify-center font-mono font-bold text-blue-600 dark:text-brand-400 text-xs shrink-0 mt-0.5">
               03
             </div>
             <div className="space-y-1">
-              <h3 className="text-xs font-bold text-obsidian-100">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-obsidian-100">
                 SHA-256 Verified Safe Patches
               </h3>
               <p>
@@ -100,8 +100,8 @@ export function HowItWorksModal({ isOpen, onClose, onStartReview }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3.5 bg-obsidian-850 border-t border-obsidian-800 flex items-center justify-between">
-          <span className="text-[11px] font-mono text-obsidian-500">
+        <div className="px-6 py-3.5 bg-slate-50 dark:bg-obsidian-850 border-t border-slate-200 dark:border-obsidian-800 flex items-center justify-between">
+          <span className="text-[11px] font-mono text-slate-500 dark:text-obsidian-500">
             Esc to dismiss
           </span>
 

@@ -48,20 +48,20 @@ export function IssuePanel({
       className={`bg-obsidian-900 border-r border-obsidian-800 flex flex-col h-full overflow-hidden select-none font-sans ${className}`}
     >
       {/* Rail Header */}
-      <div className="px-4 py-3 border-b border-obsidian-800 flex items-center justify-between shrink-0 bg-obsidian-850">
+      <div className="px-4 py-3 border-b border-slate-200 dark:border-obsidian-800 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-obsidian-850">
         <div className="flex items-center gap-2">
-          <h2 className="text-xs font-bold text-obsidian-100">
+          <h2 className="text-xs font-bold text-slate-900 dark:text-obsidian-100">
             Needs Attention
           </h2>
           {reviewStatus !== 'IDLE' && (
-            <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-[4px] bg-obsidian-800 text-obsidian-300 font-bold border border-obsidian-700">
+            <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-[4px] bg-slate-100 dark:bg-obsidian-800 text-slate-700 dark:text-obsidian-300 font-bold border border-slate-200 dark:border-obsidian-700">
               {issues.length}
             </span>
           )}
         </div>
 
         {isStale && (
-          <span className="text-[10px] font-mono text-amber-300 bg-amber-950/40 border border-amber-800/50 px-1.5 py-0.5 rounded-[4px] font-medium">
+          <span className="text-[10px] font-mono text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 px-1.5 py-0.5 rounded-[4px] font-medium">
             Stale
           </span>
         )}
@@ -69,13 +69,13 @@ export function IssuePanel({
 
       {/* Category Filter Notice */}
       {externalCategoryFilter && externalCategoryFilter !== 'ALL' && (
-        <div className="px-3 py-1.5 bg-brand-500/10 border-b border-brand-500/30 flex items-center justify-between text-xs text-brand-400 font-medium shrink-0">
+        <div className="px-3 py-1.5 bg-blue-50 dark:bg-brand-500/10 border-b border-blue-200 dark:border-brand-500/30 flex items-center justify-between text-xs text-blue-700 dark:text-brand-400 font-medium shrink-0">
           <span>Filtered by {externalCategoryFilter}</span>
           {onClearCategoryFilter && (
             <button
               type="button"
               onClick={onClearCategoryFilter}
-              className="text-[11px] underline hover:text-brand-300 cursor-pointer font-semibold"
+              className="text-[11px] underline hover:text-blue-900 dark:hover:text-brand-300 cursor-pointer font-semibold"
             >
               Reset
             </button>
@@ -85,7 +85,7 @@ export function IssuePanel({
 
       {/* Severity Filter Tabs */}
       {reviewStatus !== 'IDLE' && issues.length > 0 && (
-        <div className="px-3 py-1.5 border-b border-obsidian-800 flex items-center gap-1 overflow-x-auto text-[11px] shrink-0 bg-obsidian-900">
+        <div className="px-3 py-1.5 border-b border-slate-200 dark:border-obsidian-800 flex items-center gap-1 overflow-x-auto text-[11px] shrink-0 bg-slate-50/50 dark:bg-obsidian-900">
           {filterTabs.map((tab) => {
             const isActive = severityFilter === tab.key;
             if (tab.key !== 'ALL' && tab.count === 0) return null;
@@ -97,12 +97,12 @@ export function IssuePanel({
                 onClick={() => setSeverityFilter(tab.key)}
                 className={`px-2 py-0.5 rounded-[4px] text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer ${
                   isActive
-                    ? 'bg-obsidian-800 text-obsidian-50 font-semibold shadow-sm border border-obsidian-700'
-                    : 'text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850'
+                    ? 'bg-white dark:bg-obsidian-800 text-slate-900 dark:text-obsidian-50 font-semibold shadow-xs border border-slate-200 dark:border-obsidian-700'
+                    : 'text-slate-600 dark:text-obsidian-400 hover:text-slate-900 dark:hover:text-obsidian-200 hover:bg-slate-100 dark:hover:bg-obsidian-850'
                 }`}
               >
                 <span>{tab.label}</span>
-                <span className={`text-[10px] font-mono ${isActive ? 'text-brand-400 font-bold' : 'text-obsidian-500'}`}>
+                <span className={`text-[10px] font-mono ${isActive ? 'text-blue-600 dark:text-brand-400 font-bold' : 'text-slate-400 dark:text-obsidian-500'}`}>
                   {tab.count}
                 </span>
               </button>
@@ -114,14 +114,14 @@ export function IssuePanel({
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto">
         {reviewStatus === 'IDLE' ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-obsidian-400">
-            <div className="w-9 h-9 rounded-[6px] bg-obsidian-850 border border-obsidian-750 flex items-center justify-center mb-3 text-brand-500 shadow-sm">
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
+            <div className="w-9 h-9 rounded-[6px] bg-slate-100 dark:bg-obsidian-850 border border-slate-200 dark:border-obsidian-750 flex items-center justify-center mb-3 text-blue-600 dark:text-brand-500 shadow-xs">
               <Play className="w-4 h-4 fill-current ml-0.5" />
             </div>
-            <p className="text-xs font-semibold text-obsidian-200 mb-1">
+            <p className="text-xs font-semibold text-slate-900 dark:text-obsidian-200 mb-1">
               Ready to review
             </p>
-            <p className="text-xs text-obsidian-400 mb-4 max-w-[200px] leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-obsidian-400 mb-4 max-w-[200px] leading-relaxed">
               Click Run Review or press ⌘↵ to start analysis.
             </p>
             {onRunReview && (
@@ -136,26 +136,26 @@ export function IssuePanel({
             )}
           </div>
         ) : reviewStatus === 'ANALYZING' ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-obsidian-400">
-            <Loader2 className="w-6 h-6 animate-spin text-brand-500 mb-2" />
-            <p className="text-xs font-semibold text-obsidian-200">
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
+            <Loader2 className="w-6 h-6 animate-spin text-blue-600 dark:text-brand-500 mb-2" />
+            <p className="text-xs font-semibold text-slate-900 dark:text-obsidian-200">
               Analyzing code...
             </p>
           </div>
         ) : displayedIssues.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-obsidian-400">
-            <CheckCircle2 className="w-6 h-6 text-emerald-400 mb-2" />
-            <p className="text-xs font-semibold text-obsidian-200">
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
+            <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mb-2" />
+            <p className="text-xs font-semibold text-slate-900 dark:text-obsidian-200">
               {issues.length === 0 ? 'All checks passed' : 'No matching issues'}
             </p>
-            <p className="text-xs text-obsidian-500 mt-1 max-w-[200px] leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-obsidian-500 mt-1 max-w-[200px] leading-relaxed">
               {issues.length === 0
                 ? 'No issues found.'
                 : 'Try choosing another filter.'}
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-obsidian-800">
+          <div className="divide-y divide-slate-100 dark:divide-obsidian-800">
             {displayedIssues.map((issue) => {
               const isSelected = selectedIssueId === issue.id;
               const hasFix = Boolean(issue.fix);
@@ -168,8 +168,8 @@ export function IssuePanel({
                   onClick={() => onSelectIssue(issue.id)}
                   className={`w-full text-left px-4 py-3 transition-all flex flex-col gap-1 cursor-pointer border-l-2 ${
                     isSelected
-                      ? 'bg-obsidian-800 text-obsidian-50 border-l-brand-500 shadow-sm'
-                      : 'border-l-transparent hover:bg-obsidian-850 text-obsidian-300'
+                      ? 'bg-blue-50/60 dark:bg-obsidian-800 text-slate-900 dark:text-obsidian-50 border-l-blue-600 dark:border-l-brand-500 shadow-xs'
+                      : 'border-l-transparent hover:bg-slate-50 dark:hover:bg-obsidian-850 text-slate-700 dark:text-obsidian-300'
                   }`}
                 >
                   {/* Title & Severity */}
@@ -183,11 +183,11 @@ export function IssuePanel({
                             ? 'bg-orange-500'
                             : issue.severity === 'MEDIUM'
                             ? 'bg-amber-500'
-                            : 'bg-obsidian-400'
+                            : 'bg-slate-400 dark:bg-obsidian-400'
                         }`}
                         aria-hidden="true"
                       />
-                      <span className={`text-sm font-bold leading-snug truncate ${isSelected ? 'text-obsidian-50' : 'text-obsidian-200'}`}>
+                      <span className={`text-sm font-bold leading-snug truncate ${isSelected ? 'text-slate-950 dark:text-obsidian-50' : 'text-slate-800 dark:text-obsidian-200'}`}>
                         {issue.title}
                       </span>
                     </div>
@@ -195,7 +195,7 @@ export function IssuePanel({
                     {hasFix && (
                       <span
                         title="Verified patch available"
-                        className="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px] bg-emerald-950/40 text-emerald-400 border border-emerald-800/60 shrink-0"
+                        className="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shrink-0"
                       >
                         PATCH
                       </span>
@@ -203,17 +203,17 @@ export function IssuePanel({
                   </div>
 
                   {/* Location & Provenance */}
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-obsidian-400 pl-4">
-                    <span className="text-obsidian-300">
+                  <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 dark:text-obsidian-400 pl-4">
+                    <span className="text-slate-700 dark:text-obsidian-300">
                       {filename}:{issue.line}
                       {issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
                     </span>
-                    <span className="text-obsidian-600">•</span>
+                    <span className="text-slate-300 dark:text-obsidian-600">•</span>
                     <span
                       className={`text-[9px] uppercase px-1.5 py-0.2 rounded-[3px] font-bold ${
                         isAi
-                          ? 'text-brand-400 bg-brand-500/15 border border-brand-500/30'
-                          : 'text-obsidian-300 bg-obsidian-800 border border-obsidian-700'
+                          ? 'text-blue-700 dark:text-brand-400 bg-blue-50 dark:bg-brand-500/15 border border-blue-200 dark:border-brand-500/30'
+                          : 'text-slate-700 dark:text-obsidian-300 bg-slate-100 dark:bg-obsidian-800 border border-slate-200 dark:border-obsidian-700'
                       }`}
                     >
                       {isAi ? 'AI' : 'AST'}

@@ -77,9 +77,9 @@ export function Card3D({
         rotateY: !reducedMotion && interactive ? rotateY : 0,
       }}
       className={cn(
-        'relative rounded-[8px] bg-[#111111] border border-[#262626] transition-colors duration-200',
-        'shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.035)_inset]',
-        interactive && 'hover:border-[#333333] hover:bg-[#141414]',
+        'relative rounded-[8px] bg-white dark:bg-[#111111] border border-slate-200 dark:border-[#262626] transition-colors duration-200',
+        'shadow-sm dark:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.035)_inset]',
+        interactive && 'hover:border-slate-300 dark:hover:border-[#333333] hover:bg-slate-50 dark:hover:bg-[#141414]',
         onClick && 'cursor-pointer',
         className
       )}

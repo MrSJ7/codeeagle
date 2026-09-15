@@ -130,27 +130,26 @@ export function ReviewHistoryDrawer({
         role="dialog"
         aria-label="Review History"
         aria-modal="true"
-        className="fixed top-0 right-0 bottom-0 w-full sm:w-96 bg-obsidian-900 border-l border-obsidian-800 z-50 flex flex-col shadow-2xl font-sans select-none text-obsidian-50"
+        className="fixed top-0 right-0 bottom-0 w-full sm:w-96 bg-white dark:bg-obsidian-900 border-l border-slate-200 dark:border-obsidian-800 z-50 flex flex-col shadow-2xl font-sans select-none text-slate-900 dark:text-obsidian-50"
       >
         {/* Drawer Header */}
-        <div className="h-13 bg-obsidian-850 border-b border-obsidian-800 px-5 flex items-center justify-between shrink-0">
+        <div className="h-13 bg-slate-50 dark:bg-obsidian-850 border-b border-slate-200 dark:border-obsidian-800 px-5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <History className="w-4 h-4 text-brand-500" />
-            <h2 className="text-xs font-bold text-obsidian-100 uppercase tracking-wider">
+            <History className="w-4 h-4 text-blue-600 dark:text-brand-500" />
+            <h2 className="text-xs font-bold text-slate-900 dark:text-obsidian-100 uppercase tracking-wider">
               Review History
             </h2>
             {pagination.total > 0 && (
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[4px] bg-obsidian-800 text-obsidian-300 font-bold border border-obsidian-700">
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[4px] bg-slate-100 dark:bg-obsidian-800 text-slate-700 dark:text-obsidian-300 font-bold border border-slate-200 dark:border-obsidian-700">
                 {pagination.total}
               </span>
             )}
           </div>
 
           <div className="flex items-center gap-2">
-
             <button
               onClick={onClose}
-              className="p-1 rounded-[4px] text-obsidian-400 hover:text-obsidian-100 hover:bg-obsidian-800 transition-colors cursor-pointer"
+              className="p-1 rounded-[4px] text-slate-400 dark:text-obsidian-400 hover:text-slate-900 dark:hover:text-obsidian-100 hover:bg-slate-100 dark:hover:bg-obsidian-800 transition-colors cursor-pointer"
               title="Close history drawer"
               aria-label="Close history drawer"
             >
@@ -162,14 +161,14 @@ export function ReviewHistoryDrawer({
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
           {isLoading && reviews.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-obsidian-400">
-              <Loader2 className="w-6 h-6 animate-spin text-brand-500 mb-2" />
+            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600 dark:text-brand-500 mb-2" />
               <p className="text-xs font-medium">Loading history...</p>
             </div>
           ) : errorMessage ? (
-            <div className="p-4 rounded-[6px] bg-red-950/40 border border-red-800/60 text-xs text-red-300 flex flex-col gap-2">
+            <div className="p-4 rounded-[6px] bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 text-xs text-red-700 dark:text-red-300 flex flex-col gap-2">
               <div className="flex items-center gap-2 font-bold">
-                <AlertTriangle className="w-4 h-4 text-red-400" />
+                <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
                 <span>Failed to load history</span>
               </div>
               <p>{errorMessage}</p>
@@ -184,10 +183,10 @@ export function ReviewHistoryDrawer({
               </Button>
             </div>
           ) : reviews.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-obsidian-400">
-              <FolderArchive className="w-8 h-8 text-obsidian-600 mb-2" />
-              <p className="text-xs font-bold text-obsidian-200">No reviews yet</p>
-              <p className="text-xs text-obsidian-500 mt-1 max-w-[220px]">
+            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
+              <FolderArchive className="w-8 h-8 text-slate-300 dark:text-obsidian-600 mb-2" />
+              <p className="text-xs font-bold text-slate-900 dark:text-obsidian-200">No reviews yet</p>
+              <p className="text-xs text-slate-500 dark:text-obsidian-500 mt-1 max-w-[220px]">
                 Run a code review or apply a verified fix to start building your review history.
               </p>
             </div>
@@ -206,7 +205,7 @@ export function ReviewHistoryDrawer({
 
         {/* Pagination Footer */}
         {pagination.pages > 1 && (
-          <div className="p-3 bg-obsidian-850 border-t border-obsidian-800 flex items-center justify-between text-xs font-mono text-obsidian-400 select-none">
+          <div className="p-3 bg-slate-50 dark:bg-obsidian-850 border-t border-slate-200 dark:border-obsidian-800 flex items-center justify-between text-xs font-mono text-slate-500 dark:text-obsidian-400 select-none">
             <span>
               Page {pagination.page} of {pagination.pages}
             </span>
@@ -234,12 +233,12 @@ export function ReviewHistoryDrawer({
         {/* In-app Modal Confirmation for Unsaved Changes */}
         {pendingSelectId && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-xs z-60 flex items-center justify-center p-4">
-            <div className="bg-obsidian-900 border border-obsidian-750 rounded-[8px] p-5 shadow-2xl max-w-xs text-xs space-y-3 font-sans text-obsidian-200">
-              <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            <div className="bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-750 rounded-[8px] p-5 shadow-2xl max-w-xs text-xs space-y-3 font-sans text-slate-800 dark:text-obsidian-200">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
+                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                 <span>Unsaved Code Changes</span>
               </div>
-              <p className="text-obsidian-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-obsidian-300 leading-relaxed">
                 Loading this historical review will replace the current editor code. Are you sure you want to proceed?
               </p>
               <div className="flex items-center justify-end gap-2 pt-1">
@@ -265,12 +264,12 @@ export function ReviewHistoryDrawer({
         {/* In-app Modal Confirmation for Audit Deletion */}
         {deletingId && (
           <div className="absolute inset-0 bg-black/60 backdrop-blur-xs z-60 flex items-center justify-center p-4">
-            <div className="bg-obsidian-900 border border-obsidian-750 rounded-[8px] p-5 shadow-2xl max-w-xs text-xs space-y-3 font-sans text-obsidian-200">
-              <div className="flex items-center gap-2 text-red-400 font-bold text-sm">
-                <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            <div className="bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-750 rounded-[8px] p-5 shadow-2xl max-w-xs text-xs space-y-3 font-sans text-slate-800 dark:text-obsidian-200">
+              <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-bold text-sm">
+                <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
                 <span>Delete Review Record</span>
               </div>
-              <p className="text-obsidian-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-obsidian-300 leading-relaxed">
                 Permanently delete this review record from your history? This action cannot be undone.
               </p>
               <div className="flex items-center justify-end gap-2 pt-1">

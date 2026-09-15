@@ -79,11 +79,11 @@ export function IssueDetails({
       className={`bg-obsidian-900 flex flex-col h-full overflow-hidden select-none font-sans ${className}`}
     >
       {/* 1. Header: Senior PR Review Comment Meta */}
-      <div className="px-5 py-4 border-b border-obsidian-800 shrink-0 bg-obsidian-850">
+      <div className="px-5 py-4 border-b border-slate-200 dark:border-obsidian-800 shrink-0 bg-slate-50 dark:bg-obsidian-850">
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
             <SeverityBadge severity={issue.severity} />
-            <span className="text-[11px] font-mono font-semibold text-obsidian-300">
+            <span className="text-[11px] font-mono font-semibold text-slate-700 dark:text-obsidian-300">
               {issue.category}
             </span>
           </div>
@@ -91,33 +91,33 @@ export function IssueDetails({
           <span
             className={`text-[10px] font-mono px-2 py-0.5 rounded-[4px] font-bold border ${
               isAi
-                ? 'text-brand-400 bg-brand-500/10 border-brand-500/30'
-                : 'text-obsidian-300 bg-obsidian-800 border-obsidian-700'
+                ? 'text-blue-700 dark:text-brand-400 bg-blue-50 dark:bg-brand-500/10 border-blue-200 dark:border-brand-500/30'
+                : 'text-slate-700 dark:text-obsidian-300 bg-slate-100 dark:bg-obsidian-800 border border-slate-200 dark:border-obsidian-700'
             }`}
           >
             {isAi ? 'AI' : 'Static'}
           </span>
         </div>
 
-        <h2 className="text-sm font-bold text-obsidian-50 leading-snug">
+        <h2 className="text-sm font-bold text-slate-900 dark:text-obsidian-50 leading-snug">
           {issue.title}
         </h2>
 
-        <div className="flex items-center gap-2 text-xs font-mono text-obsidian-400 mt-1.5 flex-wrap">
-          <span className="text-obsidian-200 font-semibold">
+        <div className="flex items-center gap-2 text-xs font-mono text-slate-500 dark:text-obsidian-400 mt-1.5 flex-wrap">
+          <span className="text-slate-800 dark:text-obsidian-200 font-semibold">
             {filename}:{issue.line}
             {issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
           </span>
           {issue.rule && (
             <>
-              <span className="text-obsidian-600">•</span>
-              <span className="text-brand-400 font-mono text-[11px] font-semibold">{issue.rule}</span>
+              <span className="text-slate-300 dark:text-obsidian-600">•</span>
+              <span className="text-blue-600 dark:text-brand-400 font-mono text-[11px] font-semibold">{issue.rule}</span>
             </>
           )}
           {typeof issue.confidence === 'number' && (
             <>
-              <span className="text-obsidian-600">•</span>
-              <span className="text-obsidian-400">{Math.round(issue.confidence * 100)}% confidence</span>
+              <span className="text-slate-300 dark:text-obsidian-600">•</span>
+              <span className="text-slate-500 dark:text-obsidian-400">{Math.round(issue.confidence * 100)}% confidence</span>
             </>
           )}
         </div>
@@ -127,20 +127,20 @@ export function IssueDetails({
       <div className="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
         {/* Why this matters */}
         <div>
-          <div className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 font-semibold mb-1.5">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 dark:text-obsidian-400 font-semibold mb-1.5">
             Why this matters
           </div>
-          <p className="text-sm text-obsidian-200 leading-relaxed font-normal">
+          <p className="text-sm text-slate-700 dark:text-obsidian-200 leading-relaxed font-normal">
             {issue.description}
           </p>
         </div>
 
         {/* Recommendation */}
         <div>
-          <div className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 font-semibold mb-1.5">
+          <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 dark:text-obsidian-400 font-semibold mb-1.5">
             Recommendation
           </div>
-          <p className="text-sm text-obsidian-200 leading-relaxed font-normal">
+          <p className="text-sm text-slate-700 dark:text-obsidian-200 leading-relaxed font-normal">
             {issue.recommendation}
           </p>
         </div>
@@ -149,20 +149,20 @@ export function IssueDetails({
         {hasFix && issue.fix?.replacement && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-obsidian-300 font-semibold">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-700 dark:text-obsidian-300 font-semibold">
                 Suggested fix
               </span>
 
               <button
                 type="button"
                 onClick={handleCopy}
-                className="flex items-center gap-1 text-[11px] font-mono text-obsidian-400 hover:text-obsidian-100 cursor-pointer transition-colors"
+                className="flex items-center gap-1 text-[11px] font-mono text-slate-500 dark:text-obsidian-400 hover:text-slate-900 dark:hover:text-obsidian-100 cursor-pointer transition-colors"
                 title="Copy suggested fix"
               >
                 {copyStatus === 'copied' ? (
                   <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-emerald-400">Copied</span>
+                    <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
                   </>
                 ) : (
                   <>
@@ -173,16 +173,16 @@ export function IssueDetails({
               </button>
             </div>
 
-            <div className="rounded-[6px] overflow-hidden border border-obsidian-750 bg-obsidian-950 font-mono text-xs shadow-inner">
+            <div className="rounded-[6px] overflow-hidden border border-slate-200 dark:border-obsidian-750 bg-slate-50 dark:bg-obsidian-950 font-mono text-xs shadow-inner">
               <div className="p-3 space-y-1">
                 {issue.fix.original && (
-                  <div className="flex items-start gap-2 text-red-400 bg-red-950/20 px-2.5 py-1 rounded-[3px] border border-red-500/20">
-                    <span className="select-none font-bold text-red-500">-</span>
+                  <div className="flex items-start gap-2 text-red-700 dark:text-red-400 bg-red-100/80 dark:bg-red-950/20 px-2.5 py-1 rounded-[3px] border border-red-200 dark:border-red-500/20">
+                    <span className="select-none font-bold text-red-600 dark:text-red-500">-</span>
                     <span className="whitespace-pre-wrap break-all">{issue.fix.original}</span>
                   </div>
                 )}
-                <div className="flex items-start gap-2 text-emerald-300 bg-emerald-950/20 px-2.5 py-1 rounded-[3px] border border-emerald-500/20">
-                  <span className="select-none font-bold text-emerald-400">+</span>
+                <div className="flex items-start gap-2 text-emerald-700 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/20 px-2.5 py-1 rounded-[3px] border border-emerald-200 dark:border-emerald-500/20">
+                  <span className="select-none font-bold text-emerald-600 dark:text-emerald-400">+</span>
                   <span className="whitespace-pre-wrap break-all">{issue.fix.replacement}</span>
                 </div>
               </div>
@@ -193,10 +193,10 @@ export function IssueDetails({
 
       {/* 3. Sticky Action Footer */}
       {(hasFix || isAi) && (
-        <div className="p-4 border-t border-obsidian-800 bg-obsidian-900/90 backdrop-blur-xs space-y-2 shrink-0">
+        <div className="p-4 border-t border-slate-200 dark:border-obsidian-800 bg-white/95 dark:bg-obsidian-900/90 backdrop-blur-xs space-y-2 shrink-0">
           {/* Integrity Note */}
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-obsidian-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-brand-500 shrink-0" />
+          <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-500 dark:text-obsidian-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-brand-500 shrink-0" />
             <span>Source verified · Fix verified against current code</span>
           </div>
 
@@ -230,7 +230,7 @@ export function IssueDetails({
           )}
 
           {isStale && (
-            <p className="text-[11px] text-amber-300 text-center font-mono font-medium">
+            <p className="text-[11px] text-amber-700 dark:text-amber-300 text-center font-mono font-medium">
               Code has been edited. Run review again to verify.
             </p>
           )}

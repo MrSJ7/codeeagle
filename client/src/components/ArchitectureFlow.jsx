@@ -162,19 +162,19 @@ export function ArchitectureFlow({
   const steps = inferFlow();
 
   return (
-    <div className={`h-full overflow-y-auto bg-obsidian-950 p-6 sm:p-10 font-sans select-none text-obsidian-50 ${className}`}>
+    <div className={`h-full overflow-y-auto bg-slate-50 dark:bg-obsidian-950 p-6 sm:p-10 font-sans select-none text-slate-900 dark:text-obsidian-50 ${className}`}>
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Header */}
-        <div className="border-b border-obsidian-800 pb-4">
+        <div className="border-b border-slate-200 dark:border-obsidian-800 pb-4">
           <div className="flex items-center justify-between gap-4 mb-1">
-            <h2 className="text-sm font-bold text-obsidian-100 font-mono uppercase tracking-wider">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-obsidian-100 font-mono uppercase tracking-wider">
               Inferred Execution Architecture
             </h2>
-            <span className="text-xs font-mono text-obsidian-400">
+            <span className="text-xs font-mono text-slate-500 dark:text-obsidian-400">
               {filename}
             </span>
           </div>
-          <p className="text-xs text-obsidian-400 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-obsidian-400 leading-relaxed">
             Inferred control flow mapped from source code. Red nodes denote where detected vulnerabilities break the execution chain.
           </p>
         </div>
@@ -195,8 +195,8 @@ export function ArchitectureFlow({
                   }}
                   className={`p-4 rounded-[8px] border transition-all duration-150 shadow-sm ${
                     hasFlaw
-                      ? 'bg-red-950/20 border-red-800/40 hover:bg-red-950/30 cursor-pointer'
-                      : 'bg-obsidian-900 border-obsidian-800 hover:border-obsidian-750'
+                      ? 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800/40 hover:bg-red-100/60 dark:hover:bg-red-950/30 cursor-pointer'
+                      : 'bg-white dark:bg-obsidian-900 border-slate-200 dark:border-obsidian-800 hover:border-slate-300 dark:hover:border-obsidian-750'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -204,8 +204,8 @@ export function ArchitectureFlow({
                       <div
                         className={`w-8 h-8 rounded-[5px] flex items-center justify-center shrink-0 border ${
                           hasFlaw
-                            ? 'bg-red-950/50 border-red-800/50 text-red-400'
-                            : 'bg-obsidian-850 border-obsidian-750 text-obsidian-300'
+                            ? 'bg-red-100 dark:bg-red-950/50 border-red-200 dark:border-red-800/50 text-red-600 dark:text-red-400'
+                            : 'bg-slate-100 dark:bg-obsidian-850 border-slate-200 dark:border-obsidian-750 text-slate-700 dark:text-obsidian-300'
                         }`}
                       >
                         {step.icon}
@@ -216,7 +216,7 @@ export function ArchitectureFlow({
                           <span className="text-xs font-bold text-obsidian-100 truncate">
                             {step.title}
                           </span>
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[3px] bg-obsidian-800 text-obsidian-300 border border-obsidian-700">
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[3px] bg-slate-100 dark:bg-obsidian-800 text-slate-700 dark:text-obsidian-300 border border-slate-200 dark:border-obsidian-700">
                             {step.category}
                           </span>
                           <span className="text-[10px] font-mono text-obsidian-500">
@@ -230,11 +230,11 @@ export function ArchitectureFlow({
 
                         {/* Issue Callout if node is implicated */}
                         {hasFlaw && (
-                          <div className="mt-2.5 inline-flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-obsidian-950 border border-red-800/60 text-red-300 text-xs font-mono shadow-sm">
-                            <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                          <div className="mt-2.5 inline-flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-white dark:bg-obsidian-950 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 text-xs font-mono shadow-sm">
+                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 dark:text-red-400 shrink-0" />
                             <span className="font-bold">{issue.severity}:</span>
                             <span className="truncate">{issue.title}</span>
-                            <span className="text-brand-400 font-bold underline ml-1">
+                            <span className="text-blue-600 dark:text-brand-400 font-bold underline ml-1">
                               View finding →
                             </span>
                           </div>
@@ -244,11 +244,11 @@ export function ArchitectureFlow({
 
                     <div className="shrink-0 font-mono text-[11px]">
                       {hasFlaw ? (
-                        <span className="text-red-400 font-bold bg-red-950/50 px-2 py-0.5 rounded-[4px] border border-red-800/50">
+                        <span className="text-red-700 dark:text-red-400 font-bold bg-red-100 dark:bg-red-950/50 px-2 py-0.5 rounded-[4px] border border-red-200 dark:border-red-800/50">
                           Flagged
                         </span>
                       ) : (
-                        <span className="text-emerald-400 font-semibold bg-emerald-950/40 px-2 py-0.5 rounded-[4px] border border-emerald-800/50">
+                        <span className="text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-[4px] border border-emerald-200 dark:border-emerald-800/50">
                           Pass
                         </span>
                       )}
@@ -268,7 +268,7 @@ export function ArchitectureFlow({
         </div>
 
         {/* Footnote guidance */}
-        <div className="p-3.5 rounded-[6px] bg-obsidian-900 border border-obsidian-800 text-xs text-obsidian-400 font-sans flex items-center justify-between gap-4 shadow-sm">
+        <div className="p-3.5 rounded-[6px] bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-800 text-xs text-slate-600 dark:text-obsidian-400 font-sans flex items-center justify-between gap-4 shadow-sm">
           <span>Click on any flagged node to jump directly to its code context and verified fix.</span>
           {onNavigateFindings && (
             <Button
