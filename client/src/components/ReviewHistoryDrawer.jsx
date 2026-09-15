@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ReviewHistoryItem } from './ReviewHistoryItem.jsx';
 import { getReviewHistoryApi, deleteReviewApi } from '../services/reviewApi.js';
+import { Button } from './ui/Button.jsx';
 
 export function ReviewHistoryDrawer({
   isOpen,
@@ -128,7 +129,7 @@ export function ReviewHistoryDrawer({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-40 transition-opacity"
+        className="fixed inset-0 bg-graphite-950/80 backdrop-blur-xs z-40 transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -138,98 +139,76 @@ export function ReviewHistoryDrawer({
         role="dialog"
         aria-label="Review History"
         aria-modal="true"
-        className="fixed inset-y-0 right-0 w-full max-w-md bg-[#F5F7F6] border-l border-stone-200 shadow-2xl z-50 flex flex-col overflow-hidden animate-slideLeft"
+        className="fixed top-0 right-0 bottom-0 w-full sm:w-96 bg-graphite-950 border-l border-graphite-800 z-50 flex flex-col shadow-dev-lg font-sans select-none"
       >
         {/* Drawer Header */}
-        <div className="h-14 px-5 bg-white border-b border-stone-200 flex items-center justify-between select-none shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded bg-[#DDF7EC] border border-[#0F9F6E]/30 flex items-center justify-center text-[#0F9F6E]">
-              <History className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xs font-semibold text-stone-900 uppercase tracking-wide font-mono">
-                  Review History
-                </h2>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                  {pagination.total} {pagination.total === 1 ? 'review' : 'reviews'}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 text-[10px] text-stone-500 font-mono mt-0.5">
-                <Database className="w-3 h-3 text-stone-400" />
-                <span>
-                  Storage: {persistenceMode === 'mongo' ? 'MongoDB Atlas' : 'In-Memory'}
-                </span>
-              </div>
-            </div>
+        <div className="h-12 bg-graphite-900 border-b border-graphite-800 px-5 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2">
+            <History className="w-4 h-4 text-brand-400" />
+            <h2 className="text-xs font-bold text-graphite-100 uppercase tracking-wider">
+              Review History
+            </h2>
+            {pagination.total > 0 && (
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-graphite-800 text-graphite-300 font-semibold border border-graphite-700">
+                {pagination.total}
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => fetchHistory(pagination.page)}
-              disabled={isLoading}
-              title="Refresh history"
-              aria-label="Refresh history"
-              className="p-1.5 rounded text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+          <div className="flex items-center gap-2">
+            {/* Persistence Indicator */}
+            <div
+              title={`Active storage: ${persistenceMode === 'mongodb' ? 'MongoDB Atlas persistent database' : 'In-memory ephemeral store'}`}
+              className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-graphite-850 text-graphite-300 border border-graphite-750"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            </button>
+              <Database className="w-3 h-3 text-cyan-400" />
+              <span>{persistenceMode === 'mongodb' ? 'MongoDB' : 'Memory'}</span>
+            </div>
+
             <button
               onClick={onClose}
+              className="p-1 rounded text-graphite-400 hover:text-graphite-100 hover:bg-graphite-800 transition-colors cursor-pointer"
               title="Close history drawer"
               aria-label="Close history drawer"
-              className="p-1.5 rounded text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Drawer Content */}
+        {/* Content Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
-          {/* Loading State */}
-          {isLoading && (
-            <div className="h-48 flex flex-col items-center justify-center text-stone-400 space-y-2 select-none">
-              <Loader2 className="w-6 h-6 animate-spin text-[#0F9F6E]" />
-              <span className="text-xs font-mono">Loading history...</span>
+          {isLoading && reviews.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-graphite-500">
+              <Loader2 className="w-6 h-6 animate-spin text-brand-400 mb-2" />
+              <p className="text-xs font-medium">Loading history...</p>
             </div>
-          )}
-
-          {/* Error State */}
-          {!isLoading && errorMessage && (
-            <div className="p-4 rounded bg-red-50 border border-red-200 text-center space-y-2">
-              <AlertTriangle className="w-6 h-6 text-red-600 mx-auto" />
-              <div className="text-xs font-semibold text-red-800">
-                Could not load review history
+          ) : errorMessage ? (
+            <div className="p-4 rounded-lg bg-red-950/40 border border-red-800/60 text-xs text-red-300 flex flex-col gap-2">
+              <div className="flex items-center gap-2 font-semibold">
+                <AlertTriangle className="w-4 h-4 text-red-400" />
+                <span>Failed to load history</span>
               </div>
-              <p className="text-[11px] text-stone-600 leading-relaxed">
-                {errorMessage}
-              </p>
-              <button
+              <p>{errorMessage}</p>
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => fetchHistory(pagination.page)}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-white hover:bg-stone-50 text-stone-800 text-xs font-medium border border-stone-300 transition-colors shadow-2xs"
+                leftIcon={<RefreshCw className="w-3 h-3" />}
+                className="self-start mt-1"
               >
-                <RefreshCw className="w-3 h-3" />
-                <span>Try Again</span>
-              </button>
+                Retry
+              </Button>
             </div>
-          )}
-
-          {/* Empty State */}
-          {!isLoading && !errorMessage && reviews.length === 0 && (
-            <div className="h-64 flex flex-col items-center justify-center text-center p-6 text-stone-400 space-y-2 select-none">
-              <div className="w-10 h-10 rounded bg-stone-200/80 border border-stone-300 flex items-center justify-center text-stone-500 mb-1">
-                <FolderArchive className="w-5 h-5" />
-              </div>
-              <div className="text-xs font-semibold text-stone-800">No reviews yet</div>
-              <p className="text-[11px] text-stone-500 max-w-xs leading-relaxed">
-                Run a review on code in the editor to record review history.
+          ) : reviews.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-graphite-500">
+              <FolderArchive className="w-8 h-8 text-graphite-700 mb-2" />
+              <p className="text-xs font-semibold text-graphite-300">No review audits yet</p>
+              <p className="text-xs text-graphite-500 mt-1 max-w-[220px]">
+                Run a code review or apply a verified fix to start building your audit history.
               </p>
             </div>
-          )}
-
-          {/* Review List */}
-          {!isLoading && !errorMessage && reviews.length > 0 && (
+          ) : (
             reviews.map((rev) => (
               <ReviewHistoryItem
                 key={rev.reviewId}
@@ -242,105 +221,101 @@ export function ReviewHistoryDrawer({
           )}
         </div>
 
-        {/* Drawer Footer / Pagination */}
+        {/* Pagination Footer */}
         {pagination.pages > 1 && (
-          <div className="h-12 px-5 bg-white border-t border-stone-200 flex items-center justify-between text-xs text-stone-500 font-mono select-none shrink-0">
-            <button
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page <= 1 || isLoading}
-              aria-label="Previous page"
-              className="flex items-center gap-1 px-3 py-1 rounded bg-stone-50 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed border border-stone-200 transition-colors text-stone-700 font-medium"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-              <span>Prev</span>
-            </button>
-
-            <span className="text-[11px] text-stone-600 font-medium">
+          <div className="p-3 bg-graphite-900 border-t border-graphite-800 flex items-center justify-between text-xs font-mono text-graphite-400 select-none">
+            <span>
               Page {pagination.page} of {pagination.pages}
             </span>
-
-            <button
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.pages || isLoading}
-              aria-label="Next page"
-              className="flex items-center gap-1 px-3 py-1 rounded bg-stone-50 hover:bg-stone-100 disabled:opacity-30 disabled:cursor-not-allowed border border-stone-200 transition-colors text-stone-700 font-medium"
-            >
-              <span>Next</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={pagination.page <= 1 || isLoading}
+                leftIcon={<ChevronLeft className="w-3.5 h-3.5" />}
+                aria-label="Previous page"
+              />
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={pagination.page >= pagination.pages || isLoading}
+                leftIcon={<ChevronRight className="w-3.5 h-3.5" />}
+                aria-label="Next page"
+              />
+            </div>
           </div>
         )}
 
-        {/* In-App Confirmation: Delete Audit */}
-        {deletingId && (
-          <div className="absolute inset-0 bg-stone-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
-            <div className="bg-white border border-stone-200 rounded-lg p-5 max-w-xs w-full shadow-xl text-center space-y-3">
-              <div className="w-9 h-9 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-red-600 mx-auto">
-                <AlertTriangle className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-stone-900 font-sans">Delete this review?</h3>
-                <p className="text-[11px] text-stone-500 mt-1 leading-relaxed">
-                  This record will be permanently removed from history. This cannot be undone.
-                </p>
-              </div>
-              <div className="flex items-center justify-center gap-2 pt-1">
-                <button
-                  type="button"
-                  disabled={isDeleting}
-                  onClick={() => setDeletingId(null)}
-                  className="px-3 py-1.5 rounded text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-colors"
+        {/* Confirmation Modal: Restore when unsaved changes exist */}
+        {pendingSelectId && (
+          <div
+            className="absolute inset-0 bg-graphite-950/90 flex items-center justify-center p-4 z-60"
+            role="alertdialog"
+            aria-labelledby="confirm-restore-title"
+          >
+            <div className="bg-graphite-900 border border-graphite-700 rounded-lg p-4 shadow-dev-lg max-w-xs text-xs">
+              <h3 id="confirm-restore-title" className="font-bold text-graphite-100 mb-1 flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-orange-400" />
+                <span>Discard current edits?</span>
+              </h3>
+              <p className="text-graphite-400 mb-4 leading-relaxed">
+                You have modified the code buffer. Loading this historical review will overwrite your active edits.
+              </p>
+              <div className="flex items-center justify-end gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setPendingSelectId(null)}
                 >
                   Cancel
-                </button>
-                <button
-                  type="button"
-                  disabled={isDeleting}
-                  onClick={confirmDeleteAudit}
-                  className="px-3.5 py-1.5 rounded text-xs font-semibold text-white bg-red-600 hover:bg-red-700 transition-colors flex items-center gap-1 shadow-2xs"
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={confirmSelectHistoricalAudit}
                 >
-                  {isDeleting ? (
-                    <>
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      <span>Deleting...</span>
-                    </>
-                  ) : (
-                    <span>Delete</span>
-                  )}
-                </button>
+                  Restore Audit
+                </Button>
               </div>
             </div>
           </div>
         )}
 
-        {/* In-App Confirmation: Replace Unsaved Changes */}
-        {pendingSelectId && (
-          <div className="absolute inset-0 bg-stone-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
-            <div className="bg-white border border-amber-300 rounded-lg p-5 max-w-xs w-full shadow-xl text-center space-y-3">
-              <div className="w-9 h-9 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mx-auto">
-                <AlertTriangle className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold text-stone-900 font-sans">Restore Historical Review?</h3>
-                <p className="text-[11px] text-stone-600 mt-1 leading-relaxed">
-                  Current editor has modified code that has not been reviewed yet. Restoring will replace current editor contents.
-                </p>
-              </div>
-              <div className="flex items-center justify-center gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => setPendingSelectId(null)}
-                  className="px-3 py-1.5 rounded text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 border border-stone-200 transition-colors"
+        {/* Confirmation Modal: Delete audit item */}
+        {deletingId && (
+          <div
+            className="absolute inset-0 bg-graphite-950/90 flex items-center justify-center p-4 z-60"
+            role="alertdialog"
+            aria-labelledby="confirm-delete-title"
+          >
+            <div className="bg-graphite-900 border border-graphite-700 rounded-lg p-4 shadow-dev-lg max-w-xs text-xs">
+              <h3 id="confirm-delete-title" className="font-bold text-graphite-100 mb-1 flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-red-400" />
+                <span>Delete historical audit?</span>
+              </h3>
+              <p className="text-graphite-400 mb-4 leading-relaxed">
+                This will permanently delete this audit record from your history ledger.
+              </p>
+              <div className="flex items-center justify-end gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setDeletingId(null)}
+                  disabled={isDeleting}
                 >
                   Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmSelectHistoricalAudit}
-                  className="px-3.5 py-1.5 rounded text-xs font-semibold text-white bg-[#0F9F6E] hover:bg-[#087A54] transition-colors shadow-2xs"
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={confirmDeleteAudit}
+                  disabled={isDeleting}
+                  isLoading={isDeleting}
                 >
-                  Open Review
-                </button>
+                  Delete
+                </Button>
               </div>
             </div>
           </div>
@@ -349,4 +324,3 @@ export function ReviewHistoryDrawer({
     </>
   );
 }
-

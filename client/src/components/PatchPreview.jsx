@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, Sparkles, ShieldCheck, Loader2 } from 'lucide-react';
+import { Button } from './ui/Button.jsx';
+import { Badge } from './ui/Badge.jsx';
 
 export function PatchPreview({
   isOpen,
@@ -33,34 +35,36 @@ export function PatchPreview({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-graphite-950/80 backdrop-blur-xs"
       onClick={onClose}
       aria-modal="true"
       role="dialog"
       aria-labelledby="patch-preview-title"
     >
       <div
-        className="w-full max-w-xl bg-white border border-stone-200 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[85vh] select-none font-sans"
+        className="w-full max-w-xl bg-graphite-900 border border-graphite-700 rounded-xl shadow-dev-lg overflow-hidden flex flex-col max-h-[85vh] select-none font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="px-5 py-3.5 bg-[#FAFAF9] border-b border-stone-200 flex items-center justify-between">
+        <div className="px-5 py-3.5 bg-graphite-950 border-b border-graphite-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded bg-[#DDF7EC] border border-[#0F9F6E]/30 flex items-center justify-center text-[#0F9F6E]">
+            <div className="w-6 h-6 rounded bg-brand-950/80 border border-brand-800/60 flex items-center justify-center text-brand-400">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 id="patch-preview-title" className="text-xs font-semibold text-stone-900 flex items-center gap-2">
+              <h3 id="patch-preview-title" className="text-xs font-semibold text-graphite-100 flex items-center gap-2">
                 <span>Preview AI Patch</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200">
-                  {issue.rule}
-                </span>
+                {issue.rule && (
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-graphite-800 text-cyan-300 border border-graphite-700">
+                    {issue.rule}
+                  </span>
+                )}
               </h3>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-6 h-6 rounded flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+            className="w-6 h-6 rounded flex items-center justify-center text-graphite-400 hover:text-graphite-100 hover:bg-graphite-800 transition-colors cursor-pointer"
             title="Close Preview"
             aria-label="Close Preview"
           >
@@ -71,38 +75,38 @@ export function PatchPreview({
         {/* Modal Body */}
         <div className="p-5 flex-1 overflow-y-auto space-y-3.5 text-xs">
           {/* Issue title */}
-          <div className="text-xs font-medium text-stone-800">
+          <div className="text-xs font-medium text-graphite-200">
             {issue.title}
           </div>
 
           {/* Verification notice */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded bg-[#DDF7EC]/50 border border-[#0F9F6E]/30 text-[#087A54] text-[11px] font-mono">
-            <ShieldCheck className="w-4 h-4 text-[#0F9F6E] shrink-0" />
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-950/50 border border-brand-800/50 text-brand-300 text-[11px] font-mono">
+            <ShieldCheck className="w-4 h-4 text-brand-400 shrink-0" />
             <span>
               Lines {startLine}{endLine !== startLine ? `–${endLine}` : ''} · AI patch verified against current source.
             </span>
           </div>
 
           {/* PR Unified Diff Box */}
-          <div className="rounded border border-[#242826] bg-[#171A19] overflow-hidden font-mono text-[11px] leading-relaxed">
-            <div className="px-3 py-1.5 bg-[#121514] border-b border-[#242826] flex items-center justify-between text-[10px] text-[#8F9E94]">
-              <span className="font-semibold uppercase tracking-wider text-[#A0AEA4]">
+          <div className="rounded-lg border border-graphite-800 bg-code overflow-hidden font-mono text-[11px] leading-relaxed shadow-dev-sm">
+            <div className="px-3 py-1.5 bg-graphite-950 border-b border-graphite-800 flex items-center justify-between text-[10px] text-graphite-400">
+              <span className="font-semibold uppercase tracking-wider text-graphite-300">
                 Proposed Diff
               </span>
               <span>
                 Lines {startLine}{endLine !== startLine ? `–${endLine}` : ''}
               </span>
             </div>
-            <div className="p-3 overflow-x-auto dark-editor-scrollbar space-y-0.5 max-h-72">
+            <div className="p-3 overflow-x-auto dark-editor-scrollbar space-y-1 max-h-72">
               {originalLines.map((line, idx) => (
-                <div key={`orig-${idx}`} className="text-red-300 bg-red-950/30 px-1.5 py-0.5 -mx-1 rounded-xs flex items-baseline">
-                  <span className="text-red-400 select-none mr-2 font-bold text-xs">-</span>
+                <div key={`orig-${idx}`} className="text-red-300 bg-red-950/40 px-2 py-0.5 rounded border border-red-900/30 flex items-baseline gap-2">
+                  <span className="text-red-500 select-none font-bold text-xs">-</span>
                   <span className="whitespace-pre">{line}</span>
                 </div>
               ))}
               {replacementLines.map((line, idx) => (
-                <div key={`repl-${idx}`} className="text-[#34D399] bg-[#0F9F6E]/15 px-1.5 py-0.5 -mx-1 rounded-xs flex items-baseline">
-                  <span className="text-[#0F9F6E] select-none mr-2 font-bold text-xs">+</span>
+                <div key={`repl-${idx}`} className="text-brand-300 bg-brand-950/40 px-2 py-0.5 rounded border border-brand-900/30 flex items-baseline gap-2">
+                  <span className="text-brand-500 select-none font-bold text-xs">+</span>
                   <span className="whitespace-pre">{line}</span>
                 </div>
               ))}
@@ -111,36 +115,29 @@ export function PatchPreview({
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="px-5 py-3 bg-[#FAFAF9] border-t border-stone-200 flex items-center justify-end gap-2.5">
-          <button
+        <div className="px-5 py-3 bg-graphite-950 border-t border-graphite-800 flex items-center justify-end gap-2.5">
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={onClose}
             disabled={isApplying}
             aria-label="Cancel patch application"
-            className="px-3.5 py-1.5 rounded bg-white hover:bg-stone-50 text-stone-700 text-xs font-medium border border-stone-200 transition-colors shadow-2xs"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
             onClick={() => onConfirmApply(issue)}
             disabled={isApplying}
+            isLoading={isApplying}
+            leftIcon={!isApplying ? <Sparkles className="w-3.5 h-3.5" /> : null}
             aria-label="Apply Fix"
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded bg-[#0F9F6E] hover:bg-[#087A54] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-2xs transition-all"
           >
-            {isApplying ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Applying...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-3.5 h-3.5 text-white/80" />
-                <span>Apply Fix</span>
-              </>
-            )}
-          </button>
+            Apply Fix
+          </Button>
         </div>
       </div>
     </div>
   );
 }
-

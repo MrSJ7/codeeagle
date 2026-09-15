@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { CheckCircle2, Wrench, Filter, Shield, Zap, Sparkles } from 'lucide-react';
 import { filterIssues, sortIssues, getSeverityCounts } from '../utils/reviewHelpers.js';
+import { Badge } from './ui/Badge.jsx';
 
 export function IssuePanel({
   issues = [],
@@ -36,10 +37,10 @@ export function IssuePanel({
   // Group displayed issues by severity
   const groupedIssues = useMemo(() => {
     const groups = [
-      { key: 'CRITICAL', label: 'Critical', dot: 'bg-[#DC2626]', text: 'text-[#DC2626]', bg: 'bg-red-50/70', items: [] },
-      { key: 'HIGH', label: 'High', dot: 'bg-[#EA580C]', text: 'text-[#EA580C]', bg: 'bg-orange-50/70', items: [] },
-      { key: 'MEDIUM', label: 'Medium', dot: 'bg-[#D97706]', text: 'text-[#D97706]', bg: 'bg-amber-50/70', items: [] },
-      { key: 'LOW', label: 'Low', dot: 'bg-[#2563EB]', text: 'text-[#2563EB]', bg: 'bg-blue-50/70', items: [] },
+      { key: 'CRITICAL', label: 'Critical', dot: 'bg-red-500', text: 'text-red-400', bg: 'bg-red-950/20', items: [] },
+      { key: 'HIGH', label: 'High', dot: 'bg-orange-500', text: 'text-orange-400', bg: 'bg-orange-950/20', items: [] },
+      { key: 'MEDIUM', label: 'Medium', dot: 'bg-amber-500', text: 'text-amber-400', bg: 'bg-amber-950/20', items: [] },
+      { key: 'LOW', label: 'Low', dot: 'bg-cyan-400', text: 'text-cyan-400', bg: 'bg-cyan-950/20', items: [] },
     ];
 
     displayedIssues.forEach((issue) => {
@@ -61,21 +62,21 @@ export function IssuePanel({
   return (
     <aside
       aria-label="Findings queue"
-      className={`bg-white border-r border-slate-200/90 flex flex-col h-full overflow-hidden select-none ${className}`}
+      className={`bg-graphite-900 border-r border-graphite-800 flex flex-col h-full overflow-hidden select-none ${className}`}
     >
       {/* Rail Header */}
-      <div className="px-4 py-3 border-b border-slate-200/90 flex items-center justify-between shrink-0 bg-slate-50/60">
+      <div className="px-4 py-3 border-b border-graphite-800 flex items-center justify-between shrink-0 bg-graphite-950">
         <div className="flex items-center gap-2">
-          <h2 className="text-xs font-bold text-slate-800 font-sans tracking-tight">
-            Review Findings
+          <h2 className="text-xs font-bold text-graphite-200 font-sans tracking-tight uppercase">
+            Findings Queue
           </h2>
-          <span className="text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700 font-semibold">
+          <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-full bg-graphite-800 text-graphite-300 font-semibold border border-graphite-700">
             {issues.length}
           </span>
         </div>
 
         {isStale && (
-          <span className="text-[10px] font-mono text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-medium">
+          <span className="text-[10px] font-mono text-orange-400 bg-orange-950/40 border border-orange-800/40 px-1.5 py-0.5 rounded font-medium">
             Stale
           </span>
         )}
@@ -83,13 +84,13 @@ export function IssuePanel({
 
       {/* Category Filter Notice (if filtered via Summary Bar) */}
       {externalCategoryFilter && externalCategoryFilter !== 'ALL' && (
-        <div className="px-3 py-1.5 bg-[#DCFCE7]/40 border-b border-[#0F9F6E]/30 flex items-center justify-between text-xs text-[#087A54] font-medium shrink-0">
+        <div className="px-3 py-1.5 bg-brand-950/40 border-b border-brand-800/40 flex items-center justify-between text-xs text-brand-300 font-medium shrink-0">
           <span>Filtered by {externalCategoryFilter}</span>
           {onClearCategoryFilter && (
             <button
               type="button"
               onClick={onClearCategoryFilter}
-              className="text-[11px] underline hover:text-[#065F42]"
+              className="text-[11px] underline hover:text-brand-200 cursor-pointer"
             >
               Reset
             </button>
@@ -98,7 +99,7 @@ export function IssuePanel({
       )}
 
       {/* Severity Filter Tabs */}
-      <div className="px-3 py-1.5 border-b border-slate-200/80 flex items-center gap-1 overflow-x-auto text-[11px] shrink-0 bg-white">
+      <div className="px-3 py-1.5 border-b border-graphite-800 flex items-center gap-1 overflow-x-auto text-[11px] shrink-0 bg-graphite-900">
         {filterTabs.map((tab) => {
           const isActive = severityFilter === tab.key;
           if (tab.key !== 'ALL' && tab.count === 0) return null;
@@ -108,14 +109,14 @@ export function IssuePanel({
               key={tab.key}
               type="button"
               onClick={() => setSeverityFilter(tab.key)}
-              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors flex items-center gap-1 ${
+              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer ${
                 isActive
-                  ? 'bg-slate-900 text-white font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-brand-500 text-graphite-950 font-semibold shadow-dev-sm'
+                  : 'text-graphite-400 hover:text-graphite-200 hover:bg-graphite-800'
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`text-[10px] font-mono ${isActive ? 'text-slate-300' : 'text-slate-400'}`}>
+              <span className={`text-[10px] font-mono ${isActive ? 'text-graphite-950 font-bold' : 'text-graphite-500'}`}>
                 {tab.count}
               </span>
             </button>
@@ -126,30 +127,30 @@ export function IssuePanel({
       {/* Grouped Findings Rail */}
       <div className="flex-1 overflow-y-auto">
         {displayedIssues.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
-            <CheckCircle2 className="w-6 h-6 text-[#0F9F6E] mb-2" />
-            <p className="text-xs font-semibold text-slate-800">
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-graphite-500">
+            <CheckCircle2 className="w-6 h-6 text-brand-400 mb-2" />
+            <p className="text-xs font-semibold text-graphite-200">
               {issues.length === 0 ? 'No issues detected' : 'No matching issues'}
             </p>
-            <p className="text-xs text-slate-500 mt-1 max-w-[200px] leading-relaxed font-sans">
+            <p className="text-xs text-graphite-400 mt-1 max-w-[200px] leading-relaxed font-sans">
               {issues.length === 0
                 ? 'Your code passed all static AST and AI security checks.'
                 : 'Try choosing another severity or category filter.'}
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-graphite-800">
             {groupedIssues.map((group) => (
               <div key={group.key}>
                 {/* Severity Group Subheader */}
-                <div className={`px-4 py-1.5 flex items-center gap-2 text-[11px] font-semibold tracking-wide text-slate-700 ${group.bg} border-b border-slate-100`}>
+                <div className={`px-4 py-1.5 flex items-center gap-2 text-[11px] font-semibold tracking-wide text-graphite-300 ${group.bg} border-b border-graphite-800`}>
                   <span className={`w-2 h-2 rounded-full ${group.dot}`} />
                   <span>{group.label}</span>
-                  <span className="text-slate-500 font-mono text-[10px]">({group.items.length})</span>
+                  <span className="text-graphite-500 font-mono text-[10px]">({group.items.length})</span>
                 </div>
 
                 {/* Items in this group */}
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y divide-graphite-800/60">
                   {group.items.map((issue) => {
                     const isSelected = selectedIssueId === issue.id;
                     const hasFix = Boolean(issue.fix);
@@ -160,10 +161,10 @@ export function IssuePanel({
                         key={issue.id}
                         type="button"
                         onClick={() => onSelectIssue(issue.id)}
-                        className={`w-full text-left px-4 py-2.5 transition-colors flex flex-col gap-1 border-b ${
+                        className={`w-full text-left px-4 py-2.5 transition-all flex flex-col gap-1 border-b cursor-pointer ${
                           isSelected
-                            ? 'bg-[#DCFCE7]/30 text-slate-900 border-slate-200 ring-1 ring-inset ring-[#0F9F6E]/40'
-                            : 'border-slate-100 hover:bg-slate-50/90 text-slate-700'
+                            ? 'bg-graphite-850 text-graphite-100 border-graphite-700 border-l-2 border-l-brand-400 shadow-dev-sm'
+                            : 'border-graphite-800/40 hover:bg-graphite-850/60 text-graphite-300'
                         }`}
                       >
                         {/* Title Row */}
@@ -173,7 +174,7 @@ export function IssuePanel({
                               className={`w-1.5 h-1.5 rounded-full shrink-0 mt-1.5 ${group.dot}`}
                               aria-hidden="true"
                             />
-                            <span className="text-xs font-semibold text-slate-900 leading-snug truncate">
+                            <span className="text-xs font-semibold text-graphite-100 leading-snug truncate">
                               {issue.title}
                             </span>
                           </div>
@@ -181,7 +182,7 @@ export function IssuePanel({
                           {hasFix && (
                             <span
                               title="Verified automated patch available"
-                              className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-emerald-50 text-[#087A54] border border-emerald-200/80 flex items-center gap-0.5 shrink-0"
+                              className="text-[10px] font-medium px-1.5 py-0.2 rounded bg-brand-950/80 text-brand-300 border border-brand-800/60 flex items-center gap-0.5 shrink-0 font-mono"
                             >
                               <Wrench className="w-2.5 h-2.5" />
                               <span>Fix</span>
@@ -190,13 +191,13 @@ export function IssuePanel({
                         </div>
 
                         {/* Location & Provenance Tag */}
-                        <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 pl-3">
-                          <span className="text-slate-700 font-medium">
+                        <div className="flex items-center gap-2 text-[11px] font-mono text-graphite-400 pl-3">
+                          <span className="text-graphite-300 font-medium">
                             {filename}:{issue.line}{issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
                           </span>
-                          <span className="text-slate-300">•</span>
-                          <span className={`text-[10px] uppercase px-1 py-0.5 rounded font-semibold ${
-                            isAi ? 'text-purple-700 bg-purple-50' : 'text-slate-600 bg-slate-100'
+                          <span className="text-graphite-600">•</span>
+                          <span className={`text-[10px] uppercase px-1 py-0.2 rounded font-semibold ${
+                            isAi ? 'text-teal-300 bg-teal-950/60 border border-teal-800/40' : 'text-cyan-300 bg-cyan-950/60 border border-cyan-800/40'
                           }`}>
                             {isAi ? 'AI' : 'AST'}
                           </span>

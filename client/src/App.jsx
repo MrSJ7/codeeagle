@@ -368,7 +368,7 @@ export default function App() {
     <div
       className={`min-h-screen ${
         currentRoute === 'review' ? 'h-screen flex flex-col overflow-hidden' : 'flex flex-col'
-      } bg-[#F8F9FA] text-slate-900 font-sans transition-opacity duration-200 ${
+      } bg-graphite-950 text-graphite-100 font-sans transition-opacity duration-200 ${
         isTransitioning ? 'opacity-40' : 'opacity-100'
       }`}
     >
@@ -377,11 +377,13 @@ export default function App() {
           onStartReviewing={() => navigateTo('review', 'insecure-login', true)}
           onSelectScenarioAndStart={(presetId) => navigateTo('review', presetId, true)}
           onOpenHistory={() => setIsHistoryOpen(true)}
+          historyCount={historyRefreshTrigger}
         />
       ) : (
         <>
-          {/* Primary Header */}
+          {/* Primary Workspace Header */}
           <Navbar
+            mode="workspace"
             presets={PRESETS}
             selectedPresetId={selectedPresetId}
             onSelectPreset={handleSelectPreset}
@@ -395,6 +397,11 @@ export default function App() {
             persistenceMode={persistenceMode}
             isAiConfigured={isAiConfigured}
             onNavigateHome={() => navigateTo('landing')}
+            filename={currentFilename}
+            language="JavaScript"
+            lineCount={code.split('\n').length}
+            issueCount={reviewData?.issues?.length || 0}
+            reviewStatus={reviewStatus}
           />
 
           {/* Review Outcome Banner (Before/After Resolution Diff) */}
@@ -423,25 +430,25 @@ export default function App() {
 
           {/* Review in Progress Banner */}
           {isReviewing && (
-            <div className="px-6 py-2 bg-[#DCFCE7]/70 border-b border-[#0F9F6E]/30 flex items-center justify-between text-xs font-mono text-[#087A54] select-none shrink-0">
+            <div className="px-6 py-2 bg-brand-950/80 border-b border-brand-800/80 flex items-center justify-between text-xs font-mono text-brand-300 select-none shrink-0 shadow-dev-sm">
               <div className="flex items-center gap-2">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0F9F6E]" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-400" />
                 <span>Reviewing code... AST static analysis: Complete · Gemini semantic reasoning: Running...</span>
               </div>
-              <span className="text-[#0F9F6E] text-[11px] font-semibold uppercase tracking-wider">Analyzing</span>
+              <span className="text-brand-400 text-[11px] font-semibold uppercase tracking-wider">Analyzing</span>
             </div>
           )}
 
           {/* Error Notice Banner */}
           {reviewStatus === 'ERROR' && (
-            <div className="px-6 py-2.5 bg-red-50 border-b border-red-200 flex items-center justify-between text-xs text-red-900 select-none shrink-0">
+            <div className="px-6 py-2.5 bg-red-950/80 border-b border-red-800/80 flex items-center justify-between text-xs text-red-200 select-none shrink-0">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
                 <span>Review failed: {errorMessage || 'Could not analyze this code right now.'}</span>
               </div>
               <button
                 onClick={handleRunReview}
-                className="flex items-center gap-1.5 px-3 py-1 rounded bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-xs font-semibold transition-colors shadow-2xs"
+                className="flex items-center gap-1.5 px-3 py-1 rounded bg-graphite-900 hover:bg-graphite-800 text-graphite-200 border border-graphite-700 text-xs font-semibold transition-colors shadow-dev-sm cursor-pointer"
               >
                 <RefreshCw className="w-3 h-3" />
                 <span>Try Again</span>
@@ -450,7 +457,7 @@ export default function App() {
           )}
 
           {/* Stable Three-Column Workspace Layout (Zero layout jumps) */}
-          <main className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden bg-[#F8F9FA]">
+          <main className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden bg-graphite-950">
             {/* Left Column: Review findings / Findings Queue */}
             <IssuePanel
               issues={reviewData?.issues || []}
@@ -460,7 +467,7 @@ export default function App() {
               filename={currentFilename}
               externalCategoryFilter={activeCategoryFilter}
               onClearCategoryFilter={() => setActiveCategoryFilter(null)}
-              className="w-full lg:w-72 xl:w-80 shrink-0 h-48 lg:h-full border-b lg:border-b-0 border-r border-slate-200/90"
+              className="w-full lg:w-72 xl:w-80 shrink-0 h-48 lg:h-full border-b lg:border-b-0 border-r border-graphite-800"
             />
 
             {/* Center Column: Code Editor */}
@@ -490,7 +497,7 @@ export default function App() {
               isApplyingPatch={isApplyingPatch || isApplyingAiPatch}
               isVerifyingAiPatch={isVerifyingAiPatch}
               filename={currentFilename}
-              className="w-full lg:w-80 xl:w-96 shrink-0 h-64 lg:h-full border-t lg:border-t-0 border-l border-slate-200/90"
+              className="w-full lg:w-80 xl:w-96 shrink-0 h-64 lg:h-full border-t lg:border-t-0 border-l border-graphite-800"
             />
           </main>
         </>
@@ -519,6 +526,28 @@ export default function App() {
         persistenceMode={persistenceMode}
         refreshTrigger={historyRefreshTrigger}
       />
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-5 right-5 z-60 select-none">
+          <div
+            role="status"
+            aria-live="polite"
+            className={`px-4 py-2.5 rounded-lg border shadow-dev-lg flex items-center gap-2.5 text-xs font-sans ${
+              toast.type === 'error'
+                ? 'bg-graphite-900 border-red-800/80 text-red-300'
+                : 'bg-graphite-900 border-brand-500/50 text-graphite-100'
+            }`}
+          >
+            {toast.type === 'error' ? (
+              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-4 h-4 text-brand-400 shrink-0" />
+            )}
+            <span className="font-medium">{toast.message}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

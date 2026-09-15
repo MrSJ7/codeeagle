@@ -2,45 +2,50 @@
 name: CodeEagle
 description: AI Code Review platform pairing deterministic AST safety with contextual semantic reasoning
 colors:
-  primary: "#0F9F6E"
-  primary-hover: "#087A54"
-  primary-tint: "#DDF7EC"
-  shell: "#F5F7F6"
-  surface: "#FFFFFF"
-  border-hairline: "#E7E5E4"
-  code-bg: "#171A19"
-  code-gutter: "#121514"
-  code-text: "#E8EEE9"
-  code-border: "#242826"
-  severity-critical: "#D92D20"
-  severity-high: "#E87B21"
-  severity-medium: "#C58B00"
-  severity-low: "#4D78A8"
+  primary: "#10B981"
+  primary-hover: "#059669"
+  primary-tint: "rgba(16, 185, 129, 0.12)"
+  teal-secondary: "#0D9488"
+  cyan-accent: "#38BDF8"
+  shell: "#0A0D12"
+  surface: "#111620"
+  surface-elevated: "#161E2B"
+  surface-raised: "#1E2838"
+  border-subtle: "#1E2636"
+  border-strong: "#2D394E"
+  code-bg: "#0D1117"
+  code-gutter: "#090D12"
+  code-text: "#E6EDF3"
+  code-border: "#1E2636"
+  severity-critical: "#EF4444"
+  severity-high: "#F97316"
+  severity-medium: "#FBBF24"
+  severity-low: "#38BDF8"
 typography:
   display:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
-    fontSize: "clamp(2rem, 4vw, 3rem)"
+    fontFamily: "Outfit, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+    fontSize: "clamp(2.25rem, 5vw, 3.5rem)"
     fontWeight: 700
     lineHeight: 1.15
     letterSpacing: "-0.025em"
   headline:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Outfit, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 600
     lineHeight: 1.25
     letterSpacing: "-0.015em"
   title:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Outfit, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
     fontSize: "1rem"
     fontWeight: 600
     lineHeight: 1.3
   body:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Outfit, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+    fontFamily: "Outfit, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 500
     lineHeight: 1.4
@@ -64,14 +69,12 @@ spacing:
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
-    textColor: "#FFFFFF"
+    textColor: "#0A0D12"
     rounded: "{rounded.lg}"
     padding: "6px 14px"
-  button-primary-hover:
-    backgroundColor: "{colors.primary-hover}"
   card-surface:
     backgroundColor: "{colors.surface}"
-    rounded: "{rounded.xl}"
+    rounded: "{rounded.lg}"
     padding: "16px 20px"
 ---
 
@@ -81,43 +84,45 @@ components:
 
 **Creative North Star: "The Precision Cockpit"**
 
-CodeEagle is designed as an authoritative, high-density developer instrument. It avoids the visual cliches of generic AI dashboards—such as neon gradients, animated robot mascots, floating card chaos, and low-density bubbly cards—in favor of the disciplined restraint of premier developer tooling like GitHub Pull Request reviews, JetBrains IDEs, and Linear.
+CodeEagle is designed as an authoritative, high-density developer instrument. It avoids the visual cliches of generic AI dashboards—such as neon gradients, animated robot mascots, floating card chaos, and low-density bubbly cards—in favor of the disciplined restraint of premier developer tooling like GitHub Pull Request reviews, Raycast, and Linear.
 
-The interface is built around a deliberate **Dual-Canvas Architecture**: a crisp, off-white mineral workspace shell (`#F5F7F6`) housing elevated white surfaces (`#FFFFFF`) for analysis cards and navigation, contrasting with an immersive, dark code inspection viewport (`#171A19`). This boundary creates immediate spatial separation between the subject code under inspection and the diagnostic commentary surrounding it.
+The interface is built around a unified **Deep Graphite Architecture**: an immersive, dark root canvas (`#0A0D12`) housing elevated graphite containers (`#111620`, `#161E2B`), paired with high-contrast code surfaces (`#0D1117`).
 
 **Key Characteristics:**
-- **High Information Density**: UI chrome is compact (48px header, 40px summary toolbar), prioritizing code visibility and multi-column scanability.
-- **Quiet Confidence**: Emerald green (`#0F9F6E`) is reserved strictly for primary execution and verified health states; warnings and severities speak with restrained, authoritative tones.
-- **Micro-Precision Borders**: 1px hairline borders (`#E7E5E4` on light surfaces, `#242826` on code surfaces) create structure without heavy drop shadows.
-- **Dual Typography**: `Inter` handles all UI navigation, labels, and analytical prose, while `JetBrains Mono` governs code blocks, line numbers, hashes, and quantitative metrics.
+- **High Information Density**: UI chrome is compact (44px workspace header, 36px summary toolbar), prioritizing code visibility and multi-column scanability.
+- **Luminous Emerald & Restrained Palette**: Rich emerald (`#10B981`) is reserved strictly for primary execution and verified health states; warnings and severities speak with restrained, authoritative tones.
+- **Micro-Precision Borders**: 1px hairline borders (`#1E2636`, `#2D394E`) create structure without heavy drop shadows.
+- **Dual Typography**: `Outfit` handles UI navigation, labels, and analytical prose, while `JetBrains Mono` governs code blocks, line numbers, hashes, and quantitative metrics.
 
 ## Colors
 
-CodeEagle utilizes a focused palette pairing an emerald brand anchor with semantic severity scales and high-contrast dual canvases.
+CodeEagle utilizes a focused palette pairing an emerald brand anchor with semantic severity scales and deep graphite surfaces.
 
 ### Primary
-- **Emerald Brand** (`#0F9F6E`): Primary action triggers (Run Review, Apply Verified Patch), healthy status indicators (Score 80–100), and confirmed badges.
-- **Emerald Hover** (`#087A54`): Deepened hover state for interactive primary buttons.
-- **Emerald Tint** (`#DDF7EC`): Subtle background fill for active selection tabs, status pills, and verified patch tags.
+- **Emerald Brand** (`#10B981`): Primary action triggers (Run Review, Apply Verified Patch), healthy status indicators (Score 80–100), and confirmed badges.
+- **Emerald Hover** (`#059669`): Deepened hover state for interactive primary buttons.
+- **Emerald Tint** (`rgba(16, 185, 129, 0.12)`): Subtle background fill for active selection tabs, status pills, and verified patch tags.
+- **Teal Secondary** (`#0D9488`): Secondary highlights and semantic context tags.
+- **Cyan Accent** (`#38BDF8`): AST rule identifiers and quantitative metrics.
 
-### Neutral
-- **Mineral Shell** (`#F5F7F6`): Neutral background canvas for the application shell and landing page backdrop.
-- **Elevated Surface** (`#FFFFFF`): Light cards, navigation bar, review finding containers, and modal bodies.
-- **Hairline Border** (`#E7E5E4` / `border-stone-200/80`): Structural boundary for light surface divisions.
-- **Primary Text** (`#161918` / `text-stone-900`): High-contrast dark charcoal for primary headings and body copy.
-- **Muted Text** (`#5E6963` / `text-stone-500`): Secondary captions, timestamps, and column labels.
+### Neutral & Surfaces
+- **App Shell** (`#0A0D12`): Neutral background canvas for the root application shell and landing page backdrop.
+- **Elevated Surface** (`#111620`): Panel surfaces, review finding containers, and modal bodies.
+- **Raised Surface** (`#161E2B`): Active cards, navigation bars, and headers.
+- **Hairline Border** (`#1E2636`): Structural boundary for surface divisions.
+- **Primary Text** (`#F1F5F9`): High-contrast off-white for primary headings and body copy.
+- **Muted Text** (`#64748B`): Secondary captions, timestamps, and column labels.
 
 ### Code Canvas
-- **Code Background** (`#171A19`): Deep carbon surface for the code editor and diff viewers.
-- **Code Gutter** (`#121514`): Darkened baseline gutter housing line numbers.
-- **Code Foreground** (`#E8EEE9`): Crisp off-white text ensuring high legibility without eye strain.
-- **Code Border** (`#242826`): Hairline boundary separating editor panels and diff columns.
-
+- **Code Background** (`#0D1117`): Deep carbon surface for the code editor and diff viewers.
+- **Code Gutter** (`#090D12`): Darkened baseline gutter housing line numbers.
+- **Code Foreground** (`#E6EDF3`): Crisp off-white text ensuring high legibility without eye strain.
+- **Code Border** (`#1E2636`): Hairline boundary separating editor panels and diff columns.
 ### Severity Scale
-- **Critical** (`#D92D20`): Severe security vulnerabilities (SQL injection, `eval()`, prototype pollution).
-- **High** (`#E87B21`): Direct runtime risks (memory leaks, unhandled rejections).
-- **Medium** (`#C58B00`): Code smells, missing hook dependencies, and moderate logic hazards.
-- **Low** (`#4D78A8`): Style, minor maintainability observations, and optimization suggestions.
+- **Critical** (`#EF4444`): Severe security vulnerabilities (SQL injection, `eval()`, prototype pollution).
+- **High** (`#F97316`): Direct runtime risks (memory leaks, unhandled rejections).
+- **Medium** (`#FBBF24`): Code smells, missing hook dependencies, and moderate logic hazards.
+- **Low** (`#38BDF8`): Style, minor maintainability observations, and optimization suggestions.
 
 ### Named Rules
 **The Dual-Canvas Rule.** Code is always rendered on dark carbon surfaces (`#171A19`); analytical commentary, review findings, and administrative controls are always rendered on light mineral surfaces (`#FFFFFF` on `#F5F7F6`). Neither canvas invades the other.

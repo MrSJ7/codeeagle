@@ -97,27 +97,27 @@ export function CodeEditor({
     switch (activeSeverity) {
       case 'CRITICAL':
         return {
-          gutter: 'bg-[#DC2626]/20 text-red-300 font-bold border-l border-[#DC2626]',
-          overlay: 'bg-[#DC2626]/12 border-l border-[#DC2626]',
-          badge: 'bg-[#DC2626]/20 text-red-300 border-[#DC2626]/40',
+          gutter: 'bg-red-950/50 text-red-300 font-bold border-l-2 border-red-500',
+          overlay: 'bg-red-950/25 border-l-2 border-red-500',
+          badge: 'bg-red-950/60 text-red-300 border-red-800/60',
         };
       case 'HIGH':
         return {
-          gutter: 'bg-[#EA580C]/20 text-orange-300 font-bold border-l border-[#EA580C]',
-          overlay: 'bg-[#EA580C]/12 border-l border-[#EA580C]',
-          badge: 'bg-[#EA580C]/20 text-orange-300 border-[#EA580C]/40',
+          gutter: 'bg-orange-950/50 text-orange-300 font-bold border-l-2 border-orange-500',
+          overlay: 'bg-orange-950/25 border-l-2 border-orange-500',
+          badge: 'bg-orange-950/60 text-orange-300 border-orange-800/60',
         };
       case 'MEDIUM':
         return {
-          gutter: 'bg-[#D97706]/20 text-amber-300 font-bold border-l border-[#D97706]',
-          overlay: 'bg-[#D97706]/12 border-l border-[#D97706]',
-          badge: 'bg-[#D97706]/20 text-amber-300 border-[#D97706]/40',
+          gutter: 'bg-amber-950/50 text-amber-300 font-bold border-l-2 border-amber-500',
+          overlay: 'bg-amber-950/25 border-l-2 border-amber-500',
+          badge: 'bg-amber-950/60 text-amber-300 border-amber-800/60',
         };
       default:
         return {
-          gutter: 'bg-[#2563EB]/20 text-blue-300 font-bold border-l border-[#2563EB]',
-          overlay: 'bg-[#2563EB]/12 border-l border-[#2563EB]',
-          badge: 'bg-[#2563EB]/20 text-blue-300 border-[#2563EB]/40',
+          gutter: 'bg-cyan-950/50 text-cyan-300 font-bold border-l-2 border-cyan-400',
+          overlay: 'bg-cyan-950/25 border-l-2 border-cyan-400',
+          badge: 'bg-cyan-950/60 text-cyan-300 border-cyan-800/60',
         };
     }
   };
@@ -125,19 +125,19 @@ export function CodeEditor({
   const highlightStyles = getHighlightColor();
 
   return (
-    <div className="flex flex-col h-full bg-[#16191D] border-r border-slate-200/90 overflow-hidden select-none">
+    <div className="flex flex-col h-full bg-code border-r border-graphite-800 overflow-hidden select-none">
       {/* Editor Header Bar */}
-      <div className="h-10 px-4 bg-[#111316] border-b border-[#21262D] flex items-center justify-between text-xs shrink-0 select-none">
+      <div className="h-10 px-4 bg-graphite-950 border-b border-graphite-800 flex items-center justify-between text-xs shrink-0 select-none">
         {/* Left: File metadata */}
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 font-mono text-[#E6EDF3] font-semibold">
-            <FileCode className="w-3.5 h-3.5 text-[#0F9F6E]" />
+          <div className="flex items-center gap-1.5 font-mono text-graphite-100 font-semibold">
+            <FileCode className="w-3.5 h-3.5 text-brand-400" />
             <span>{filename}</span>
           </div>
-          <span className="text-[#6E7681]">•</span>
-          <span className="text-[11px] font-mono text-[#8B949E]">{language}</span>
-          <span className="text-[#6E7681]">•</span>
-          <span className="text-[11px] font-mono text-[#8B949E]">{lineCount} lines</span>
+          <span className="text-graphite-600">•</span>
+          <span className="text-[11px] font-mono text-graphite-400">{language}</span>
+          <span className="text-graphite-600">•</span>
+          <span className="text-[11px] font-mono text-graphite-400">{lineCount} lines</span>
 
           {/* Active Highlight Badge */}
           {activeStartLine && (
@@ -155,22 +155,22 @@ export function CodeEditor({
           {/* Review Status Pill */}
           <div className="text-[11px] font-medium flex items-center gap-1.5 font-mono">
             {isStale ? (
-              <span className="flex items-center gap-1 text-amber-300 bg-amber-950/50 px-2 py-0.5 rounded border border-amber-500/40">
+              <span className="flex items-center gap-1 text-orange-300 bg-orange-950/50 px-2 py-0.5 rounded border border-orange-800/40">
                 <AlertTriangle className="w-3 h-3" />
-                Review stale
+                Modified
               </span>
             ) : reviewStatus === 'ANALYZING' ? (
-              <span className="flex items-center gap-1 text-[#34D399] bg-[#0F9F6E]/20 px-2 py-0.5 rounded border border-[#0F9F6E]/40">
-                <Sparkles className="w-3 h-3 text-[#34D399] animate-spin" />
+              <span className="flex items-center gap-1 text-brand-300 bg-brand-950/50 px-2 py-0.5 rounded border border-brand-800/40">
+                <Sparkles className="w-3 h-3 text-brand-400 animate-spin" />
                 Analyzing
               </span>
             ) : reviewStatus === 'SUCCESS' ? (
-              <span className="flex items-center gap-1 text-[#34D399] bg-[#0F9F6E]/15 px-2 py-0.5 rounded border border-[#0F9F6E]/30">
-                <CheckCircle2 className="w-3 h-3" />
+              <span className="flex items-center gap-1 text-brand-300 bg-brand-950/40 px-2 py-0.5 rounded border border-brand-800/40">
+                <CheckCircle2 className="w-3 h-3 text-brand-400" />
                 Reviewed
               </span>
             ) : (
-              <span className="text-[#8B949E]">Ready to review</span>
+              <span className="text-graphite-400">Ready</span>
             )}
           </div>
 
@@ -180,11 +180,11 @@ export function CodeEditor({
               <button
                 type="button"
                 onClick={() => setIsPresetOpen((prev) => !prev)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#1C2128] hover:bg-[#262C36] text-[#C9D1D9] border border-[#30363D] text-xs font-mono font-medium transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-graphite-900 hover:bg-graphite-850 text-graphite-200 border border-graphite-750 text-xs font-mono font-medium transition-colors cursor-pointer shadow-dev-sm"
                 title="Load sample code scenario"
               >
                 <span>Examples</span>
-                <ChevronDown className="w-3 h-3 text-[#8B949E]" />
+                <ChevronDown className="w-3 h-3 text-graphite-400" />
               </button>
 
               {isPresetOpen && (
@@ -193,8 +193,8 @@ export function CodeEditor({
                     className="fixed inset-0 z-20"
                     onClick={() => setIsPresetOpen(false)}
                   />
-                  <div className="absolute right-0 mt-1.5 w-60 bg-[#161B22] border border-[#30363D] rounded-lg shadow-xl z-30 py-1 font-sans text-xs">
-                    <div className="px-3 py-1.5 text-[10px] font-mono text-[#8B949E] uppercase tracking-wider border-b border-[#21262D]">
+                  <div className="absolute right-0 mt-1.5 w-60 bg-graphite-900 border border-graphite-700 rounded-lg shadow-dev-lg z-30 py-1 font-sans text-xs">
+                    <div className="px-3 py-1.5 text-[10px] font-mono text-graphite-400 uppercase tracking-wider border-b border-graphite-800">
                       Sample Scenarios
                     </div>
                     {presets.map((preset) => (
@@ -205,17 +205,17 @@ export function CodeEditor({
                           onSelectPreset(preset.id);
                           setIsPresetOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-[#1F242C] transition-colors ${
-                          selectedPresetId === preset.id ? 'bg-[#0F9F6E]/15 text-[#34D399]' : 'text-[#C9D1D9]'
+                        className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-graphite-800 transition-colors cursor-pointer ${
+                          selectedPresetId === preset.id ? 'bg-brand-950/60 text-brand-300' : 'text-graphite-200'
                         }`}
                       >
                         <div className="font-semibold text-xs flex items-center justify-between">
                           <span>{preset.name}</span>
                           {selectedPresetId === preset.id && (
-                            <span className="text-[10px] font-mono text-[#34D399]">Active</span>
+                            <span className="text-[10px] font-mono text-brand-400">Active</span>
                           )}
                         </div>
-                        <div className="text-[11px] text-[#8B949E] truncate">
+                        <div className="text-[11px] text-graphite-400 truncate">
                           {preset.description}
                         </div>
                       </button>
@@ -233,7 +233,7 @@ export function CodeEditor({
         {/* Line Numbers Gutter */}
         <div
           ref={gutterRef}
-          className="w-12 py-3 bg-[#111316] border-r border-[#21262D] text-[#8B949E] text-right pr-3 select-none overflow-hidden shrink-0"
+          className="w-12 py-3 bg-graphite-950 border-r border-graphite-800 text-graphite-500 text-right pr-3 select-none overflow-hidden shrink-0"
           aria-hidden="true"
         >
           {lines.map((_, index) => {
@@ -266,12 +266,12 @@ export function CodeEditor({
                   <span
                     className={`absolute left-2 w-1.5 h-1.5 rounded-full ${
                       lineIssue.severity === 'CRITICAL'
-                        ? 'bg-[#DC2626]'
+                        ? 'bg-red-500'
                         : lineIssue.severity === 'HIGH'
-                        ? 'bg-[#EA580C]'
+                        ? 'bg-orange-500'
                         : lineIssue.severity === 'MEDIUM'
-                        ? 'bg-[#D97706]'
-                        : 'bg-[#2563EB]'
+                        ? 'bg-amber-500'
+                        : 'bg-cyan-400'
                     }`}
                   />
                 )}
@@ -282,7 +282,7 @@ export function CodeEditor({
         </div>
 
         {/* Code Canvas Container */}
-        <div className="relative flex-1 h-full overflow-hidden bg-[#16191D]">
+        <div className="relative flex-1 h-full overflow-hidden bg-code">
           {/* Highlight Background Layer */}
           <div
             ref={overlayRef}
@@ -317,7 +317,7 @@ export function CodeEditor({
             autoComplete="off"
             autoCorrect="off"
             aria-label={`Code editor for ${filename}`}
-            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-[#E6EDF3] resize-none outline-hidden font-mono text-xs leading-6 selection:bg-[#264F78] selection:text-white dark-editor-scrollbar overflow-auto z-10"
+            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-graphite-100 resize-none outline-none font-mono text-xs leading-6 selection:bg-brand-500/25 selection:text-white dark-editor-scrollbar overflow-auto z-10"
             style={{ tabSize: 2 }}
           />
         </div>

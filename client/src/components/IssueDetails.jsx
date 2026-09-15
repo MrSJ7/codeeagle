@@ -9,9 +9,9 @@ import {
   AlertTriangle,
   Loader2,
   CheckCircle2,
-  Maximize2,
 } from 'lucide-react';
-import { SeverityBadge } from './SeverityBadge.jsx';
+import { Badge } from './ui/Badge.jsx';
+import { Button } from './ui/Button.jsx';
 
 export function IssueDetails({
   issue,
@@ -29,15 +29,15 @@ export function IssueDetails({
     return (
       <section
         aria-label="Finding remediation"
-        className={`bg-slate-50 flex flex-col items-center justify-center p-8 text-center text-slate-400 h-full select-none ${className}`}
+        className={`bg-graphite-900 flex flex-col items-center justify-center p-8 text-center text-graphite-500 h-full select-none ${className}`}
       >
-        <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center mb-3 text-slate-400 shadow-xs">
+        <div className="w-10 h-10 rounded-full bg-graphite-850 border border-graphite-700 flex items-center justify-center mb-3 text-graphite-400 shadow-dev-sm">
           <Info className="w-5 h-5" />
         </div>
-        <h3 className="text-sm font-bold text-slate-800 font-sans mb-1">
+        <h3 className="text-sm font-bold text-graphite-200 font-sans mb-1">
           No finding selected
         </h3>
-        <p className="text-xs text-slate-500 max-w-xs leading-relaxed font-sans">
+        <p className="text-xs text-graphite-400 max-w-xs leading-relaxed font-sans">
           Select an issue from the findings queue to inspect its rationale, security impact, and verified fix.
         </p>
       </section>
@@ -76,51 +76,47 @@ export function IssueDetails({
   return (
     <section
       aria-label={`Finding details for ${issue.title}`}
-      className={`bg-white flex flex-col h-full overflow-hidden select-none ${className}`}
+      className={`bg-graphite-900 flex flex-col h-full overflow-hidden select-none ${className}`}
     >
       {/* Finding Header - PR Review Comment Style */}
-      <div className="px-5 py-4 border-b border-slate-200/90 shrink-0 bg-slate-50/70">
+      <div className="px-5 py-4 border-b border-graphite-800 shrink-0 bg-graphite-950">
         <div className="flex items-center justify-between gap-2 mb-2">
           {/* Severity + Category Pill */}
           <div className="flex items-center gap-2">
-            <SeverityBadge severity={issue.severity} />
-            <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-slate-600 px-2 py-0.5 rounded bg-white border border-slate-200">
+            <Badge variant={issue.severity.toLowerCase()}>
+              {issue.severity}
+            </Badge>
+            <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-graphite-300 px-2 py-0.5 rounded bg-graphite-850 border border-graphite-700">
               {issue.category}
             </span>
           </div>
 
           {/* Source Attribution Tag */}
-          <span
-            className={`text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded border ${
-              isAi
-                ? 'bg-purple-50 text-purple-700 border-purple-200'
-                : 'bg-slate-100 text-slate-700 border-slate-200'
-            }`}
-          >
+          <Badge variant={isAi ? 'ai' : 'ast'}>
             {isAi ? 'AI Semantic' : 'Static AST'}
-          </span>
+          </Badge>
         </div>
 
         {/* Title */}
-        <h2 className="text-sm font-bold text-slate-900 leading-snug font-sans">
+        <h2 className="text-sm font-bold text-graphite-100 leading-snug font-sans">
           {issue.title}
         </h2>
 
         {/* Location Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-500 mt-1.5">
-          <span className="text-slate-800 font-semibold">
+        <div className="flex items-center gap-2 text-xs font-mono text-graphite-400 mt-1.5 flex-wrap">
+          <span className="text-graphite-200 font-semibold">
             {filename}:{issue.line}{issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
           </span>
           {typeof issue.confidence === 'number' && (
             <>
-              <span className="text-slate-300">•</span>
-              <span className="text-slate-600">{Math.round(issue.confidence * 100)}% confidence</span>
+              <span className="text-graphite-600">•</span>
+              <span className="text-graphite-400">{Math.round(issue.confidence * 100)}% confidence</span>
             </>
           )}
           {issue.rule && (
             <>
-              <span className="text-slate-300">•</span>
-              <span className="text-slate-600 font-mono text-[11px]">{issue.rule}</span>
+              <span className="text-graphite-600">•</span>
+              <span className="text-cyan-400 font-mono text-[11px]">{issue.rule}</span>
             </>
           )}
         </div>
@@ -130,22 +126,22 @@ export function IssueDetails({
       <div className="flex-1 overflow-y-auto p-5 space-y-4 font-sans text-xs">
         {/* Section 1: Why This Matters */}
         <div>
-          <h3 className="text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
-            <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+          <h3 className="text-xs font-bold text-graphite-200 mb-1.5 flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
             <span>Why this matters</span>
           </h3>
-          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-700 leading-relaxed text-xs">
+          <div className="p-3 rounded-lg bg-graphite-950 border border-graphite-800 text-graphite-300 leading-relaxed text-xs">
             {issue.description}
           </div>
         </div>
 
         {/* Section 2: Recommendation */}
         <div>
-          <h3 className="text-xs font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5 text-slate-500" />
+          <h3 className="text-xs font-bold text-graphite-200 mb-1.5 flex items-center gap-1.5">
+            <Wrench className="w-3.5 h-3.5 text-graphite-400" />
             <span>Recommendation</span>
           </h3>
-          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-700 leading-relaxed text-xs">
+          <div className="p-3 rounded-lg bg-graphite-950 border border-graphite-800 text-graphite-300 leading-relaxed text-xs">
             {issue.recommendation}
           </div>
         </div>
@@ -153,154 +149,108 @@ export function IssueDetails({
         {/* Section 3: Suggested Fix Diff View */}
         {hasFix && issue.fix?.replacement && (
           <div>
-            <div className="flex items-center justify-between text-xs font-bold text-slate-800 mb-1.5">
-              <span className="flex items-center gap-1 text-[#087A54]">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#0F9F6E]" />
+            <div className="flex items-center justify-between text-xs font-bold text-graphite-200 mb-1.5">
+              <span className="flex items-center gap-1 text-brand-400">
+                <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Suggested Change</span>
               </span>
-              <span className="text-[11px] font-mono text-slate-500 font-normal">
-                {issue.fix.original ? 'inline diff' : 'replacement'}
-              </span>
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="flex items-center gap-1 text-[11px] font-mono text-graphite-400 hover:text-graphite-200 cursor-pointer"
+              >
+                {copyStatus === 'copied' ? (
+                  <>
+                    <Check className="w-3 h-3 text-brand-400" />
+                    <span className="text-brand-400">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3 h-3" />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
             </div>
 
-            {/* PR-style Diff Box */}
-            <div className="rounded-lg border border-[#21262D] bg-[#16191D] overflow-hidden font-mono text-xs leading-relaxed shadow-xs">
-              <div className="px-3 py-1.5 bg-[#111316] border-b border-[#21262D] flex items-center justify-between text-[11px] text-[#8B949E]">
-                <span className="font-semibold uppercase tracking-wider text-slate-300">
-                  {filename}
-                </span>
-                <span>
-                  Lines {issue.line}{issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
-                </span>
+            {/* In-situ Diff Box */}
+            <div className="rounded-lg border border-graphite-800 bg-code font-mono text-[11px] p-3 space-y-1 overflow-x-auto shadow-dev-sm">
+              <div className="text-graphite-500 text-[10px] uppercase tracking-wider mb-1 font-sans font-semibold">
+                Unified Diff Preview
               </div>
-              <div className="p-3 overflow-x-auto dark-editor-scrollbar space-y-1">
-                {originalLines.length > 0 &&
-                  originalLines.map((line, idx) => (
-                    <div key={`orig-${idx}`} className="text-red-300 bg-red-950/40 px-2 py-0.5 rounded flex items-baseline">
-                      <span className="text-red-400 select-none mr-2 font-bold">-</span>
-                      <span className="whitespace-pre">{line}</span>
-                    </div>
-                  ))}
-                {replacementLines.map((line, idx) => (
-                  <div key={`repl-${idx}`} className="text-[#34D399] bg-[#0F9F6E]/20 px-2 py-0.5 rounded flex items-baseline">
-                    <span className="text-[#34D399] select-none mr-2 font-bold">+</span>
-                    <span className="whitespace-pre">{line}</span>
-                  </div>
-                ))}
-              </div>
+
+              {/* Removed Lines */}
+              {originalLines.map((line, idx) => (
+                <div
+                  key={`orig-${idx}`}
+                  className="text-red-300 bg-red-950/40 px-2 py-0.5 rounded border border-red-900/30 flex items-baseline gap-2"
+                >
+                  <span className="text-red-500 select-none font-bold shrink-0">-</span>
+                  <span className="whitespace-pre overflow-x-auto">{line}</span>
+                </div>
+              ))}
+
+              {/* Added Lines */}
+              {replacementLines.map((line, idx) => (
+                <div
+                  key={`rep-${idx}`}
+                  className="text-brand-300 bg-brand-950/40 px-2 py-0.5 rounded border border-brand-900/30 flex items-baseline gap-2"
+                >
+                  <span className="text-brand-500 select-none font-bold shrink-0">+</span>
+                  <span className="whitespace-pre overflow-x-auto">{line}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Stale Warning Notice */}
-        {isStale && (
-          <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed">
-            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
-            <div>
-              <p className="font-bold text-amber-950">Source code has been modified</p>
-              <p className="text-[11px] text-amber-800 mt-0.5">
-                Run review again before applying patches to ensure line numbers and source hashes match.
-              </p>
-            </div>
+        {/* Section 4: Static Rule Metadata */}
+        {issue.rule && (
+          <div className="p-2.5 rounded-md bg-graphite-950 border border-graphite-800 text-[11px] font-mono text-graphite-400 flex items-center justify-between">
+            <span>Rule Identifier</span>
+            <span className="text-cyan-400 font-semibold">{issue.rule}</span>
           </div>
         )}
       </div>
 
-      {/* Finding Footer Actions */}
-      <div className="px-5 py-3 border-t border-slate-200/90 bg-slate-50/80 flex items-center justify-between gap-2 shrink-0 select-none">
-        {/* Copy snippet button */}
-        {hasFix && issue.fix?.replacement ? (
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-medium transition-colors shadow-2xs"
-            title="Copy fix snippet to clipboard"
-          >
-            {copyStatus === 'copied' ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-[#0F9F6E]" />
-                <span className="font-semibold text-[#087A54]">Copied</span>
-              </>
-            ) : copyStatus === 'failed' ? (
-              <>
-                <AlertCircle className="w-3.5 h-3.5 text-red-600" />
-                <span>Failed</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5 text-slate-400" />
-                <span>Copy Fix</span>
-              </>
-            )}
-          </button>
-        ) : (
-          <span className="text-xs text-slate-500 font-mono">Manual review required</span>
-        )}
-
-        {/* Patch Action Button */}
-        <div className="flex items-center gap-2">
-          {/* Static Patch: One-Click Apply Patch */}
-          {hasFix && isStatic && (
-            <button
-              type="button"
+      {/* Remediation Action Callout Footer */}
+      {hasFix && (
+        <div className="p-4 border-t border-graphite-800 bg-graphite-950 shrink-0 flex flex-col gap-2">
+          {isStatic && (
+            <Button
+              variant="primary"
+              size="md"
               onClick={() => onApplyPatch(issue)}
               disabled={isStale || isApplyingPatch}
-              title={isStale ? 'Re-run review before applying patch' : 'Apply patch to editor'}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-[#0F9F6E] hover:bg-[#087A54] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-xs transition-colors"
+              isLoading={isApplyingPatch}
+              leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+              className="w-full"
             >
-              {isApplyingPatch ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
-                  <span>Applying...</span>
-                </>
-              ) : (
-                <>
-                  <Wrench className="w-3.5 h-3.5 text-white/90" />
-                  <span>Apply Patch</span>
-                </>
-              )}
-            </button>
+              Apply Patch & Re-Analyze
+            </Button>
           )}
 
-          {/* AI Patch: Preview Fix flow */}
-          {hasFix && isAi && (
-            <div>
-              {isStale ? (
-                <span className="text-[11px] font-mono text-amber-800 bg-amber-50 px-2 py-1 rounded border border-amber-200">
-                  Source changed
-                </span>
-              ) : typeof issue.confidence === 'number' && issue.confidence < 0.8 ? (
-                <span className="text-[11px] font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">
-                  Low confidence ({Math.round(issue.confidence * 100)}%)
-                </span>
-              ) : !issue.fix?.original ? (
-                <span className="text-[11px] font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded border border-slate-200">
-                  Manual fix only
-                </span>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => onPreviewAiPatch && onPreviewAiPatch(issue)}
-                  disabled={isVerifyingAiPatch || isApplyingPatch}
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-[#0F9F6E] hover:bg-[#087A54] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold shadow-xs transition-colors"
-                >
-                  {isVerifyingAiPatch ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
-                      <span>Verifying...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-3.5 h-3.5 text-white/90" />
-                      <span>Apply Patch</span>
-                    </>
-                  )}
-                </button>
-              )}
-            </div>
+          {isAi && (
+            <Button
+              variant="accent"
+              size="md"
+              onClick={() => onPreviewAiPatch(issue)}
+              disabled={isStale || isVerifyingAiPatch}
+              isLoading={isVerifyingAiPatch}
+              leftIcon={<Sparkles className="w-3.5 h-3.5" />}
+              className="w-full"
+            >
+              Preview & Verify AI Patch
+            </Button>
+          )}
+
+          {isStale && (
+            <p className="text-[11px] text-orange-400 text-center font-mono">
+              Code has been edited. Re-run review to enable patch application.
+            </p>
           )}
         </div>
-      </div>
+      )}
     </section>
   );
 }

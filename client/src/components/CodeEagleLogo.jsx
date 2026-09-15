@@ -2,19 +2,20 @@ import React from 'react';
 
 /**
  * Geometric, precise CodeEagle brand mark.
- * Symbolizes vision, precision code analysis, and oversight.
+ * Features an abstract, angular vector eagle silhouette with an inspecting optical diamond lens.
+ * Designed for high-density developer tooling.
  */
 export function CodeEagleLogo({
-  size = 24,
+  size = 22,
   withText = false,
   withSubtitle = false,
   className = '',
 }) {
-  const pixelSize = typeof size === 'number' ? size : size === 'lg' ? 32 : size === 'sm' ? 18 : 24;
+  const pixelSize = typeof size === 'number' ? size : size === 'lg' ? 28 : size === 'sm' ? 18 : 22;
 
   return (
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
-      {/* Eagle Geometric Mark */}
+      {/* Precision Geometric Eagle Mark */}
       <svg
         width={pixelSize}
         height={pixelSize}
@@ -25,53 +26,61 @@ export function CodeEagleLogo({
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="eagle-wings" x1="2" y1="4" x2="30" y2="18" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#087A54" />
-            <stop offset="0.5" stopColor="#0F9F6E" />
-            <stop offset="1" stopColor="#087A54" />
+          <linearGradient id="eagle-wing-left" x1="2" y1="6" x2="16" y2="20" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#34D399" />
+            <stop offset="1" stopColor="#059669" />
           </linearGradient>
-          <linearGradient id="eagle-core" x1="16" y1="12" x2="16" y2="29" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#0F9F6E" />
-            <stop offset="1" stopColor="#044430" />
+          <linearGradient id="eagle-wing-right" x1="30" y1="6" x2="16" y2="20" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#10B981" />
+            <stop offset="1" stopColor="#047857" />
+          </linearGradient>
+          <linearGradient id="eagle-keel" x1="16" y1="14" x2="16" y2="30" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#10B981" />
+            <stop offset="1" stopColor="#064E3B" />
           </linearGradient>
         </defs>
 
-        {/* Outer faceted wingspan */}
+        {/* Left Swept Wing Facet */}
         <path
-          d="M2 11L16 4L30 11L25 18L16 13.5L7 18L2 11Z"
-          fill="url(#eagle-wings)"
+          d="M16 5L2 12L7 18.5L16 14.5V5Z"
+          fill="url(#eagle-wing-left)"
         />
 
-        {/* Inner geometric focal body */}
+        {/* Right Swept Wing Facet */}
         <path
-          d="M16 13.5L22 22L16 29L10 22L16 13.5Z"
-          fill="url(#eagle-core)"
+          d="M16 5L30 12L25 18.5L16 14.5V5Z"
+          fill="url(#eagle-wing-right)"
         />
 
-        {/* Central inspecting lens facet */}
+        {/* Lower Keel / Vector Tail */}
         <path
-          d="M16 8L18.5 12.5L16 15L13.5 12.5L16 8Z"
-          fill="#FFFFFF"
+          d="M16 15.5L23 22L16 29.5L9 22L16 15.5Z"
+          fill="url(#eagle-keel)"
+        />
+
+        {/* Central Inspecting Optical Diamond Reticle */}
+        <path
+          d="M16 9L19 13.5L16 18L13 13.5L16 9Z"
+          fill="#F1F5F9"
           fillOpacity="0.95"
         />
 
-        {/* Sharp detection beak point */}
-        <path
-          d="M16 17L18 21H14L16 17Z"
-          fill="#10B981"
+        {/* Sharp Precision Beak Indicator */}
+        <polygon
+          points="16,19 18,22.5 14,22.5"
+          fill="#34D399"
         />
       </svg>
 
       {/* Brand Typography */}
       {withText && (
         <div className="flex flex-col leading-none">
-          <div className="flex items-center">
-            <span className="text-sm font-semibold tracking-tight text-[#161918] font-sans">
-              Code<span className="text-[#0F9F6E] font-bold">Eagle</span>
-            </span>
+          <div className="flex items-center text-sm font-semibold tracking-tight font-sans">
+            <span className="text-graphite-100">Code</span>
+            <span className="text-brand-400 font-bold ml-0.5">Eagle</span>
           </div>
           {withSubtitle && (
-            <span className="text-[10px] font-medium tracking-wider text-[#626A65] uppercase font-sans mt-0.5">
+            <span className="text-[10px] font-medium tracking-wider text-graphite-400 uppercase font-sans mt-0.5">
               AI Code Review
             </span>
           )}
@@ -80,4 +89,3 @@ export function CodeEagleLogo({
     </div>
   );
 }
-
