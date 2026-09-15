@@ -27,6 +27,7 @@ import { SeverityBadge } from './SeverityBadge.jsx';
 import { LayoutTextFlip } from './ui/layout-text-flip.jsx';
 import { Navbar } from './Navbar.jsx';
 import { CodeEagleLogo } from './CodeEagleLogo.jsx';
+import { CodeEagleBentoShowcase } from './ui/bento-product-features.tsx';
 
 export function LandingPage({
   onStartReviewing,
@@ -575,6 +576,9 @@ export function LandingPage({
             </div>
           </div>
         </div>
+
+        {/* CodeEagle Technical Pillars Bento Grid */}
+        <CodeEagleBentoShowcase className="mt-8" />
       </section>
 
       {/* 7. Section 07: Review Intelligence & Findings Severity Spectrum */}
