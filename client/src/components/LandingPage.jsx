@@ -191,7 +191,7 @@ export function LandingPage({
                   <div><span className="text-slate-500 select-none inline-block w-6 text-right mr-3">11</span>  <span className="text-slate-500">// Security risk: direct string interpolation</span></div>
                   <div className="bg-[#DC2626]/20 text-red-200 -mx-4 px-4 py-0.5 border-l-2 border-[#DC2626] flex items-baseline">
                     <span className="text-slate-400 select-none inline-block w-6 text-right mr-3 font-bold">12</span>
-                    <span>  <span className="text-purple-400">const</span> query = <span className="text-red-300 font-semibold">`SELECT * FROM users WHERE user = '${username}'`</span>;</span>
+                    <span>  <span className="text-purple-400">const</span> query = <span className="text-red-300 font-semibold">{"`SELECT * FROM users WHERE user = '${username}'`"}</span>;</span>
                   </div>
                   <div><span className="text-slate-500 select-none inline-block w-6 text-right mr-3">13</span>  <span className="text-purple-400">const</span> user = <span className="text-blue-400">await</span> db.query(query);</div>
                   <div><span className="text-slate-500 select-none inline-block w-6 text-right mr-3">14</span>&#125;</div>
