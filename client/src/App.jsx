@@ -347,16 +347,24 @@ export default function App() {
 
     setIsApplyingPatch(true);
     try {
-      const response = await applyPatchApi(code, issue.id);
+      const response = await applyPatchApi({
+        code,
+        codeHash: reviewData?.metadata?.codeHash,
+        issue,
+        language: 'JavaScript',
+        filename: currentFilename,
+        beforeReview: reviewData,
+      });
 
       if (response && response.patchedCode) {
         setCode(response.patchedCode);
 
-        if (response.afterReview) {
-          setReviewData(response.afterReview);
+        const updatedReview = response.review || response.afterReview;
+        if (updatedReview) {
+          setReviewData(updatedReview);
           setReviewStatus('SUCCESS');
-          setSelectedIssueId(response.afterReview.issues?.[0]?.id || null);
-          setCurrentReviewId(response.afterReview.reviewId || null);
+          setSelectedIssueId(updatedReview.issues?.[0]?.id || null);
+          setCurrentReviewId(updatedReview.reviewId || null);
           setIsHistoricalView(false);
           setHistoricalCreatedAt(null);
           setHistoryRefreshTrigger((prev) => prev + 1);
@@ -382,7 +390,11 @@ export default function App() {
 
     setIsVerifyingAiPatch(true);
     try {
-      const verified = await verifyAiPatchApi(code, issue.id);
+      const verified = await verifyAiPatchApi({
+        code,
+        codeHash: reviewData?.metadata?.codeHash,
+        issue,
+      });
       if (verified && verified.applicable) {
         setPreviewAiIssue(issue);
         setAiPreviewData(verified);
@@ -403,16 +415,24 @@ export default function App() {
 
     setIsApplyingAiPatch(true);
     try {
-      const response = await applyAiPatchApi(code, previewAiIssue.id);
+      const response = await applyAiPatchApi({
+        code,
+        codeHash: reviewData?.metadata?.codeHash,
+        issue: previewAiIssue,
+        language: 'JavaScript',
+        filename: currentFilename,
+        beforeReview: reviewData,
+      });
 
       if (response && response.patchedCode) {
         setCode(response.patchedCode);
 
-        if (response.afterReview) {
-          setReviewData(response.afterReview);
+        const updatedReview = response.review || response.afterReview;
+        if (updatedReview) {
+          setReviewData(updatedReview);
           setReviewStatus('SUCCESS');
-          setSelectedIssueId(response.afterReview.issues?.[0]?.id || null);
-          setCurrentReviewId(response.afterReview.reviewId || null);
+          setSelectedIssueId(updatedReview.issues?.[0]?.id || null);
+          setCurrentReviewId(updatedReview.reviewId || null);
           setIsHistoricalView(false);
           setHistoricalCreatedAt(null);
           setHistoryRefreshTrigger((prev) => prev + 1);
@@ -534,7 +554,7 @@ export default function App() {
 
           {/* Main Content Area based on Active Lens */}
           {reviewStatus === 'SUCCESS' && activeLens === 'overview' ? (
-            <main className="flex-1 h-full overflow-hidden bg-slate-50">
+            <main className="flex-1 min-h-0 overflow-hidden bg-slate-50">
               <ReviewOverview
                 reviewData={reviewData}
                 filename={currentFilename}
@@ -548,7 +568,7 @@ export default function App() {
               />
             </main>
           ) : reviewStatus === 'SUCCESS' && activeLens === 'architecture' ? (
-            <main className="flex-1 h-full overflow-hidden bg-slate-50">
+            <main className="flex-1 min-h-0 overflow-hidden bg-slate-50">
               <ArchitectureFlow
                 code={code}
                 issues={reviewData?.issues || []}
@@ -562,7 +582,7 @@ export default function App() {
             </main>
           ) : (
             /* Findings Lens / Code Workspace (Three-Column Layout) */
-            <main className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden bg-slate-50">
+            <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden bg-slate-50">
               {/* Left Column: Review findings / Findings Queue */}
               <IssuePanel
                 issues={reviewData?.issues || []}
@@ -574,7 +594,7 @@ export default function App() {
                 filename={currentFilename}
                 externalCategoryFilter={activeCategoryFilter}
                 onClearCategoryFilter={() => setActiveCategoryFilter(null)}
-                className="w-full lg:w-72 xl:w-80 shrink-0 h-48 lg:h-full border-b lg:border-b-0 border-r border-graphite-800"
+                className="w-full lg:w-72 xl:w-80 shrink-0 h-48 lg:h-full border-b lg:border-b-0 border-r border-slate-200"
               />
 
               {/* Center Column: Code Editor */}
@@ -605,7 +625,7 @@ export default function App() {
                 isApplyingPatch={isApplyingPatch || isApplyingAiPatch}
                 isVerifyingAiPatch={isVerifyingAiPatch}
                 filename={currentFilename}
-                className="w-full lg:w-80 xl:w-96 shrink-0 h-64 lg:h-full border-t lg:border-t-0 border-l border-graphite-800"
+                className="w-full lg:w-80 xl:w-96 shrink-0 h-64 lg:h-full border-t lg:border-t-0 border-l border-slate-200"
               />
             </main>
           )}
@@ -648,7 +668,7 @@ export default function App() {
 
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-5 right-5 z-60 select-none">
+        <div className="fixed bottom-5 left-5 z-60 select-none">
           <div
             role="status"
             aria-live="polite"

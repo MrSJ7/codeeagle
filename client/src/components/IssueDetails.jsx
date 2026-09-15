@@ -87,7 +87,7 @@ export function IssueDetails({
             <Badge variant={issue.severity.toLowerCase()}>
               {issue.severity}
             </Badge>
-            <span className="text-[11px] font-mono uppercase tracking-wider font-semibold text-slate-700">
+            <span className="text-[11px] font-mono font-semibold text-slate-700">
               {issue.category}
             </span>
           </div>

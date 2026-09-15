@@ -12,10 +12,12 @@ import {
   Play,
   Wrench,
   AlertCircle,
+  Cpu,
 } from 'lucide-react';
 import { Button } from './ui/Button.jsx';
 import { Badge } from './ui/Badge.jsx';
 import { Navbar } from './Navbar.jsx';
+import { LayoutTextFlip } from './ui/layout-text-flip.jsx';
 
 export function LandingPage({
   onStartReviewing,
@@ -28,7 +30,7 @@ export function LandingPage({
   const [demoFixed, setDemoFixed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-brand-500/20 selection:text-brand-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-amber-500/20 selection:text-amber-900 flex flex-col">
       {/* 1. Header Navigation */}
       <Navbar
         mode="landing"
@@ -40,24 +42,45 @@ export function LandingPage({
       />
 
       {/* 2. Above The Fold: Developer Entry Point */}
-      <section className="pt-10 sm:pt-16 pb-16 px-4 sm:px-8 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
+      <section className="pt-8 sm:pt-14 pb-14 px-4 sm:px-8 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           {/* Left Column: Clear Value Proposition & Direct Entry Points */}
-          <div className="lg:col-span-6 space-y-6 pt-2">
-            <div className="space-y-3">
-              <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
-                Review your code.
-                <br />
-                <span className="text-brand-600">Catch problems before they ship.</span>
-              </h1>
+          <div className="lg:col-span-6 space-y-6 pt-1">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-xs font-mono text-slate-700 font-medium">
+                <Cpu className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Deterministic AST Checks + Contextual AI</span>
+              </div>
 
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-xl">
-                CodeEagle pairs deterministic AST compiler checks with contextual AI reasoning to identify security vulnerabilities, logic bugs, and quality hazards in your JavaScript and JSX code.
-              </p>
+              <div className="space-y-2">
+                <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+                  <span>Review your code.</span>
+                  <br />
+                  <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-slate-900">
+                    <span>Catch</span>
+                    <LayoutTextFlip
+                      words={[
+                        'hardcoded secrets',
+                        'security hazards',
+                        'logic errors',
+                        'react key bugs',
+                        'unhandled async',
+                      ]}
+                      duration={2600}
+                      pillClassName="border-amber-300/80 bg-amber-50/70 text-amber-900"
+                    />
+                  </span>
+                  <span>before you ship.</span>
+                </h1>
+
+                <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-xl pt-1">
+                  CodeEagle combines compiler-grade Babel AST parsing with contextual Gemini reasoning. It detects vulnerabilities, identifies exact line ranges, and applies verified 1-click patches with automated re-analysis.
+                </p>
+              </div>
             </div>
 
             {/* Primary Action Button */}
-            <div className="pt-1 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Button
                 variant="primary"
                 size="lg"
@@ -65,49 +88,75 @@ export function LandingPage({
                 rightIcon={<ArrowRight className="w-4 h-4" />}
                 className="w-full sm:w-auto text-base py-3 px-6 shadow-dev"
               >
-                Start Reviewing
+                <span>Start Reviewing</span>
+                <kbd className="ml-2 px-1.5 py-0.5 text-[10px] font-mono bg-white/20 rounded text-white font-semibold">
+                  ⌘↵
+                </kbd>
               </Button>
+
+              {onOpenHowItWorks && (
+                <button
+                  type="button"
+                  onClick={onOpenHowItWorks}
+                  className="px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-colors text-center cursor-pointer"
+                >
+                  How it works
+                </button>
+              )}
             </div>
 
             {/* Instant-Start Example Scenarios */}
-            <div className="pt-4 border-t border-slate-200">
-              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2.5">
-                Instant sample scenarios (1-click live review):
+            <div className="pt-4 border-t border-slate-200/80">
+              <div className="text-xs font-semibold text-slate-500 mb-2.5 flex items-center justify-between">
+                <span>Instant sample scenarios (1-click live review):</span>
+                <span className="font-mono text-[11px] text-slate-400">Zero setup</span>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => onSelectScenarioAndStart && onSelectScenarioAndStart('insecure-login')}
-                  className="px-3 py-1.5 rounded-[6px] bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-medium transition-colors shadow-dev-sm cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-2 rounded-lg bg-white hover:bg-slate-100/80 text-left border border-slate-200 transition-all shadow-dev-sm cursor-pointer group"
                   title="Run review on insecure auth handler"
                 >
-                  <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                  <span>Insecure Login (auth.js)</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                    <span className="font-mono text-xs font-semibold text-slate-900 group-hover:text-amber-700">
+                      auth.js
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-500">Insecure Secret · Critical</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onSelectScenarioAndStart && onSelectScenarioAndStart('buggy-react')}
-                  className="px-3 py-1.5 rounded-[6px] bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-medium transition-colors shadow-dev-sm cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-2 rounded-lg bg-white hover:bg-slate-100/80 text-left border border-slate-200 transition-all shadow-dev-sm cursor-pointer group"
                   title="Run review on buggy React component"
                 >
-                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                  <span>Buggy React (ActivityFeed.jsx)</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                    <span className="font-mono text-xs font-semibold text-slate-900 group-hover:text-amber-700">
+                      ActivityFeed.jsx
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-500">Missing Key · Medium</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => onSelectScenarioAndStart && onSelectScenarioAndStart('complex-function')}
-                  className="px-3 py-1.5 rounded-[6px] bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-medium transition-colors shadow-dev-sm cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-2 rounded-lg bg-white hover:bg-slate-100/80 text-left border border-slate-200 transition-all shadow-dev-sm cursor-pointer group"
                   title="Run review on complex logic function"
                 >
-                  <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
-                  <span>Complex Function (shippingFee.js)</span>
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                    <span className="font-mono text-xs font-semibold text-slate-900 group-hover:text-amber-700">
+                      shippingFee.js
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-500">Complex Logic · High</div>
                 </button>
               </div>
-              <p className="text-[11px] text-slate-500 mt-2 font-mono">
-                Clicking any scenario immediately launches analysis and highlights findings.
-              </p>
             </div>
           </div>
 
@@ -222,7 +271,7 @@ export function LandingPage({
 
                 {/* Clean Unified Diff */}
                 <div className="rounded-lg border border-slate-800 bg-[#0D1117] text-slate-100 p-3 font-mono text-xs select-none">
-                  <div className="text-[10px] uppercase tracking-wider text-slate-400 mb-1.5 font-bold">
+                  <div className="text-[10px] text-slate-400 mb-1.5 font-medium">
                     Suggested Change
                   </div>
                   <div className="text-red-300 bg-red-950/50 px-2 py-0.5 rounded -mx-1 mb-1">

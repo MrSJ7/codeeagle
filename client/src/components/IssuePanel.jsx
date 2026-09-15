@@ -50,7 +50,7 @@ export function IssuePanel({
       {/* Rail Header */}
       <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50">
         <div className="flex items-center gap-2">
-          <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+          <h2 className="text-xs font-bold text-slate-800">
             Needs Attention
           </h2>
           {reviewStatus !== 'IDLE' && (

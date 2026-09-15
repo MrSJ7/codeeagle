@@ -125,19 +125,19 @@ export function CodeEditor({
   const highlightStyles = getHighlightColor();
 
   return (
-    <div className="flex flex-col h-full bg-code border-r border-graphite-800 overflow-hidden select-none">
+    <div className="flex flex-col h-full bg-[#0D1117] border-r border-[#21262D] overflow-hidden select-none">
       {/* Editor Header Bar */}
-      <div className="h-10 px-4 bg-graphite-950 border-b border-graphite-800 flex items-center justify-between text-xs shrink-0 select-none">
+      <div className="h-10 px-4 bg-[#090C10] border-b border-[#21262D] flex items-center justify-between text-xs shrink-0 select-none">
         {/* Left: File metadata */}
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 font-mono text-graphite-100 font-semibold">
+          <div className="flex items-center gap-1.5 font-mono text-[#E6EDF3] font-semibold">
             <FileCode className="w-3.5 h-3.5 text-brand-400" />
             <span>{filename}</span>
           </div>
-          <span className="text-graphite-600">•</span>
-          <span className="text-[11px] font-mono text-graphite-400">{language}</span>
-          <span className="text-graphite-600">•</span>
-          <span className="text-[11px] font-mono text-graphite-400">{lineCount} lines</span>
+          <span className="text-slate-600">•</span>
+          <span className="text-[11px] font-mono text-slate-400">{language}</span>
+          <span className="text-slate-600">•</span>
+          <span className="text-[11px] font-mono text-slate-400">{lineCount} lines</span>
 
           {/* Active Highlight Badge */}
           {activeStartLine && (
@@ -233,7 +233,7 @@ export function CodeEditor({
         {/* Line Numbers Gutter */}
         <div
           ref={gutterRef}
-          className="w-12 py-3 bg-graphite-950 border-r border-graphite-800 text-graphite-500 text-right pr-3 select-none overflow-hidden shrink-0"
+          className="w-12 py-3 bg-[#090C10] border-r border-[#21262D] text-slate-500 text-right pr-3 select-none overflow-hidden shrink-0"
           aria-hidden="true"
         >
           {lines.map((_, index) => {
@@ -344,7 +344,7 @@ export function CodeEditor({
             autoComplete="off"
             autoCorrect="off"
             aria-label={`Code editor for ${filename}`}
-            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-graphite-100 resize-none outline-none font-mono text-xs leading-6 selection:bg-brand-500/25 selection:text-white dark-editor-scrollbar overflow-auto z-10"
+            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-[#E6EDF3] resize-none outline-none font-mono text-xs leading-6 selection:bg-brand-500/25 selection:text-white dark-editor-scrollbar overflow-auto z-10"
             style={{ tabSize: 2 }}
           />
         </div>

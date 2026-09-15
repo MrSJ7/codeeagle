@@ -104,10 +104,10 @@ export function ReviewOverview({
         {totalFindings > 0 ? (
           <div>
             <div className="flex items-center justify-between gap-2 mb-3">
-              <h3 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500">
+              <h3 className="text-xs font-mono font-bold text-slate-700">
                 What's Stopping This Code
               </h3>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-slate-500 font-mono">
                 {totalFindings} issues ranked by risk
               </span>
             </div>
@@ -178,13 +178,13 @@ export function ReviewOverview({
 
         {/* 3. Review Signals (Quality Breakdown) */}
         <div>
-          <h3 className="text-xs font-mono uppercase tracking-wider font-bold text-slate-500 mb-3">
+          <h3 className="text-xs font-mono font-bold text-slate-700 mb-3">
             Review Signals
           </h3>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
             <div className="p-3.5 rounded-lg bg-white border border-slate-200 shadow-dev-sm">
-              <div className="text-slate-500 text-[11px] uppercase tracking-wider mb-1">
+              <div className="text-slate-500 text-[11px] font-medium mb-1">
                 Security
               </div>
               <div
@@ -202,7 +202,7 @@ export function ReviewOverview({
             </div>
 
             <div className="p-3.5 rounded-lg bg-white border border-slate-200 shadow-dev-sm">
-              <div className="text-slate-500 text-[11px] uppercase tracking-wider mb-1">
+              <div className="text-slate-500 text-[11px] font-medium mb-1">
                 Quality
               </div>
               <div className="text-lg font-bold text-slate-900">
@@ -212,7 +212,7 @@ export function ReviewOverview({
             </div>
 
             <div className="p-3.5 rounded-lg bg-white border border-slate-200 shadow-dev-sm">
-              <div className="text-slate-500 text-[11px] uppercase tracking-wider mb-1">
+              <div className="text-slate-500 text-[11px] font-medium mb-1">
                 Performance
               </div>
               <div className="text-lg font-bold text-slate-900">
@@ -222,7 +222,7 @@ export function ReviewOverview({
             </div>
 
             <div className="p-3.5 rounded-lg bg-white border border-slate-200 shadow-dev-sm">
-              <div className="text-slate-500 text-[11px] uppercase tracking-wider mb-1">
+              <div className="text-slate-500 text-[11px] font-medium mb-1">
                 Complexity
               </div>
               <div className="text-lg font-bold text-slate-900">
