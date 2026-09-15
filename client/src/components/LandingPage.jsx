@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { CodeEagleLogo } from './CodeEagleLogo.jsx';
 import {
   ArrowRight,
   ShieldCheck,
@@ -9,9 +8,10 @@ import {
   ListTree,
   GitBranch,
   RotateCcw,
-  Sparkles,
-  Zap,
   Check,
+  Play,
+  Wrench,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from './ui/Button.jsx';
 import { Badge } from './ui/Badge.jsx';
@@ -21,6 +21,7 @@ export function LandingPage({
   onStartReviewing,
   onSelectScenarioAndStart,
   onOpenHistory,
+  onOpenHowItWorks,
   historyCount = 0,
 }) {
   // Live Miniature Product Demo State
@@ -34,51 +35,53 @@ export function LandingPage({
         onNavigateHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         onNavigateReview={onStartReviewing}
         onToggleHistory={onOpenHistory}
+        onOpenHowItWorks={onOpenHowItWorks}
         historyCount={historyCount}
       />
 
-      {/* 2. Hero Section: Product-Led Split Composition */}
-      <section className="pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Column: Product Value & Immediate Action */}
-          <div className="lg:col-span-6 space-y-6">
-            <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
+      {/* 2. Above The Fold: Developer Entry Point */}
+      <section className="pt-10 sm:pt-16 pb-16 px-4 sm:px-8 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
+          {/* Left Column: Clear Value Proposition & Direct Entry Points */}
+          <div className="lg:col-span-6 space-y-6 pt-2">
+            <div className="space-y-3">
+              <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
                 Review your code.
                 <br />
                 <span className="text-brand-600">Catch problems before they ship.</span>
               </h1>
 
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-xl">
-                CodeEagle combines deterministic code analysis with AI reasoning to identify security vulnerabilities, logic bugs, and quality hazards before you open a pull request.
+                CodeEagle pairs deterministic AST compiler checks with contextual AI reasoning to identify security vulnerabilities, logic bugs, and quality hazards in your JavaScript and JSX code.
               </p>
             </div>
 
             {/* Primary Action Button */}
-            <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="pt-1 flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <Button
                 variant="primary"
                 size="lg"
                 onClick={onStartReviewing}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
-                className="w-full sm:w-auto shadow-dev hover:shadow-dev-lg text-base py-3 px-6"
+                className="w-full sm:w-auto text-base py-3 px-6 shadow-dev"
               >
                 Start Reviewing
               </Button>
             </div>
 
-            {/* Instant Sample Scenario Triggers */}
+            {/* Instant-Start Example Scenarios */}
             <div className="pt-4 border-t border-slate-200">
               <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2.5">
-                Or explore an example scenario:
+                Instant sample scenarios (1-click live review):
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => onSelectScenarioAndStart && onSelectScenarioAndStart('insecure-login')}
                   className="px-3 py-1.5 rounded-[6px] bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-medium transition-colors shadow-dev-sm cursor-pointer flex items-center gap-1.5"
+                  title="Run review on insecure auth handler"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                  <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
                   <span>Insecure Login (auth.js)</span>
                 </button>
 
@@ -86,8 +89,9 @@ export function LandingPage({
                   type="button"
                   onClick={() => onSelectScenarioAndStart && onSelectScenarioAndStart('buggy-react')}
                   className="px-3 py-1.5 rounded-[6px] bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-medium transition-colors shadow-dev-sm cursor-pointer flex items-center gap-1.5"
+                  title="Run review on buggy React component"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
                   <span>Buggy React (ActivityFeed.jsx)</span>
                 </button>
 
@@ -95,11 +99,15 @@ export function LandingPage({
                   type="button"
                   onClick={() => onSelectScenarioAndStart && onSelectScenarioAndStart('complex-function')}
                   className="px-3 py-1.5 rounded-[6px] bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-medium transition-colors shadow-dev-sm cursor-pointer flex items-center gap-1.5"
+                  title="Run review on complex logic function"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
                   <span>Complex Function (shippingFee.js)</span>
                 </button>
               </div>
+              <p className="text-[11px] text-slate-500 mt-2 font-mono">
+                Clicking any scenario immediately launches analysis and highlights findings.
+              </p>
             </div>
           </div>
 
@@ -120,9 +128,9 @@ export function LandingPage({
                   <span className="text-slate-500 text-[11px]">JavaScript · 27 lines</span>
                 </div>
 
-                {/* Interactive Score Indicator */}
+                {/* Score Verdict */}
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Score:</span>
+                  <span className="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Verdict:</span>
                   <span
                     className={`font-mono font-bold text-xs px-2 py-0.5 rounded-[4px] border transition-colors ${
                       demoFixed
@@ -130,7 +138,7 @@ export function LandingPage({
                         : 'bg-amber-50 text-amber-800 border-amber-200'
                     }`}
                   >
-                    {demoFixed ? '66 / 100 (+16 pts)' : '50 / 100'}
+                    {demoFixed ? '66 / 100 · (+16 pts)' : '50 / 100 · NEEDS ATTENTION'}
                   </span>
                 </div>
               </div>
@@ -189,16 +197,16 @@ export function LandingPage({
                 </div>
               </div>
 
-              {/* Bottom Half: Senior PR Review Comment on Clean White Surface */}
+              {/* Bottom Half: Senior PR Review Comment */}
               <div className="p-5 bg-white space-y-4">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-2">
                     <Badge variant={demoFixed ? 'success' : 'critical'} size="sm">
                       {demoFixed ? 'RESOLVED' : 'CRITICAL · SECURITY'}
                     </Badge>
-                    <span className="font-mono text-xs text-slate-500 font-semibold">SEC-SECRET · auth.js:6</span>
+                    <span className="font-mono text-xs text-slate-700 font-semibold">SEC-SECRET · auth.js:6</span>
                   </div>
-                  <span className="text-[11px] text-slate-400 font-medium">Source verified</span>
+                  <span className="text-[11px] font-mono text-slate-500 font-medium">AST static verified</span>
                 </div>
 
                 <div>
@@ -213,14 +221,14 @@ export function LandingPage({
                 </div>
 
                 {/* Clean Unified Diff */}
-                <div className="rounded-lg border border-slate-200 bg-slate-900 text-slate-100 p-3 font-mono text-xs select-none">
+                <div className="rounded-lg border border-slate-800 bg-[#0D1117] text-slate-100 p-3 font-mono text-xs select-none">
                   <div className="text-[10px] uppercase tracking-wider text-slate-400 mb-1.5 font-bold">
                     Suggested Change
                   </div>
-                  <div className="text-red-400 bg-red-950/40 px-2 py-0.5 rounded -mx-1 mb-1">
+                  <div className="text-red-300 bg-red-950/50 px-2 py-0.5 rounded -mx-1 mb-1">
                     - const JWT_SECRET = 'supersecretjwtkey123';
                   </div>
-                  <div className="text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded -mx-1">
+                  <div className="text-emerald-300 bg-emerald-950/50 px-2 py-0.5 rounded -mx-1">
                     + const JWT_SECRET = process.env.JWT_SECRET;
                   </div>
                 </div>
@@ -275,186 +283,126 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* 3. Section: Why CodeEagle (4 Editorial Concepts, NOT 4 Giant Cards) */}
-      <section id="why-codeeagle" className="py-16 sm:py-20 px-4 sm:px-8 border-t border-slate-200 bg-white">
+      {/* 3. Section: The 5-Step Review Workflow */}
+      <section className="py-14 sm:py-16 px-4 sm:px-8 border-t border-slate-200 bg-white">
         <div className="max-w-5xl mx-auto">
-          <div className="max-w-2xl mb-12">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
-              Built for developers who care about code correctness.
+          <div className="mb-10 text-center max-w-xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
+              The Effortless Review Loop
             </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
-              Unlike generic chat assistants or basic linters, CodeEagle pairs deterministic compiler-level precision with contextual AI reasoning and cryptographically verified patches.
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Designed around how developers inspect code: understand what is wrong, where it is wrong, and fix it in one step.
             </p>
           </div>
 
-          <div className="divide-y divide-slate-200">
-            {/* Concept 1 */}
-            <div className="py-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div className="md:col-span-4 flex items-center gap-3">
-                <span className="font-mono text-sm font-bold text-brand-600">01</span>
-                <h3 className="text-lg font-bold text-slate-900">Deterministic AST Checks</h3>
-              </div>
-              <div className="md:col-span-8 text-sm text-slate-600 leading-relaxed">
-                13 native static analyzers parse your JavaScript AST locally. High-confidence detection of SQL injections, hardcoded credentials, and prototype pollution runs in milliseconds with zero false positives.
-              </div>
-            </div>
-
-            {/* Concept 2 */}
-            <div className="py-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div className="md:col-span-4 flex items-center gap-3">
-                <span className="font-mono text-sm font-bold text-brand-600">02</span>
-                <h3 className="text-lg font-bold text-slate-900">Contextual AI Reasoning</h3>
-              </div>
-              <div className="md:col-span-8 text-sm text-slate-600 leading-relaxed">
-                Google Gemini semantic analysis inspects multi-line function behavior, error handling branches, and business logic flaws that standard static rules cannot catch alone.
-              </div>
-            </div>
-
-            {/* Concept 3 */}
-            <div className="py-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div className="md:col-span-4 flex items-center gap-3">
-                <span className="font-mono text-sm font-bold text-brand-600">03</span>
-                <h3 className="text-lg font-bold text-slate-900">Verified Safe Patches</h3>
-              </div>
-              <div className="md:col-span-8 text-sm text-slate-600 leading-relaxed">
-                Every patch is cryptographically verified against SHA-256 source hashes and line ranges before application. One click applies the fix and immediately re-audits the code to confirm score improvement.
-              </div>
-            </div>
-
-            {/* Concept 4 */}
-            <div className="py-8 grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div className="md:col-span-4 flex items-center gap-3">
-                <span className="font-mono text-sm font-bold text-brand-600">04</span>
-                <h3 className="text-lg font-bold text-slate-900">Auditable Review Ledger</h3>
-              </div>
-              <div className="md:col-span-8 text-sm text-slate-600 leading-relaxed">
-                Every audit creates an immutable snapshot of code state, findings, and score progression. Seamlessly inspect your improvement timeline and restore past reviews in a single click.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Section: How It Works (Connected 5-Step Progression) */}
-      <section id="how-it-works" className="py-16 sm:py-20 px-4 sm:px-8 border-t border-slate-200 bg-slate-50">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
-              From code to confidence in five steps.
-            </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
-              A continuous, guided workflow designed to resolve issues without cognitive overload.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-dev-sm space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-mono font-bold text-xs text-slate-800">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/60 space-y-2">
+              <div className="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center font-mono font-bold text-xs text-slate-700 shadow-dev-sm">
                 01
               </div>
-              <h4 className="text-sm font-bold text-slate-900">Paste Code</h4>
+              <h3 className="text-xs font-bold text-slate-900">Paste Code</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Paste any source snippet or load an example scenario.
+                Paste any JS/JSX snippet or select an example scenario.
               </p>
             </div>
 
-            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-dev-sm space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-mono font-bold text-xs text-slate-800">
+            <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/60 space-y-2">
+              <div className="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center font-mono font-bold text-xs text-slate-700 shadow-dev-sm">
                 02
               </div>
-              <h4 className="text-sm font-bold text-slate-900">Run Review</h4>
+              <h3 className="text-xs font-bold text-slate-900">Run Review</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                AST checks run in milliseconds followed by AI reasoning.
+                Deterministic AST static checks run in milliseconds with AI reasoning.
               </p>
             </div>
 
-            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-dev-sm space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-mono font-bold text-xs text-slate-800">
+            <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/60 space-y-2">
+              <div className="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center font-mono font-bold text-xs text-slate-700 shadow-dev-sm">
                 03
               </div>
-              <h4 className="text-sm font-bold text-slate-900">Inspect Findings</h4>
+              <h3 className="text-xs font-bold text-slate-900">Inspect Findings</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Read the executive briefing and explore prioritized blockers.
+                See exact code locations, threat impact, and clean unified diffs.
               </p>
             </div>
 
-            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-dev-sm space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-mono font-bold text-xs text-slate-800">
+            <div className="p-4 rounded-lg border border-slate-200 bg-slate-50/60 space-y-2">
+              <div className="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center font-mono font-bold text-xs text-slate-700 shadow-dev-sm">
                 04
               </div>
-              <h4 className="text-sm font-bold text-slate-900">Apply Fix</h4>
+              <h3 className="text-xs font-bold text-slate-900">Apply Fix</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Inspect clean unified diffs and apply verified patches with one click.
+                Apply cryptographically verified patches with a single click.
               </p>
             </div>
 
-            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-dev-sm space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center font-mono font-bold text-xs text-brand-700">
+            <div className="p-4 rounded-lg border border-emerald-200 bg-emerald-50/60 space-y-2">
+              <div className="w-7 h-7 rounded-md bg-white border border-emerald-200 flex items-center justify-center font-mono font-bold text-xs text-emerald-800 shadow-dev-sm">
                 05
               </div>
-              <h4 className="text-sm font-bold text-slate-900">Verify Result</h4>
+              <h3 className="text-xs font-bold text-slate-900">Re-Analyze</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Automated re-audit confirms resolution and score jump.
+                Automated re-audit verifies resolution and updates score delta.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. Section: Product Capabilities (3 Review Lenses) */}
-      <section className="py-16 sm:py-20 px-4 sm:px-8 border-t border-slate-200 bg-white">
+      {/* 4. Section: Three Review Lenses */}
+      <section className="py-14 sm:py-16 px-4 sm:px-8 border-t border-slate-200 bg-slate-50">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-3">
-              Three review lenses. Zero guesswork.
+          <div className="mb-10 text-center max-w-xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
+              Three Dedicated Review Lenses
             </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
-              Every perspective answers one specific question so you can take action without friction.
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Progressive disclosure: see the executive verdict first, then dive into code lines and architecture.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl border border-slate-200 bg-slate-50/70 shadow-dev-sm space-y-3">
-              <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-brand-600 shadow-dev-sm">
-                <Layers className="w-5 h-5" />
+            <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-dev-sm space-y-2.5">
+              <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-brand-600 shadow-dev-sm">
+                <Layers className="w-4 h-4" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">Overview Lens</h3>
+              <h3 className="text-sm font-bold text-slate-900">Overview Lens (Hotkey 1)</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Executive briefing answering <em>"What's stopping this code?"</em> with quality score verdict, ranked blocker checklist, and review signals.
+                Answers <em>"What's stopping this code?"</em> with quality score verdict, ranked blocker checklist, and 4-dimension review signals.
               </p>
             </div>
 
-            <div className="p-6 rounded-xl border border-slate-200 bg-slate-50/70 shadow-dev-sm space-y-3">
-              <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-brand-600 shadow-dev-sm">
-                <ListTree className="w-5 h-5" />
+            <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-dev-sm space-y-2.5">
+              <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-brand-600 shadow-dev-sm">
+                <ListTree className="w-4 h-4" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">Findings Lens</h3>
+              <h3 className="text-sm font-bold text-slate-900">Findings Lens (Hotkey 2)</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Actionable task list paired with the dark code editor and senior PR review comments with verified diffs and one-click patching.
+                Actionable 3-column cockpit: task queue, dark code canvas with line range pips, and senior PR review comments with 1-click patching.
               </p>
             </div>
 
-            <div className="p-6 rounded-xl border border-slate-200 bg-slate-50/70 shadow-dev-sm space-y-3">
-              <div className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-brand-600 shadow-dev-sm">
-                <GitBranch className="w-5 h-5" />
+            <div className="p-5 rounded-xl border border-slate-200 bg-white shadow-dev-sm space-y-2.5">
+              <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-brand-600 shadow-dev-sm">
+                <GitBranch className="w-4 h-4" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">Architecture Lens</h3>
+              <h3 className="text-sm font-bold text-slate-900">Architecture Lens (Hotkey 3)</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Inferred execution control flow graph mapping handlers, validation, and database queries with vulnerable nodes highlighted.
+                Visual control flow diagram inferred from AST structure, highlighting vulnerable nodes and connecting them directly to source lines.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 6. Section: Final CTA */}
-      <section className="py-16 sm:py-24 px-4 sm:px-8 border-t border-slate-200 bg-slate-50">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-            Ready to review?
+      {/* 5. Final CTA */}
+      <section className="py-16 sm:py-20 px-4 sm:px-8 border-t border-slate-200 bg-white">
+        <div className="max-w-2xl mx-auto text-center space-y-5">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Ready to review your code?
           </h2>
-          <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
-            Paste your code or pick an example scenario. Catch problems before they reach production.
+          <p className="text-base text-slate-600 leading-relaxed">
+            Paste your JavaScript or JSX code. Inspect vulnerabilities with compiler precision and apply verified fixes.
           </p>
           <div className="pt-2">
             <Button
@@ -462,7 +410,7 @@ export function LandingPage({
               size="lg"
               onClick={onStartReviewing}
               rightIcon={<ArrowRight className="w-4 h-4" />}
-              className="shadow-dev text-base py-3.5 px-8"
+              className="py-3.5 px-8 text-base shadow-dev"
             >
               Start Reviewing Now
             </Button>
@@ -470,12 +418,14 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* 7. Footer */}
-      <footer className="py-8 px-4 sm:px-8 border-t border-slate-200 bg-white select-none">
+      {/* 6. Footer */}
+      <footer className="py-6 px-4 sm:px-8 border-t border-slate-200 bg-slate-50 select-none">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <CodeEagleLogo size={20} withText={true} withSubtitle={true} />
           <div className="text-xs text-slate-500 font-sans">
-            Deterministic AST Static Analysis · Contextual AI Reasoning · Verified Fixes
+            CodeEagle · Deterministic AST Static Analysis · Contextual AI Reasoning · Verified Fixes
+          </div>
+          <div className="text-xs text-slate-400 font-mono">
+            Pure JavaScript & JSX Static Engine
           </div>
         </div>
       </footer>

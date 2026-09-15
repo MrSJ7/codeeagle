@@ -20,6 +20,7 @@ import { AlertTriangle, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { LandingPage } from './components/LandingPage.jsx';
 import { ReviewOverview } from './components/ReviewOverview.jsx';
 import { ArchitectureFlow } from './components/ArchitectureFlow.jsx';
+import { HowItWorksModal } from './components/HowItWorksModal.jsx';
 
 export default function App() {
   const getInitialRoute = () => {
@@ -60,6 +61,7 @@ export default function App() {
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
   const [persistenceMode, setPersistenceMode] = useState('memory');
   const [isAiConfigured, setIsAiConfigured] = useState(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
 
   // Active filename based on selected sample
   const currentPreset = PRESETS.find((p) => p.id === selectedPresetId);
@@ -124,7 +126,7 @@ export default function App() {
       const result = await runReview(sourceCode, 'javascript', filenameToUse);
       setReviewData(result);
       setReviewStatus('SUCCESS');
-      setActiveLens('overview');
+      setActiveLens('findings');
       setSelectedIssueId(result.issues[0]?.id || null);
       setCurrentReviewId(result.reviewId || null);
       setIsHistoricalView(false);
@@ -200,6 +202,11 @@ export default function App() {
     const handleKeyDown = (e) => {
       // Escape closes modals/drawers first
       if (e.key === 'Escape') {
+        if (isHowItWorksOpen) {
+          e.preventDefault();
+          setIsHowItWorksOpen(false);
+          return;
+        }
         if (previewAiIssue) {
           e.preventDefault();
           setPreviewAiIssue(null);
@@ -441,9 +448,10 @@ export default function App() {
     >
       {currentRoute === 'landing' ? (
         <LandingPage
-          onStartReviewing={() => navigateTo('review', 'insecure-login', false)}
-          onSelectScenarioAndStart={(presetId) => navigateTo('review', presetId, false)}
+          onStartReviewing={() => navigateTo('review', 'insecure-login', true)}
+          onSelectScenarioAndStart={(presetId) => navigateTo('review', presetId, true)}
           onOpenHistory={() => setIsHistoryOpen(true)}
+          onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
           historyCount={historyRefreshTrigger}
         />
       ) : (
@@ -461,9 +469,11 @@ export default function App() {
             isStale={isStale}
             onToggleHistory={() => setIsHistoryOpen((prev) => !prev)}
             isHistoryOpen={isHistoryOpen}
+            historyCount={historyRefreshTrigger}
             persistenceMode={persistenceMode}
             isAiConfigured={isAiConfigured}
             onNavigateHome={() => navigateTo('landing')}
+            onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
             filename={currentFilename}
             language="JavaScript"
             lineCount={code.split('\n').length}
@@ -624,6 +634,16 @@ export default function App() {
         hasUnsavedChanges={reviewStatus === 'STALE'}
         persistenceMode={persistenceMode}
         refreshTrigger={historyRefreshTrigger}
+      />
+
+      {/* How It Works Modal */}
+      <HowItWorksModal
+        isOpen={isHowItWorksOpen}
+        onClose={() => setIsHowItWorksOpen(false)}
+        onStartReview={() => {
+          setIsHowItWorksOpen(false);
+          navigateTo('review', 'insecure-login', true);
+        }}
       />
 
       {/* Toast Notification */}

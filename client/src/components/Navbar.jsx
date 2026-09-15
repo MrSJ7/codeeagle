@@ -10,6 +10,7 @@ import {
   Layers,
   ListTree,
   GitBranch,
+  HelpCircle,
 } from 'lucide-react';
 import { CodeEagleLogo } from './CodeEagleLogo.jsx';
 import { Button } from './ui/Button.jsx';
@@ -26,6 +27,7 @@ export function Navbar({
   historyCount = null,
   onNavigateHome,
   onNavigateReview,
+  onOpenHowItWorks,
   filename = 'auth.js',
   language = 'JavaScript',
   lineCount = null,
@@ -48,29 +50,39 @@ export function Navbar({
             className="flex items-center hover:opacity-90 transition-opacity cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[4px]"
             title="CodeEagle — AI Code Review"
           >
-            <CodeEagleLogo size={24} withText={true} />
+            <CodeEagleLogo size={24} withText={true} withSubtitle={true} />
           </button>
 
-          {/* Editorial Nav Anchors */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-600">
-            <a
-              href="#product-demo"
-              className="hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:text-slate-900"
+          {/* Product Primary Navigation */}
+          <nav className="hidden md:flex items-center gap-2 text-xs font-medium text-slate-600">
+            <button
+              type="button"
+              onClick={onNavigateReview}
+              className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium cursor-pointer"
             >
-              Demo
-            </a>
-            <a
-              href="#why-codeeagle"
-              className="hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:text-slate-900"
+              Review
+            </button>
+            <button
+              type="button"
+              onClick={onToggleHistory}
+              className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium flex items-center gap-1.5 cursor-pointer"
             >
-              Why CodeEagle
-            </a>
-            <a
-              href="#how-it-works"
-              className="hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:text-slate-900"
-            >
-              How It Works
-            </a>
+              <span>History</span>
+              {typeof historyCount === 'number' && historyCount > 0 && (
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700 font-bold border border-slate-200">
+                  {historyCount}
+                </span>
+              )}
+            </button>
+            {onOpenHowItWorks && (
+              <button
+                type="button"
+                onClick={onOpenHowItWorks}
+                className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium cursor-pointer flex items-center gap-1"
+              >
+                <span>How it works</span>
+              </button>
+            )}
           </nav>
         </div>
 
@@ -82,6 +94,7 @@ export function Navbar({
             onClick={onToggleHistory}
             leftIcon={<History className="w-3.5 h-3.5" />}
             aria-label="Open review history"
+            className="hidden sm:inline-flex"
           >
             <span>History</span>
             {typeof historyCount === 'number' && historyCount > 0 && (
@@ -104,7 +117,7 @@ export function Navbar({
     );
   }
 
-  // Workspace Mode (Compact, Precision Developer Cockpit)
+  // Workspace Mode (Precision Developer Review Cockpit)
   return (
     <header className="h-13 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between select-none shrink-0 z-20 shadow-dev-sm">
       {/* Left: Brand Mark + Breadcrumb File Context */}
@@ -115,7 +128,7 @@ export function Navbar({
           className="flex items-center hover:opacity-85 transition-opacity cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[4px]"
           title="Return to Product Introduction"
         >
-          <CodeEagleLogo size={20} withText={true} />
+          <CodeEagleLogo size={20} withText={true} withSubtitle={true} />
         </button>
 
         <div className="h-4 w-px bg-slate-200 hidden sm:block shrink-0" />
@@ -207,15 +220,26 @@ export function Navbar({
         </div>
       )}
 
-      {/* Right: History & Primary Action */}
-      <div className="flex items-center gap-2.5 shrink-0">
+      {/* Right: History, Info & Primary Action */}
+      <div className="flex items-center gap-2 shrink-0">
+        {onOpenHowItWorks && (
+          <button
+            type="button"
+            onClick={onOpenHowItWorks}
+            className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer hidden md:flex items-center gap-1 text-xs"
+            title="How CodeEagle works"
+          >
+            <HelpCircle className="w-4 h-4" />
+            <span className="hidden lg:inline">Help</span>
+          </button>
+        )}
+
         <Button
           variant={isHistoryOpen ? 'secondary' : 'ghost'}
           size="sm"
           onClick={onToggleHistory}
           leftIcon={<History className="w-3.5 h-3.5 text-slate-500" />}
           aria-label={isHistoryOpen ? 'Close review history' : 'Open review history'}
-          className={isHistoryOpen ? 'bg-slate-100 border-slate-300 text-slate-900' : ''}
         >
           <span className="hidden sm:inline">History</span>
           {typeof historyCount === 'number' && historyCount > 0 && (
