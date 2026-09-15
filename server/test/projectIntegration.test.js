@@ -153,6 +153,22 @@ async function runIntegration() {
   assert(histCtx.getStatus() === 200, "GET reviews history returned HTTP 200");
   assert(histCtx.getData().reviews.length >= 2, "History holds multiple review snapshots");
 
+  // 8. Generate Automated Refactor for Finding
+  const dbFile = reviewData.review.files.find(f => f.path.includes("db.js"));
+  const evalIssue = dbFile.issues.find(i => i.rule === "SEC-EVAL");
+  if (evalIssue) {
+    const refactorCtx = mockReqRes({
+      params: { projectId, fileId: dbFile.id, findingId: evalIssue.id },
+      body: { issue: evalIssue },
+    });
+    await projectController.refactorFinding(refactorCtx.req, refactorCtx.res, (err) => { throw err; });
+    assert(refactorCtx.getStatus() === 200, "Refactor finding returned HTTP 200");
+    const refactorData = refactorCtx.getData();
+    assert(refactorData.success === true, "Refactor generation succeeded");
+    assert(typeof refactorData.replacement === "string", "Refactor returned replacement string");
+    assert(typeof refactorData.explanation === "string", "Refactor returned explanation");
+  }
+
   console.log("\n=== Integration Test Results: " + passed + " passed, " + failed + " failed ===\n");
   if (failed > 0) process.exit(1);
 }
