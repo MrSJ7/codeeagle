@@ -84,13 +84,13 @@ export function CodeEditor({
   useEffect(() => {
     if (activeStartLine && textareaRef.current) {
       const lineHeight = 24; // matches leading-6
-      const targetScroll = (activeStartLine - 4) * lineHeight;
+      const targetScroll = Math.max(0, (activeStartLine - 3) * lineHeight);
       textareaRef.current.scrollTo({
-        top: Math.max(0, targetScroll),
+        top: targetScroll,
         behavior: 'smooth',
       });
     }
-  }, [activeStartLine]);
+  }, [activeStartLine, filename, code]);
 
   // Highlight styling based on issue severity
   const getHighlightColor = () => {

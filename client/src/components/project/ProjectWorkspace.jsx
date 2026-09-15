@@ -236,8 +236,11 @@ export function ProjectWorkspace({
               language={selectedFile.language || "javascript"}
               filename={selectedFile.filename}
               issues={currentIssues}
-              activeIssueId={selectedIssueId}
-              onSelectIssue={(issue) => setSelectedIssueId(issue?.id)}
+              highlightedIssue={selectedIssue}
+              onSelectIssue={(issueId) => {
+                const id = typeof issueId === "string" ? issueId : issueId?.id;
+                setSelectedIssueId(id);
+              }}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground">
@@ -267,9 +270,13 @@ export function ProjectWorkspace({
                   <IssueDetails
                     issue={selectedIssue}
                     code={fileContent}
+                    filename={selectedFile?.filename || selectedFile?.path}
                     codeHash={selectedFile?.contentHash}
+                    onApplyPatch={handleApplyPatch}
                     onApplyFix={handleApplyPatch}
+                    onPreviewAiPatch={() => setIsPatchModalOpen(true)}
                     onPreviewPatch={() => setIsPatchModalOpen(true)}
+                    isApplyingPatch={isPatching}
                     isApplying={isPatching}
                   />
                 </div>

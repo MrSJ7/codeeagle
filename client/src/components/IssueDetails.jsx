@@ -13,15 +13,22 @@ import { Button } from './ui/Button.jsx';
 export function IssueDetails({
   issue,
   onApplyPatch,
+  onApplyFix,
   onPreviewAiPatch,
+  onPreviewPatch,
   reviewStatus = 'IDLE',
   isStale = false,
   isApplyingPatch = false,
+  isApplying = false,
   isVerifyingAiPatch = false,
-  filename = 'auth.js',
+  filename = '',
   className = '',
 }) {
   const [copyStatus, setCopyStatus] = useState(null);
+
+  const applyHandler = onApplyPatch || onApplyFix;
+  const previewHandler = onPreviewAiPatch || onPreviewPatch;
+  const isBusy = isApplyingPatch || isApplying || isVerifyingAiPatch;
 
   if (!issue) {
     return (
@@ -105,7 +112,7 @@ export function IssueDetails({
 
         <div className="flex items-center gap-2 text-xs font-mono text-slate-500 dark:text-obsidian-400 mt-1.5 flex-wrap">
           <span className="text-slate-800 dark:text-obsidian-200 font-semibold">
-            {filename}:{issue.line}
+            {filename || issue.path || 'source.js'}:{issue.line}
             {issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
           </span>
           {issue.rule && (
@@ -145,8 +152,8 @@ export function IssueDetails({
           </p>
         </div>
 
-        {/* Suggested change */}
-        {hasFix && issue.fix?.replacement && (
+        {/* Suggested change (when auto-fix is available) */}
+        {hasFix && issue.fix?.replacement ? (
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-mono uppercase tracking-wider text-slate-700 dark:text-obsidian-300 font-semibold">
@@ -188,6 +195,17 @@ export function IssueDetails({
               </div>
             </div>
           </div>
+        ) : (
+          /* Manual Remediation Guidance when automated patch requires architectural decisions */
+          <div className="p-3.5 rounded-lg border border-slate-200 dark:border-obsidian-800 bg-slate-50/80 dark:bg-obsidian-850/60 space-y-2">
+            <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-slate-800 dark:text-obsidian-200 uppercase tracking-wider">
+              <Info className="w-3.5 h-3.5 text-blue-600 dark:text-brand-400" />
+              <span>Manual Refactor Recommended</span>
+            </div>
+            <p className="text-xs text-slate-600 dark:text-obsidian-300 leading-relaxed">
+              This finding spans lines <strong className="font-mono text-slate-900 dark:text-obsidian-100">{issue.line}{issue.endLine && issue.endLine !== issue.line ? `–${issue.endLine}` : ''}</strong>. To fix this cleanly without altering business logic, extract sub-routines, helper utilities, or guard clauses into focused functions.
+            </p>
+          </div>
         )}
       </div>
 
@@ -200,13 +218,13 @@ export function IssueDetails({
             <span>Source verified · Fix verified against current code</span>
           </div>
 
-          {isStatic && (
+          {isStatic && applyHandler && (
             <Button
               variant="primary"
               size="lg"
-              onClick={() => onApplyPatch(issue)}
-              disabled={isStale || isApplyingPatch}
-              isLoading={isApplyingPatch}
+              onClick={() => applyHandler(issue)}
+              disabled={isStale || isBusy}
+              isLoading={isBusy}
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="w-full"
             >
@@ -214,13 +232,13 @@ export function IssueDetails({
             </Button>
           )}
 
-          {isAi && (
+          {isAi && previewHandler && (
             <Button
               variant="primary"
               size="lg"
-              onClick={() => onPreviewAiPatch(issue)}
-              disabled={isStale || isVerifyingAiPatch}
-              isLoading={isVerifyingAiPatch}
+              onClick={() => previewHandler(issue)}
+              disabled={isStale || isBusy}
+              isLoading={isBusy}
               leftIcon={<Sparkles className="w-4 h-4" />}
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="w-full"
