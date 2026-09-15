@@ -179,7 +179,7 @@ export function CodeEagleLogo({
         >
           {/* Main Brand Title: "Code" + "Eagle" broken into animated character pieces */}
           <div className={`flex items-center ${titleClass}`}>
-            <span className={dark ? 'text-obsidian-50' : 'text-obsidian-900'}>
+            <span className={dark ? 'text-obsidian-50' : 'text-slate-900'}>
               {PREFIX_CHARS.map((char, i) => (
                 <motion.span
                   key={`prefix-${i}`}
@@ -214,7 +214,7 @@ export function CodeEagleLogo({
           {withSubtitle && (
             <div
               className={`flex items-center gap-1 mt-0.5 ${subtitleClass} ${
-                dark ? 'text-obsidian-400' : 'text-obsidian-500'
+                dark ? 'text-obsidian-400' : 'text-slate-500'
               }`}
             >
               {SUBTITLE_WORDS.map((word, i) => (
