@@ -104,10 +104,10 @@ export const BentoCard = ({
       className={cn(
         colClasses[colSpan],
         rowClasses[rowSpan],
-        "relative flex flex-col justify-between overflow-hidden rounded-[8px] p-5 sm:p-6",
-        "bg-[#0E0E0E] hover:bg-[#121212] transition-colors duration-200",
-        "border border-[#222222] hover:border-[#333333]",
-        "shadow-[0_1px_3px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.03)_inset]",
+        "relative flex flex-col justify-between overflow-hidden rounded-[8px] p-5 sm:p-6 transition-colors duration-200",
+        "bg-white dark:bg-[#0E0E0E] hover:bg-slate-50/80 dark:hover:bg-[#121212]",
+        "border border-slate-200 dark:border-[#222222] hover:border-slate-300 dark:hover:border-[#333333]",
+        "shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.03)_inset]",
         className
       )}
       {...props}
@@ -131,38 +131,38 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
   return (
     <BentoGrid className={className}>
       {/* 1. Tall Card: Babel AST Compiler-Grade Guard (Spans 2 rows on desktop) */}
-      <BentoCard colSpan={1} rowSpan={2} className="justify-between bg-gradient-to-b from-[#111111] to-[#0A0A0A]">
+      <BentoCard colSpan={1} rowSpan={2} className="justify-between bg-white dark:bg-gradient-to-b dark:from-[#111111] dark:to-[#0A0A0A]">
         <div>
           <div className="flex items-center justify-between mb-4">
-            <span className="font-mono text-[11px] tracking-wider uppercase px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] text-brand-400 border border-[#2A2A2A] font-semibold">
+            <span className="font-mono text-[11px] tracking-wider uppercase px-2 py-0.5 rounded-[4px] bg-blue-50 dark:bg-[#1A1A1A] text-blue-600 dark:text-brand-400 border border-blue-200 dark:border-[#2A2A2A] font-semibold">
               Deterministic Engine
             </span>
           </div>
 
-          <h3 className="text-lg font-bold text-[#F5F3EF] tracking-tight mb-2">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-[#F5F3EF] tracking-tight mb-2">
             Babel AST Parser
           </h3>
-          <p className="text-sm text-[#A6A29B] leading-relaxed mb-4">
+          <p className="text-sm text-slate-600 dark:text-[#A6A29B] leading-relaxed mb-4">
             Directly parses JavaScript and JSX into standard abstract syntax trees. Traverses nodes locally before external calls, ensuring zero false negatives on syntax flaws and hardcoded secrets.
           </p>
 
           {/* AST Traversal Hierarchy Display */}
-          <div className="rounded-[6px] bg-[#070707] border border-[#1E1E1E] p-3 font-mono text-[11px] space-y-1.5 text-[#D4D0C8]">
-            <div className="flex items-center gap-1.5 text-brand-400 font-semibold text-[10px] uppercase tracking-wider">
+          <div className="rounded-[6px] bg-slate-50 dark:bg-[#070707] border border-slate-200 dark:border-[#1E1E1E] p-3 font-mono text-[11px] space-y-1.5 text-slate-700 dark:text-[#D4D0C8]">
+            <div className="flex items-center gap-1.5 text-blue-600 dark:text-brand-400 font-semibold text-[10px] uppercase tracking-wider">
               <Terminal className="h-3 w-3" />
               <span>AST Visitor Pipeline</span>
             </div>
-            <div className="text-[10px] text-[#74716C] pl-2 border-l border-[#222222]">
+            <div className="text-[10px] text-slate-500 dark:text-[#74716C] pl-2 border-l border-slate-200 dark:border-[#222222]">
               <div>&gt; Program.body[0]</div>
-              <div className="text-brand-300">&gt; VariableDeclaration</div>
-              <div className="text-red-400">&gt; Literal (entropy: high)</div>
+              <div className="text-blue-600 dark:text-brand-300">&gt; VariableDeclaration</div>
+              <div className="text-red-500 dark:text-red-400">&gt; Literal (entropy: high)</div>
             </div>
           </div>
         </div>
 
-        <div className="pt-4 mt-4 border-t border-[#1C1C1C] flex items-center justify-between text-[11px] font-mono text-[#74716C]">
+        <div className="pt-4 mt-4 border-t border-slate-200 dark:border-[#1C1C1C] flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-[#74716C]">
           <span>Coverage</span>
-          <span className="text-brand-400 font-bold">13 Built-in Rules</span>
+          <span className="text-blue-600 dark:text-brand-400 font-bold">13 Built-in Rules</span>
         </div>
       </BentoCard>
 
@@ -170,18 +170,18 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={1}>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[11px] uppercase text-[#74716C] font-semibold tracking-wider">
+            <span className="font-mono text-[11px] uppercase text-slate-500 dark:text-[#74716C] font-semibold tracking-wider">
               Semantic Audit
             </span>
           </div>
-          <h3 className="text-base font-bold text-[#F5F3EF] mb-1">
+          <h3 className="text-base font-bold text-slate-900 dark:text-[#F5F3EF] mb-1">
             Gemini Contextual AI
           </h3>
-          <p className="text-sm text-[#A6A29B] leading-relaxed">
+          <p className="text-sm text-slate-600 dark:text-[#A6A29B] leading-relaxed">
             Catches nuanced race conditions, missing input sanitization, and subtle business logic vulnerabilities beyond deterministic syntax rules.
           </p>
         </div>
-        <div className="pt-3 border-t border-[#1C1C1C] text-[11px] font-mono text-brand-400">
+        <div className="pt-3 border-t border-slate-200 dark:border-[#1C1C1C] text-[11px] font-mono text-blue-600 dark:text-brand-400">
           Hybrid AST + AI Synergy
         </div>
       </BentoCard>
@@ -190,18 +190,18 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={1}>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[11px] uppercase text-[#38C793] font-semibold tracking-wider">
+            <span className="font-mono text-[11px] uppercase text-emerald-600 dark:text-[#38C793] font-semibold tracking-wider">
               Cryptographic
             </span>
           </div>
-          <h3 className="text-base font-bold text-[#F5F3EF] mb-1">
+          <h3 className="text-base font-bold text-slate-900 dark:text-[#F5F3EF] mb-1">
             SHA-256 Hash Guard
           </h3>
-          <p className="text-sm text-[#A6A29B] leading-relaxed">
+          <p className="text-sm text-slate-600 dark:text-[#A6A29B] leading-relaxed">
             Single-authority checksum calculated directly from raw source. Prevents stale mutations and duplicate patch conflicts.
           </p>
         </div>
-        <div className="pt-3 border-t border-[#1C1C1C] text-[10px] font-mono text-[#74716C] truncate">
+        <div className="pt-3 border-t border-slate-200 dark:border-[#1C1C1C] text-[10px] font-mono text-slate-500 dark:text-[#74716C] truncate">
           checksum: 64-char hex verification
         </div>
       </BentoCard>
@@ -210,20 +210,20 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={1}>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[11px] uppercase text-[#74716C] font-semibold tracking-wider">
+            <span className="font-mono text-[11px] uppercase text-slate-500 dark:text-[#74716C] font-semibold tracking-wider">
               Precision
             </span>
           </div>
-          <h3 className="text-base font-bold text-[#F5F3EF] mb-1">
+          <h3 className="text-base font-bold text-slate-900 dark:text-[#F5F3EF] mb-1">
             Line-Grounded Findings
           </h3>
-          <p className="text-sm text-[#A6A29B] leading-relaxed">
+          <p className="text-sm text-slate-600 dark:text-[#A6A29B] leading-relaxed">
             Pinpoints exact start and end line ranges. Clicking any finding highlights the editor canvas and activates gutter severity markers.
           </p>
         </div>
-        <div className="pt-3 border-t border-[#1C1C1C] flex items-center justify-between text-[11px] font-mono text-[#74716C]">
+        <div className="pt-3 border-t border-slate-200 dark:border-[#1C1C1C] flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-[#74716C]">
           <span>Gutter Sync</span>
-          <span className="text-[#F5F3EF] font-semibold">1:1 Line Map</span>
+          <span className="text-slate-900 dark:text-[#F5F3EF] font-semibold">1:1 Line Map</span>
         </div>
       </BentoCard>
 
@@ -231,54 +231,54 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
       <BentoCard colSpan={1} rowSpan={1}>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[11px] uppercase text-brand-500 font-semibold tracking-wider">
+            <span className="font-mono text-[11px] uppercase text-blue-600 dark:text-brand-500 font-semibold tracking-wider">
               Instant
             </span>
           </div>
-          <h3 className="text-base font-bold text-[#F5F3EF] mb-1">
+          <h3 className="text-base font-bold text-slate-900 dark:text-[#F5F3EF] mb-1">
             Automated Re-Auditing
           </h3>
-          <p className="text-sm text-[#A6A29B] leading-relaxed">
+          <p className="text-sm text-slate-600 dark:text-[#A6A29B] leading-relaxed">
             Applying a fix immediately re-evaluates the code in memory, updating the security score from 50 to 100 without manual restarts.
           </p>
         </div>
-        <div className="pt-3 border-t border-[#1C1C1C] flex items-center justify-between text-[11px] font-mono text-[#38C793]">
+        <div className="pt-3 border-t border-slate-200 dark:border-[#1C1C1C] flex items-center justify-between text-[11px] font-mono text-emerald-600 dark:text-[#38C793]">
           <span>Score Delta</span>
           <span className="font-bold">+25 pts per fix</span>
         </div>
       </BentoCard>
 
       {/* 6. Wide Bottom Card: Verified Unified Diffs & Persistent History (Spans 3 cols on desktop) */}
-      <BentoCard colSpan={3} rowSpan={1} className="bg-gradient-to-r from-[#0E0E0E] via-[#121212] to-[#0E0E0E]">
+      <BentoCard colSpan={3} rowSpan={1} className="bg-white dark:bg-gradient-to-r dark:from-[#0E0E0E] dark:via-[#121212] dark:to-[#0E0E0E]">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           <div className="md:col-span-6 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] tracking-wider uppercase text-brand-400 font-semibold">
+              <span className="font-mono text-[11px] tracking-wider uppercase text-blue-600 dark:text-brand-400 font-semibold">
                 Verified Executable Patches & History
               </span>
             </div>
-            <h3 className="text-base font-bold text-[#F5F3EF]">
+            <h3 className="text-base font-bold text-slate-900 dark:text-[#F5F3EF]">
               Senior Staff PR Comments & Verified Unified Diffs
             </h3>
-            <p className="text-sm text-[#A6A29B] leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-[#A6A29B] leading-relaxed">
               Every finding includes rationale, remediation advice, and an executable unified diff. All audits are stored in review history with instant single-click state restoration.
             </p>
           </div>
 
           <div className="md:col-span-6">
             {/* Real Code Diff Preview */}
-            <div className="rounded-[6px] bg-[#070707] border border-[#222222] p-3 font-mono text-[11px] space-y-1">
-              <div className="text-[10px] text-[#74716C] mb-1 flex items-center justify-between">
+            <div className="rounded-[6px] bg-slate-50 dark:bg-[#070707] border border-slate-200 dark:border-[#222222] p-3 font-mono text-[11px] space-y-1">
+              <div className="text-[10px] text-slate-500 dark:text-[#74716C] mb-1 flex items-center justify-between">
                 <span>Unified Diff Preview</span>
-                <span className="text-[#38C793] flex items-center gap-1">
+                <span className="text-emerald-600 dark:text-[#38C793] flex items-center gap-1 font-semibold">
                   <ShieldCheck className="w-3 h-3" />
                   Verified
                 </span>
               </div>
-              <div className="px-2 py-1 rounded-[3px] bg-red-950/40 text-red-400 border border-red-900/30 truncate">
+              <div className="px-2 py-1 rounded-[3px] bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/30 truncate">
                 - const JWT_SECRET = &quot;production_super_secret_key_12345&quot;;
               </div>
-              <div className="px-2 py-1 rounded-[3px] bg-emerald-950/40 text-emerald-300 border border-emerald-900/30 truncate">
+              <div className="px-2 py-1 rounded-[3px] bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/30 truncate">
                 + const JWT_SECRET = process.env.JWT_SECRET;
               </div>
             </div>

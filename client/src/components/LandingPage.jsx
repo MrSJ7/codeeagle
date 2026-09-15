@@ -14,6 +14,7 @@ import { Navbar } from './Navbar.jsx';
 import { CodeEagleLogo } from './CodeEagleLogo.jsx';
 import { CodeEagleBentoShowcase } from './ui/bento-product-features.tsx';
 import { FeatureCard } from './ui/feature-card.tsx';
+import { useTheme } from '@/context/ThemeContext.jsx';
 
 export function LandingPage({
   onStartReviewing,
@@ -22,6 +23,7 @@ export function LandingPage({
   onOpenHowItWorks,
   historyCount = 0,
 }) {
+  const { isLight, isDark } = useTheme();
   // Live Miniature Product Demo State
   const [demoFixed, setDemoFixed] = useState(false);
   const [isApplyingDemo, setIsApplyingDemo] = useState(false);
@@ -185,31 +187,31 @@ export function LandingPage({
           <Card3D
             maxTilt={1.0}
             withGlare={true}
-            className="rounded-[10px] bg-[#0A0A0A] border border-[#242424] overflow-hidden shadow-[0_24px_70px_-16px_rgba(0,0,0,0.95),0_0_0_1px_rgba(255,255,255,0.06),0_1px_0_rgba(255,255,255,0.08)_inset]"
+            className="rounded-[10px] bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-[#242424] overflow-hidden shadow-xl dark:shadow-[0_24px_70px_-16px_rgba(0,0,0,0.95),0_0_0_1px_rgba(255,255,255,0.06),0_1px_0_rgba(255,255,255,0.08)_inset]"
           >
             {/* Workbench IDE Header Bar */}
-            <div className="h-11 bg-[#101010] px-4 flex items-center justify-between border-b border-[#202020] text-xs font-mono select-none">
+            <div className="h-11 bg-slate-100 dark:bg-[#101010] px-4 flex items-center justify-between border-b border-slate-200 dark:border-[#202020] text-xs font-mono select-none">
               {/* Left: Active File Tab */}
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#0A0A0A] border border-[#262626] text-xs font-mono font-medium text-[#F5F3EF]">
-                  <FileCode className="w-3.5 h-3.5 text-brand-400" />
+                <div className="flex items-center gap-2 px-3 py-1 rounded-[4px] bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-[#262626] text-xs font-mono font-medium text-slate-900 dark:text-[#F5F3EF]">
+                  <FileCode className="w-3.5 h-3.5 text-blue-600 dark:text-brand-400" />
                   <span>auth.js</span>
-                  <span className="text-[10px] text-obsidian-500">· JS · 27 lines</span>
+                  <span className="text-[10px] text-slate-500 dark:text-obsidian-500">· JS · 27 lines</span>
                 </div>
               </div>
 
               {/* Right: Engine Indicator Pill */}
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-[#141414] border border-[#242424] text-[11px] font-mono text-obsidian-300">
-                  <span className="font-semibold text-obsidian-200">Babel AST Engine</span>
-                  <span className="text-obsidian-600">·</span>
-                  <span className="text-obsidian-400 text-[10px]">13 Rules Active</span>
+                <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#242424] text-[11px] font-mono text-slate-700 dark:text-obsidian-300">
+                  <span className="font-semibold text-slate-900 dark:text-obsidian-200">Babel AST Engine</span>
+                  <span className="text-slate-400 dark:text-obsidian-600">·</span>
+                  <span className="text-slate-500 dark:text-obsidian-400 text-[10px]">13 Rules Active</span>
                 </div>
               </div>
             </div>
 
             {/* Workbench Grid: Left = Code Canvas, Right = Senior PR Review Comment */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[#202020]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-[#202020]">
               {/* Left Column: Monaco-Style Code Canvas */}
               <div className="lg:col-span-7 bg-[#070707] font-mono text-xs overflow-x-auto select-text p-4 sm:p-5">
                 <div className="space-y-0.5">
@@ -232,13 +234,15 @@ export function LandingPage({
                   {/* Line 3 */}
                   <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
                     <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">3</span>
-                    <span className="text-[#6A9955] italic">// Authentication middleware</span>
+                    <span className="text-obsidian-300">
+                      <span className="text-[#6A9955] italic">// Authentication middleware</span>
+                    </span>
                   </div>
 
                   {/* Line 4 */}
                   <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
                     <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">4</span>
-                    <span className="text-obsidian-200">
+                    <span className="text-obsidian-300">
                       <span className="text-[#C586C0]">export</span> <span className="text-[#569CD6]">function</span> <span className="text-[#DCDCAA]">generateToken</span>(<span className="text-[#9CDCFE]">user</span>) &#123;
                     </span>
                   </div>
@@ -246,32 +250,35 @@ export function LandingPage({
                   {/* Line 5 */}
                   <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
                     <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">5</span>
-                    <span className="text-obsidian-200 pl-4">
+                    <span className="text-obsidian-300 pl-4">
                       <span className="text-[#569CD6]">const</span> <span className="text-[#9CDCFE]">payload</span> = &#123; <span className="text-[#9CDCFE]">id</span>: <span className="text-[#9CDCFE]">user</span>.<span className="text-[#9CDCFE]">id</span>, <span className="text-[#9CDCFE]">role</span>: <span className="text-[#9CDCFE]">user</span>.<span className="text-[#9CDCFE]">role</span> &#125;;
                     </span>
                   </div>
 
-                  {/* Line 6: The Highlighted Flaw */}
+                  {/* Line 6: Interactive Finding Line */}
                   <div
-                    className={`flex items-center py-1.5 px-2 rounded-[4px] transition-all duration-300 ${
+                    className={`group flex items-center py-0.5 px-2 rounded-[3px] transition-all duration-300 ${
                       demoFixed
-                        ? 'bg-emerald-950/25 border border-emerald-500/40 text-emerald-200 shadow-[0_0_24px_rgba(16,185,129,0.12)_inset]'
-                        : 'bg-red-950/30 border border-red-500/40 text-red-200 shadow-[0_0_24px_rgba(239,68,68,0.15)_inset]'
+                        ? 'bg-emerald-950/20 border-l-2 border-emerald-500'
+                        : 'bg-red-950/25 border-l-2 border-red-500'
                     }`}
                   >
-                    <div className="w-7 flex items-center justify-end pr-2 select-none">
-                      <span className={`w-1.5 h-3.5 rounded-full mr-1.5 ${demoFixed ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.7)]' : 'bg-severity-critical animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.7)]'}`} />
-                      <span className="font-bold text-obsidian-300 font-mono text-[11px]">6</span>
-                    </div>
-                    <span className="pl-3 font-semibold tracking-wide">
+                    <span
+                      className={`w-7 text-right pr-4 select-none font-mono text-[11px] font-bold ${
+                        demoFixed ? 'text-emerald-400' : 'text-red-400'
+                      }`}
+                    >
+                      6
+                    </span>
+                    <span className="text-obsidian-100 pl-4 font-semibold">
                       {demoFixed ? (
-                        <span>
+                        <>
                           <span className="text-[#569CD6]">const</span> <span className="text-emerald-400 font-bold">JWT_SECRET</span> = <span className="text-[#9CDCFE]">process</span>.<span className="text-[#9CDCFE]">env</span>.<span className="text-emerald-400 font-bold">JWT_SECRET</span>;
-                        </span>
+                        </>
                       ) : (
-                        <span>
-                          <span className="text-[#569CD6]">const</span> <span className="text-red-400 font-bold underline decoration-wavy decoration-red-500">JWT_SECRET</span> = <span className="text-[#CE9178]">"production_super_secret_key_12345"</span>;
-                        </span>
+                        <>
+                          <span className="text-[#569CD6]">const</span> <span className="text-red-400 font-bold underline decoration-wavy decoration-red-500">JWT_SECRET</span> = <span className="text-[#CE9178]">&quot;production_super_secret_key_12345&quot;</span>;
+                        </>
                       )}
                     </span>
                   </div>
@@ -279,7 +286,7 @@ export function LandingPage({
                   {/* Line 7 */}
                   <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
                     <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">7</span>
-                    <span className="text-obsidian-200 pl-4">
+                    <span className="text-obsidian-300 pl-4">
                       <span className="text-[#C586C0]">return</span> <span className="text-[#9CDCFE]">jwt</span>.<span className="text-[#DCDCAA]">sign</span>(<span className="text-[#9CDCFE]">payload</span>, <span className="text-[#9CDCFE]">JWT_SECRET</span>, &#123; <span className="text-[#9CDCFE]">expiresIn</span>: <span className="text-[#CE9178]">'1h'</span> &#125;);
                     </span>
                   </div>
@@ -287,28 +294,40 @@ export function LandingPage({
                   {/* Line 8 */}
                   <div className="group flex items-center py-0.5 px-2 rounded-[3px] hover:bg-white/[0.03] transition-colors">
                     <span className="w-7 text-right pr-4 select-none text-obsidian-600 font-mono text-[11px]">8</span>
-                    <span className="text-obsidian-300">&#125;</span>
+                    <span className="text-obsidian-300">
+                      &#125;
+                    </span>
                   </div>
                 </div>
 
-                {/* Live Diff Mutation Notice */}
-                {demoFixed && (
-                  <div className="mt-5 p-3.5 rounded-[6px] bg-emerald-950/30 border border-emerald-500/40 text-emerald-300 flex items-center justify-between shadow-[0_4px_16px_rgba(16,185,129,0.15)] animate-in fade-in duration-300">
-                    <div className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span className="text-xs font-sans">
-                        Patch verified via SHA-256 hash and applied. Score improved: <strong>50 → 75 (+25 pts)</strong>
-                      </span>
-                    </div>
-                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-[4px] bg-emerald-900/50 text-emerald-200 border border-emerald-700/60 shrink-0">
-                      1 BLOCKER RESOLVED
+                {/* Gutter footer status */}
+                <div className="mt-6 pt-3 border-t border-[#1C1C1C] flex items-center justify-between text-[11px] font-mono text-obsidian-500 select-none">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        demoFixed ? 'bg-emerald-500 animate-pulse' : 'bg-red-500 animate-pulse'
+                      }`}
+                    />
+                    <span>
+                      {demoFixed
+                        ? 'Zero vulnerabilities detected in current buffer'
+                        : '1 high-severity blocker detected'}
                     </span>
                   </div>
-                )}
+                  {demoFixed && (
+                    <button
+                      onClick={handleResetDemo}
+                      className="text-[11px] text-obsidian-400 hover:text-brand-400 flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      Reset Demo
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Right Column: Senior PR Review Comment & Verified Patch */}
-              <div className="lg:col-span-5 bg-[#0C0C0C] p-5 sm:p-6 flex flex-col justify-between space-y-4">
+              <div className="lg:col-span-5 bg-slate-50 dark:bg-[#0C0C0C] p-5 sm:p-6 flex flex-col justify-between space-y-4">
                 <div className="space-y-4">
                   {/* Finding Header */}
                   <div className="flex items-start justify-between gap-3">
@@ -319,63 +338,63 @@ export function LandingPage({
                         ) : (
                           <SeverityBadge severity="CRITICAL" />
                         )}
-                        <span className="font-mono text-[11px] text-obsidian-400 px-2 py-0.5 rounded-[4px] bg-[#141414] border border-[#222222]">
+                        <span className="font-mono text-[11px] text-slate-600 dark:text-obsidian-400 px-2 py-0.5 rounded-[4px] bg-white dark:bg-[#141414] border border-slate-200 dark:border-[#222222]">
                           auth.js:6
                         </span>
                       </div>
-                      <h3 className="text-base font-bold text-[#F5F3EF] tracking-tight">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-[#F5F3EF] tracking-tight">
                         {demoFixed
                           ? 'Hardcoded Credential Resolved'
                           : 'Hardcoded credential in JWT_SECRET'}
                       </h3>
                     </div>
-                    <span className="px-2 py-0.5 rounded-[4px] bg-[#161616] text-[10px] font-mono font-semibold text-brand-400 border border-brand-500/30 tracking-wider">
+                    <span className="px-2 py-0.5 rounded-[4px] bg-white dark:bg-[#161616] text-[10px] font-mono font-semibold text-blue-600 dark:text-brand-400 border border-blue-200 dark:border-brand-500/30 tracking-wider">
                       SEC-SECRET
                     </span>
                   </div>
 
                   {/* Why this matters */}
-                  <div className="p-3.5 rounded-[6px] bg-[#111111] border border-[#222222] hover:border-[#2C2C2C] transition-colors space-y-1.5 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
-                    <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider">
+                  <div className="p-3.5 rounded-[6px] bg-white dark:bg-[#111111] border border-slate-200 dark:border-[#222222] hover:border-slate-300 dark:hover:border-[#2C2C2C] transition-colors space-y-1.5 shadow-xs dark:shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
+                    <div className="font-mono text-[11px] font-semibold text-slate-800 dark:text-obsidian-200 uppercase tracking-wider">
                       Why This Matters
                     </div>
-                    <p className="text-sm text-[#A6A29B] leading-relaxed">
+                    <p className="text-sm text-slate-600 dark:text-[#A6A29B] leading-relaxed">
                       Anyone with repo access could forge tokens and log in as any user.
                     </p>
                   </div>
 
                   {/* Recommendation */}
-                  <div className="p-3.5 rounded-[6px] bg-[#111111] border border-[#222222] hover:border-[#2C2C2C] transition-colors space-y-1.5 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
-                    <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider">
+                  <div className="p-3.5 rounded-[6px] bg-white dark:bg-[#111111] border border-slate-200 dark:border-[#222222] hover:border-slate-300 dark:hover:border-[#2C2C2C] transition-colors space-y-1.5 shadow-xs dark:shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
+                    <div className="font-mono text-[11px] font-semibold text-slate-800 dark:text-obsidian-200 uppercase tracking-wider">
                       Recommendation
                     </div>
-                    <p className="text-sm text-[#A6A29B] leading-relaxed">
+                    <p className="text-sm text-slate-600 dark:text-[#A6A29B] leading-relaxed">
                       Move the secret to an environment variable via{' '}
-                      <code className="text-brand-400 font-mono bg-brand-500/10 px-1.5 py-0.5 rounded-[3px] border border-brand-500/20">
+                      <code className="text-blue-600 dark:text-brand-400 font-mono bg-blue-50 dark:bg-brand-500/10 px-1.5 py-0.5 rounded-[3px] border border-blue-200 dark:border-brand-500/20">
                         process.env.JWT_SECRET
                       </code>.
                     </p>
                   </div>
 
                   {/* Unified Diff Box */}
-                  <div className="rounded-[6px] border border-[#242424] bg-[#0A0A0A] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
-                    <div className="px-3 py-1.5 bg-[#121212] border-b border-[#202020] text-[10px] font-mono text-obsidian-400 flex items-center justify-between select-none">
-                      <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-obsidian-300">
+                  <div className="rounded-[6px] border border-slate-200 dark:border-[#242424] bg-white dark:bg-[#0A0A0A] overflow-hidden shadow-xs dark:shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+                    <div className="px-3 py-1.5 bg-slate-100 dark:bg-[#121212] border-b border-slate-200 dark:border-[#202020] text-[10px] font-mono text-slate-600 dark:text-obsidian-400 flex items-center justify-between select-none">
+                      <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-slate-700 dark:text-obsidian-300">
                         Suggested Change (Unified Diff)
                       </span>
                       <span className="flex items-center gap-1 text-[10px]">
-                        <span className="text-red-400 font-semibold">-1</span>
-                        <span className="text-obsidian-600">/</span>
-                        <span className="text-emerald-400 font-semibold">+1</span>
+                        <span className="text-red-500 font-semibold">-1</span>
+                        <span className="text-slate-400 dark:text-obsidian-600">/</span>
+                        <span className="text-emerald-500 font-semibold">+1</span>
                       </span>
                     </div>
                     <div className="font-mono text-[11px] p-1.5 space-y-1">
-                      <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-red-950/20 border border-red-500/30 text-red-300 hover:bg-red-950/35 transition-colors">
-                        <span className="text-red-400 font-bold select-none">-</span>
-                        <span>const JWT_SECRET = "production_super_secret_key_12345";</span>
+                      <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 transition-colors">
+                        <span className="text-red-500 font-bold select-none">-</span>
+                        <span>const JWT_SECRET = &quot;production_super_secret_key_12345&quot;;</span>
                       </div>
-                      <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-emerald-950/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-950/35 transition-colors">
-                        <span className="text-emerald-400 font-bold select-none">+</span>
+                      <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 transition-colors">
+                        <span className="text-emerald-500 font-bold select-none">+</span>
                         <span>const JWT_SECRET = process.env.JWT_SECRET;</span>
                       </div>
                     </div>
@@ -385,19 +404,19 @@ export function LandingPage({
                 {/* Primary Action Button */}
                 <div className="pt-2">
                   {demoFixed ? (
-                    <div className="w-full py-3 px-4 rounded-[6px] bg-emerald-950/30 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center justify-between shadow-[0_4px_16px_rgba(16,185,129,0.2),0_1px_0_rgba(255,255,255,0.06)_inset] animate-in fade-in duration-200">
+                    <div className="w-full py-3 px-4 rounded-[6px] bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between shadow-xs animate-in fade-in duration-200">
                       <div className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-emerald-400" />
+                        <Check className="w-4 h-4 text-emerald-500" />
                         <span>Verified Patch Applied & Re-Analyzed</span>
                       </div>
-                      <span className="font-mono text-[10px] text-emerald-400/80 bg-emerald-900/40 px-2 py-0.5 rounded-[4px] border border-emerald-700/60">
+                      <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400/80 bg-white dark:bg-emerald-900/40 px-2 py-0.5 rounded-[4px] border border-emerald-200 dark:border-emerald-700/60">
                         SHA-256 Valid
                       </span>
                     </div>
                   ) : (
                     <Button
                       variant="primary"
-                      className="w-full h-11 text-sm font-bold tracking-tight shadow-[0_4px_20px_rgba(255,122,24,0.4),0_1px_0_rgba(255,255,255,0.3)_inset] hover:shadow-[0_6px_28px_rgba(255,122,24,0.55),0_1px_0_rgba(255,255,255,0.4)_inset] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
+                      className="w-full h-11 text-sm font-bold tracking-tight hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
                       size="md"
                       isLoading={isApplyingDemo}
                       onClick={handleApplyDemoFix}
@@ -466,73 +485,73 @@ export function LandingPage({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
+          <Card3D maxTilt={1.5} className="p-6 bg-white dark:bg-[#111111] border-slate-200 dark:border-[#262626] space-y-4 shadow-sm dark:shadow-none">
             <div className="flex items-center gap-3">
-              <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
+              <span className="px-2 py-0.5 rounded-[4px] bg-blue-50 dark:bg-[#1A1A1A] border border-blue-200 dark:border-[#2E2E2E] text-blue-600 dark:text-brand-400 font-mono text-[11px] font-bold tracking-wider">
                 01 / SEE
               </span>
-              <h3 className="text-lg font-bold text-[#F5F3EF]">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-[#F5F3EF]">
                 Find the exact line
               </h3>
             </div>
-            <p className="text-sm text-[#D4D0C8] leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-[#D4D0C8] leading-relaxed">
               Every finding links to a specific line in your file. Click it and the editor scrolls there instantly.
             </p>
-            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-[11px] text-[#A6A29B]">
-              <span className="text-red-400 font-semibold">Line 6: </span>const JWT_SECRET = &quot;production_super_secret_key_12345&quot;;
+            <div className="p-3 rounded-[5px] bg-slate-50 dark:bg-[#0A0A0A] border border-slate-200 dark:border-[#222222] font-mono text-[11px] text-slate-700 dark:text-[#A6A29B]">
+              <span className="text-red-500 dark:text-red-400 font-semibold">Line 6: </span>const JWT_SECRET = &quot;production_super_secret_key_12345&quot;;
             </div>
           </Card3D>
 
-          <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
+          <Card3D maxTilt={1.5} className="p-6 bg-white dark:bg-[#111111] border-slate-200 dark:border-[#262626] space-y-4 shadow-sm dark:shadow-none">
             <div className="flex items-center gap-3">
-              <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
+              <span className="px-2 py-0.5 rounded-[4px] bg-blue-50 dark:bg-[#1A1A1A] border border-blue-200 dark:border-[#2E2E2E] text-blue-600 dark:text-brand-400 font-mono text-[11px] font-bold tracking-wider">
                 02 / UNDERSTAND
               </span>
-              <h3 className="text-lg font-bold text-[#F5F3EF]">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-[#F5F3EF]">
                 Read a clear explanation
               </h3>
             </div>
-            <p className="text-sm text-[#D4D0C8] leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-[#D4D0C8] leading-relaxed">
               Findings are written like a code review from a senior engineer — explaining why it matters and how to fix it, not just a compiler code.
             </p>
-            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] text-xs text-[#D4D0C8]">
-              <span className="text-brand-400 font-semibold font-mono">Why this matters: </span>Token forging allows unauthenticated access across your entire API service.
+            <div className="p-3 rounded-[5px] bg-slate-50 dark:bg-[#0A0A0A] border border-slate-200 dark:border-[#222222] text-xs text-slate-700 dark:text-[#D4D0C8]">
+              <span className="text-blue-600 dark:text-brand-400 font-semibold font-mono">Why this matters: </span>Token forging allows unauthenticated access across your entire API service.
             </div>
           </Card3D>
 
-          <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
+          <Card3D maxTilt={1.5} className="p-6 bg-white dark:bg-[#111111] border-slate-200 dark:border-[#262626] space-y-4 shadow-sm dark:shadow-none">
             <div className="flex items-center gap-3">
-              <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
+              <span className="px-2 py-0.5 rounded-[4px] bg-blue-50 dark:bg-[#1A1A1A] border border-blue-200 dark:border-[#2E2E2E] text-blue-600 dark:text-brand-400 font-mono text-[11px] font-bold tracking-wider">
                 03 / FIX
               </span>
-              <h3 className="text-lg font-bold text-[#F5F3EF]">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-[#F5F3EF]">
                 Apply a verified fix
               </h3>
             </div>
-            <p className="text-sm text-[#D4D0C8] leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-[#D4D0C8] leading-relaxed">
               Each finding includes a diff you can apply in one click. The fix is verified before it touches your code.
             </p>
-            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-[11px] space-y-1">
-              <div className="text-red-400">- const JWT_SECRET = &quot;...&quot;;</div>
-              <div className="text-emerald-400">+ const JWT_SECRET = process.env.JWT_SECRET;</div>
+            <div className="p-3 rounded-[5px] bg-slate-50 dark:bg-[#0A0A0A] border border-slate-200 dark:border-[#222222] font-mono text-[11px] space-y-1">
+              <div className="text-red-500 dark:text-red-400">- const JWT_SECRET = &quot;...&quot;;</div>
+              <div className="text-emerald-600 dark:text-emerald-400 font-semibold">+ const JWT_SECRET = process.env.JWT_SECRET;</div>
             </div>
           </Card3D>
 
-          <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
+          <Card3D maxTilt={1.5} className="p-6 bg-white dark:bg-[#111111] border-slate-200 dark:border-[#262626] space-y-4 shadow-sm dark:shadow-none">
             <div className="flex items-center gap-3">
-              <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
+              <span className="px-2 py-0.5 rounded-[4px] bg-blue-50 dark:bg-[#1A1A1A] border border-blue-200 dark:border-[#2E2E2E] text-blue-600 dark:text-brand-400 font-mono text-[11px] font-bold tracking-wider">
                 04 / VERIFY
               </span>
-              <h3 className="text-lg font-bold text-[#F5F3EF]">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-[#F5F3EF]">
                 See your score improve
               </h3>
             </div>
-            <p className="text-sm text-[#D4D0C8] leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-[#D4D0C8] leading-relaxed">
               After you apply a fix, the code is re-analyzed automatically. Your score updates in real time.
             </p>
-            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-xs text-emerald-400 flex items-center justify-between">
+            <div className="p-3 rounded-[5px] bg-slate-50 dark:bg-[#0A0A0A] border border-slate-200 dark:border-[#222222] font-mono text-xs text-emerald-600 dark:text-emerald-400 flex items-center justify-between font-semibold">
               <span>Score: 50 → 75 (+25 pts)</span>
-              <span className="text-[#A6A29B] text-[11px]">1 Blocker Resolved</span>
+              <span className="text-slate-500 dark:text-[#A6A29B] text-[11px] font-normal">1 Blocker Resolved</span>
             </div>
           </Card3D>
         </div>
@@ -749,15 +768,15 @@ export function LandingPage({
       </section>
 
       {/* 10. Complete Professional Developer Footer */}
-      <footer className="mt-auto border-t border-[#1F1F1F] bg-[#0A0A0A] pt-14 pb-10 px-4 sm:px-8 w-full text-xs font-sans text-[#A6A29B]">
+      <footer className="mt-auto border-t border-slate-200 dark:border-[#1F1F1F] bg-white dark:bg-[#0A0A0A] pt-14 pb-10 px-4 sm:px-8 w-full text-xs font-sans text-slate-600 dark:text-[#A6A29B]">
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
             {/* Left Col: Brand + Tagline */}
             <div className="md:col-span-5 space-y-4">
               <div className="flex items-center gap-2.5">
-                <CodeEagleLogo size={36} withText={true} withSubtitle={true} />
+                <CodeEagleLogo size={36} withText={true} withSubtitle={true} dark={isDark} />
               </div>
-              <p className="text-sm text-[#74716C] max-w-sm leading-relaxed">
+              <p className="text-sm text-slate-500 dark:text-[#74716C] max-w-sm leading-relaxed">
                 AI-powered code review that finds real problems and helps you fix them.
               </p>
             </div>
@@ -766,14 +785,14 @@ export function LandingPage({
             <div className="md:col-span-7 grid grid-cols-3 gap-6">
               {/* PRODUCT */}
               <div className="space-y-3">
-                <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#F5F3EF] font-semibold">
+                <h4 className="text-[11px] font-mono uppercase tracking-wider text-slate-900 dark:text-[#F5F3EF] font-semibold">
                   Product
                 </h4>
                 <ul className="space-y-2.5 text-xs">
                   <li>
                     <button
                       onClick={onStartReviewing}
-                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                      className="hover:text-slate-900 dark:hover:text-[#F5F3EF] transition-colors cursor-pointer"
                     >
                       Review
                     </button>
@@ -781,11 +800,11 @@ export function LandingPage({
                   <li>
                     <button
                       onClick={onOpenHistory}
-                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer flex items-center gap-1.5"
+                      className="hover:text-slate-900 dark:hover:text-[#F5F3EF] transition-colors cursor-pointer flex items-center gap-1.5"
                     >
                       <span>History</span>
                       {typeof historyCount === 'number' && historyCount > 0 && (
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[#1C1C1C] text-[#D4D0C8] font-bold border border-[#262626]">
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-[#1C1C1C] text-slate-700 dark:text-[#D4D0C8] font-bold border border-slate-200 dark:border-[#262626]">
                           {historyCount}
                         </span>
                       )}
@@ -795,7 +814,7 @@ export function LandingPage({
                     <li>
                       <button
                         onClick={onOpenHowItWorks}
-                        className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                        className="hover:text-slate-900 dark:hover:text-[#F5F3EF] transition-colors cursor-pointer"
                       >
                         How It Works
                       </button>
@@ -806,14 +825,14 @@ export function LandingPage({
 
               {/* ENGINE */}
               <div className="space-y-3">
-                <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#F5F3EF] font-semibold">
+                <h4 className="text-[11px] font-mono uppercase tracking-wider text-slate-900 dark:text-[#F5F3EF] font-semibold">
                   Engine
                 </h4>
                 <ul className="space-y-2.5 text-xs">
                   <li>
                     <a
                       href="#architecture"
-                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                      className="hover:text-slate-900 dark:hover:text-[#F5F3EF] transition-colors cursor-pointer"
                     >
                       AST Analysis
                     </a>
@@ -821,7 +840,7 @@ export function LandingPage({
                   <li>
                     <a
                       href="#philosophy"
-                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                      className="hover:text-slate-900 dark:hover:text-[#F5F3EF] transition-colors cursor-pointer"
                     >
                       AI Reasoning
                     </a>
@@ -829,7 +848,7 @@ export function LandingPage({
                   <li>
                     <a
                       href="#workbench"
-                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                      className="hover:text-slate-900 dark:hover:text-[#F5F3EF] transition-colors cursor-pointer"
                     >
                       Verified Patches
                     </a>
@@ -839,14 +858,14 @@ export function LandingPage({
 
               {/* PROJECT */}
               <div className="space-y-3">
-                <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#F5F3EF] font-semibold">
+                <h4 className="text-[11px] font-mono uppercase tracking-wider text-slate-900 dark:text-[#F5F3EF] font-semibold">
                   Project
                 </h4>
                 <ul className="space-y-2.5 text-xs">
                   <li>
                     <button
                       onClick={onOpenHowItWorks}
-                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                      className="hover:text-slate-900 dark:hover:text-[#F5F3EF] transition-colors cursor-pointer"
                     >
                       About
                     </button>
@@ -857,7 +876,7 @@ export function LandingPage({
                         const el = document.getElementById('architecture');
                         if (el) el.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="hover:text-[#F5F3EF] transition-colors cursor-pointer"
+                      className="hover:text-slate-900 dark:hover:text-[#F5F3EF] transition-colors cursor-pointer"
                     >
                       Architecture
                     </button>
@@ -868,9 +887,9 @@ export function LandingPage({
           </div>
 
           {/* Bottom Bar */}
-          <div className="pt-8 border-t border-[#1C1C1C] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-[#74716C]">
+          <div className="pt-8 border-t border-slate-200 dark:border-[#1C1C1C] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono text-slate-500 dark:text-[#74716C]">
             <div>CodeEagle © 2026</div>
-            <div className="text-[#A6A29B]">Built for developers who ship.</div>
+            <div className="text-slate-600 dark:text-[#A6A29B]">Built for developers who ship.</div>
           </div>
         </div>
       </footer>

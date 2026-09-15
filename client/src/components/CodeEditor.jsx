@@ -344,7 +344,7 @@ export function CodeEditor({
             autoComplete="off"
             autoCorrect="off"
             aria-label={`Code editor for ${filename}`}
-            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-[#E6EDF3] resize-none outline-none font-mono text-[13px] leading-6 selection:bg-brand-500/25 selection:text-white dark-editor-scrollbar overflow-auto z-10"
+            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-900 dark:text-[#E6EDF3] resize-none outline-none font-mono text-[13px] leading-6 selection:bg-blue-500/25 dark:selection:bg-brand-500/25 dark-editor-scrollbar overflow-auto z-10"
             style={{ tabSize: 2 }}
           />
         </div>

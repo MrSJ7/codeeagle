@@ -1,3 +1,6 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,32 +8,146 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --background: 0 0% 3%;
-    --foreground: 40 18% 95%;
-    --card: 0 0% 5%;
-    --card-foreground: 40 18% 95%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 40 18% 95%;
-    --primary: 25 100% 55%;
-    --primary-foreground: 0 0% 3%;
-    --secondary: 0 0% 9%;
-    --secondary-foreground: 40 18% 95%;
-    --muted: 0 0% 9%;
-    --muted-foreground: 36 6% 63%;
-    --accent: 0 0% 12%;
-    --accent-foreground: 40 18% 95%;
-    --destructive: 0 100% 65%;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: 40 18% 95%;
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 25 100% 55%;
-    --radius: 0.5rem;
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+
+    --color-obsidian-950: #080808;
+    --color-obsidian-900: #0D0D0D;
+    --color-obsidian-850: #121212;
+    --color-obsidian-800: #181818;
+    --color-obsidian-750: #1F1F1F;
+    --color-obsidian-700: #262626;
+    --color-obsidian-600: #383838;
+    --color-obsidian-500: #74716C;
+    --color-obsidian-400: #A6A29B;
+    --color-obsidian-300: #D4D0C8;
+    --color-obsidian-200: #E6E2DA;
+    --color-obsidian-100: #F0ECE4;
+    --color-obsidian-50:  #F5F3EF;
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+  }
+
+  html.light, [data-theme="light"] {
+    color-scheme: light;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%; /* Blue in light mode */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    --color-obsidian-950: #F8FAFC; /* Canvas: soft slate off-white */
+    --color-obsidian-900: #FFFFFF; /* Panels/Cards: pure white */
+    --color-obsidian-850: #F1F5F9; /* Headers & Subpanels: soft slate */
+    --color-obsidian-800: #E2E8F0; /* Borders: crisp light border */
+    --color-obsidian-750: #E2E8F0; /* Dividers */
+    --color-obsidian-700: #E2E8F0;
+    --color-obsidian-600: #94A3B8;
+    --color-obsidian-500: #64748B;
+    --color-obsidian-400: #64748B; /* Secondary text */
+    --color-obsidian-300: #475569; /* Body text */
+    --color-obsidian-200: #334155; /* High contrast */
+    --color-obsidian-100: #1E293B; /* Code / strong text */
+    --color-obsidian-50:  #0F172A; /* Primary dark heading text */
+  }
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: 'Geist Variable', sans-serif;
+  }
+  .dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
 html {
   scroll-behavior: smooth;
   background-color: #080808;
+}
+
+html.light {
+  background-color: #F8FAFC;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -52,6 +169,11 @@ body {
   color: #F5F3EF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html.light body {
+  background-color: #F8FAFC;
+  color: #0F172A;
 }
 
 /* Custom dark developer scrollbar */
@@ -92,4 +214,33 @@ body {
 
 .dark-editor-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #3A3A3A;
+}
+
+/* Light mode scrollbars */
+html.light ::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+  border: 1px solid #E2E8F0;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+html.light .dark-editor-scrollbar::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+
+html.light .dark-editor-scrollbar::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+  border: 1px solid #E2E8F0;
+}
+
+html.light .dark-editor-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }

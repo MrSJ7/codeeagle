@@ -208,7 +208,7 @@ export function IssueDetails({
               disabled={isStale || isApplyingPatch}
               isLoading={isApplyingPatch}
               rightIcon={<ArrowRight className="w-4 h-4" />}
-              className="w-full shadow-[0_2px_8px_rgba(249,115,22,0.35)]"
+              className="w-full"
             >
               Apply Fix & Re-Analyze
             </Button>
@@ -223,7 +223,7 @@ export function IssueDetails({
               isLoading={isVerifyingAiPatch}
               leftIcon={<Sparkles className="w-4 h-4" />}
               rightIcon={<ArrowRight className="w-4 h-4" />}
-              className="w-full shadow-[0_2px_8px_rgba(249,115,22,0.35)]"
+              className="w-full"
             >
               Preview & Apply AI Fix
             </Button>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Clock, CheckCircle2, FileCode, Play, Loader2, X, AlertCircle } from 'lucide-react';
 import { Button } from './ui/Button.jsx';
+import { useTheme } from '@/context/ThemeContext.jsx';
+import { cn } from '@/lib/utils';
 
 export function ReviewSummary({
   reviewData,
@@ -17,6 +19,7 @@ export function ReviewSummary({
   patchDiff = null,
   onDismissDiff = null,
 }) {
+  const { isLight } = useTheme();
   // 1. Idle State: Clean prompt without fake scores
   if (reviewStatus === 'IDLE' || !reviewData) {
     return (
@@ -50,7 +53,12 @@ export function ReviewSummary({
               leftIcon={<Play className="w-3 h-3 fill-current" />}
             >
               <span>Run Review</span>
-              <kbd className="hidden sm:inline-block ml-1 px-1 py-0.2 text-[9px] font-mono rounded bg-obsidian-950/30 text-obsidian-950 font-bold">
+              <kbd
+                className={cn(
+                  "hidden sm:inline-block ml-1 px-1 py-0.2 text-[9px] font-mono rounded font-bold",
+                  isLight ? "bg-blue-700/40 text-white" : "bg-obsidian-950/30 text-obsidian-950"
+                )}
+              >
                 ⌘↵
               </kbd>
             </Button>
@@ -219,11 +227,16 @@ export function ReviewSummary({
             <button
               type="button"
               onClick={() => onSelectCategory && onSelectCategory('security')}
-              className={`px-2 py-0.5 rounded-[4px] transition-colors cursor-pointer ${
+              className={cn(
+                "px-2 py-0.5 rounded-[4px] transition-colors cursor-pointer",
                 activeCategory === 'security'
-                  ? 'bg-brand-500 text-obsidian-950 font-bold'
-                  : 'text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850'
-              }`}
+                  ? isLight
+                    ? "bg-blue-600 text-white font-bold shadow-xs"
+                    : "bg-brand-500 text-obsidian-950 font-bold"
+                  : isLight
+                  ? "text-slate-600 hover:text-slate-900 hover:bg-slate-200"
+                  : "text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850"
+              )}
             >
               Security <strong className="font-mono font-semibold">{breakdown.security ?? 100}</strong>
             </button>
@@ -231,11 +244,16 @@ export function ReviewSummary({
             <button
               type="button"
               onClick={() => onSelectCategory && onSelectCategory('quality')}
-              className={`px-2 py-0.5 rounded-[4px] transition-colors cursor-pointer ${
+              className={cn(
+                "px-2 py-0.5 rounded-[4px] transition-colors cursor-pointer",
                 activeCategory === 'quality'
-                  ? 'bg-brand-500 text-obsidian-950 font-bold'
-                  : 'text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850'
-              }`}
+                  ? isLight
+                    ? "bg-blue-600 text-white font-bold shadow-xs"
+                    : "bg-brand-500 text-obsidian-950 font-bold"
+                  : isLight
+                  ? "text-slate-600 hover:text-slate-900 hover:bg-slate-200"
+                  : "text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850"
+              )}
             >
               Quality <strong className="font-mono font-semibold">{breakdown.quality ?? 100}</strong>
             </button>
@@ -243,11 +261,16 @@ export function ReviewSummary({
             <button
               type="button"
               onClick={() => onSelectCategory && onSelectCategory('performance')}
-              className={`px-2 py-0.5 rounded-[4px] transition-colors cursor-pointer ${
+              className={cn(
+                "px-2 py-0.5 rounded-[4px] transition-colors cursor-pointer",
                 activeCategory === 'performance'
-                  ? 'bg-brand-500 text-obsidian-950 font-bold'
-                  : 'text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850'
-              }`}
+                  ? isLight
+                    ? "bg-blue-600 text-white font-bold shadow-xs"
+                    : "bg-brand-500 text-obsidian-950 font-bold"
+                  : isLight
+                  ? "text-slate-600 hover:text-slate-900 hover:bg-slate-200"
+                  : "text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850"
+              )}
             >
               Performance <strong className="font-mono font-semibold">{breakdown.performance ?? 100}</strong>
             </button>
@@ -255,11 +278,16 @@ export function ReviewSummary({
             <button
               type="button"
               onClick={() => onSelectCategory && onSelectCategory('complexity')}
-              className={`px-2 py-0.5 rounded-[4px] transition-colors cursor-pointer ${
+              className={cn(
+                "px-2 py-0.5 rounded-[4px] transition-colors cursor-pointer",
                 activeCategory === 'complexity'
-                  ? 'bg-brand-500 text-obsidian-950 font-bold'
-                  : 'text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850'
-              }`}
+                  ? isLight
+                    ? "bg-blue-600 text-white font-bold shadow-xs"
+                    : "bg-brand-500 text-obsidian-950 font-bold"
+                  : isLight
+                  ? "text-slate-600 hover:text-slate-900 hover:bg-slate-200"
+                  : "text-obsidian-400 hover:text-obsidian-200 hover:bg-obsidian-850"
+              )}
             >
               Complexity <strong className="font-mono font-semibold">{breakdown.complexity ?? 100}</strong>
             </button>

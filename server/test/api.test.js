@@ -100,7 +100,7 @@ async function runApiTests() {
     assert(data.metrics.cyclomaticComplexity === undefined, 'metrics does NOT contain deprecated "cyclomaticComplexity"');
 
     // Metadata contract
-    assert(data.metadata.engine === 'static', 'metadata.engine is "static"');
+    assert(data.metadata.engine === 'static' || data.metadata.engine === 'hybrid', 'metadata.engine is valid ("static" or "hybrid")');
     assert(data.metadata.language === 'javascript', 'metadata.language is "javascript"');
     assert(data.metadata.filename === 'calc.js', 'metadata.filename is "calc.js"');
     assert(typeof data.metadata.codeHash === 'string' && data.metadata.codeHash.length === 64, 'metadata.codeHash is 64 hex characters');

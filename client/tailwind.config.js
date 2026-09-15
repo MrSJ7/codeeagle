@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -45,18 +46,19 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         obsidian: {
-          950: '#080808', // Root canvas
-          900: '#0D0D0D', // Code & primary surface
-          850: '#121212', // Panels & headers
-          800: '#181818', // Elevated cards & borders
-          750: '#1F1F1F', // Hover surfaces
-          700: '#262626', // Structural dividers
-          600: '#383838', // Muted borders
-          400: '#A6A29B', // Secondary labels (warm neutral)
-          300: '#D4D0C8', // Body text (warm off-white)
-          200: '#E6E2DA', // High contrast
-          100: '#F0ECE4', // Code text
-          50: '#F5F3EF',  // Crisp warm off-white text
+          950: 'var(--color-obsidian-950, #080808)', // Root canvas
+          900: 'var(--color-obsidian-900, #0D0D0D)', // Code & primary surface
+          850: 'var(--color-obsidian-850, #121212)', // Panels & headers
+          800: 'var(--color-obsidian-800, #181818)', // Elevated cards & borders
+          750: 'var(--color-obsidian-750, #1F1F1F)', // Hover surfaces
+          700: 'var(--color-obsidian-700, #262626)', // Structural dividers
+          600: 'var(--color-obsidian-600, #383838)', // Muted borders
+          500: 'var(--color-obsidian-500, #74716C)',
+          400: 'var(--color-obsidian-400, #A6A29B)', // Secondary labels (warm neutral)
+          300: 'var(--color-obsidian-300, #D4D0C8)', // Body text (warm off-white)
+          200: 'var(--color-obsidian-200, #E6E2DA)', // High contrast
+          100: 'var(--color-obsidian-100, #F0ECE4)', // Code text
+          50:  'var(--color-obsidian-50, #F5F3EF)',  // Crisp warm off-white text
         },
         graphite: {
           50: '#F5F3EF',
