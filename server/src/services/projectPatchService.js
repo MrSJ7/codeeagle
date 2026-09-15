@@ -102,7 +102,7 @@ export async function applyProjectPatch({
   const newFileHash = patchOutcome.afterHash;
 
   // Run targeted re-analysis on modified file
-  const reAnalysis = analyzeCode(patchedSource, reviewFile.filename, reviewFile.language || "javascript");
+  const reAnalysis = analyzeCode(patchedSource, reviewFile.language || "javascript", reviewFile.filename || reviewFile.path);
 
   const newReviewId = `prev_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
 

@@ -53,7 +53,7 @@ export async function runProjectStaticAnalysis({
       }
 
       try {
-        const result = analyzeCode(file.content, file.filename, file.language || "javascript");
+        const result = analyzeCode(file.content, file.language || "javascript", file.filename || file.path);
 
         // Ground every issue to this specific project file
         const enrichedIssues = (result.issues || []).map((issue) => ({

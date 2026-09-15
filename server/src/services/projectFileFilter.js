@@ -229,6 +229,26 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
     };
   }
 
+  if (ext === ".ejs") {
+    return {
+      status: "ELIGIBLE",
+      language: "ejs",
+      extension: ext,
+      skipReason: null,
+      skipMessage: null,
+    };
+  }
+
+  if (filename === "package.json" || ext === ".json") {
+    return {
+      status: "ELIGIBLE",
+      language: "json",
+      extension: ext,
+      skipReason: null,
+      skipMessage: null,
+    };
+  }
+
   // Supported source tree representation for non-JS files
   const langMap = {
     ".ts": "typescript",

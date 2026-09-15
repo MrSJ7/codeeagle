@@ -163,6 +163,33 @@ export const RULE_REGISTRY = {
     description: 'Loose equality performs implicit type coercion which can cause subtle logic bugs.',
     recommendation: 'Use strict equality (=== or !==) instead.',
   },
+  'SEC-DEP-WILDCARD': {
+    rule: 'SEC-DEP-WILDCARD',
+    category: 'SECURITY',
+    severity: 'HIGH',
+    defaultSeverity: 'HIGH',
+    title: 'Wildcard or unrestricted dependency version',
+    description: 'Specifying "*" or "latest" allows unvetted upstream releases to execute automatically.',
+    recommendation: 'Pin dependency versions using specific semver ranges (e.g. ^1.2.0 or ~1.2.0).',
+  },
+  'SEC-EJS-UNESCAPED': {
+    rule: 'SEC-EJS-UNESCAPED',
+    category: 'SECURITY',
+    severity: 'HIGH',
+    defaultSeverity: 'HIGH',
+    title: 'Unescaped raw output in EJS template',
+    description: 'Using <%- outputs unescaped HTML, creating a direct Cross-Site Scripting (XSS) vulnerability if user data is rendered.',
+    recommendation: 'Use <%= for HTML-escaped output or sanitize input before rendering.',
+  },
+  'SEC-INSECURE-HTTP': {
+    rule: 'SEC-INSECURE-HTTP',
+    category: 'SECURITY',
+    severity: 'MEDIUM',
+    defaultSeverity: 'MEDIUM',
+    title: 'Insecure HTTP protocol in package configuration',
+    description: 'Insecure http:// URLs expose packages to man-in-the-middle tampering.',
+    recommendation: 'Use https:// or secure git protocols for repository and registry URLs.',
+  },
 };
 
 /**

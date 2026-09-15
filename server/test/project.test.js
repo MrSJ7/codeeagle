@@ -259,6 +259,49 @@ async function runProjectTests() {
   assert(qualityReview.findings.some(f => f.rule === "QUAL-DUPLICATE-KEYS"), "Detected duplicate object keys (QUAL-DUPLICATE-KEYS)");
   assert(qualityReview.findings.some(f => f.category === "QUALITY"), "Categorized issues under QUALITY");
 
+  console.log("\n--- 8. Package.json & EJS Template Eligibility & Analysis ---");
+  const pkgJsonClass = classifyProjectFile("package.json", 400);
+  assert(pkgJsonClass.status === "ELIGIBLE" && pkgJsonClass.language === "json", "package.json is marked ELIGIBLE for review");
+
+  const ejsClass = classifyProjectFile("views/dashboard.ejs", 1500);
+  assert(ejsClass.status === "ELIGIBLE" && ejsClass.language === "ejs", ".ejs template is marked ELIGIBLE for review");
+
+  const pkgContent = JSON.stringify({
+    name: "test-app",
+    version: "1.0.0",
+    dependencies: {
+      "express": "^4.18.2",
+      "lodash": "*",
+      "insecure-pkg": "http://insecure.repo.org/tarball.tgz"
+    }
+  }, null, 2);
+
+  const ejsContent = `
+    <!DOCTYPE html>
+    <html>
+      <body>
+        <h1>Welcome <%- user.name %></h1>
+        <p>Your balance is <%= user.balance %></p>
+      </body>
+    </html>
+  `;
+
+  const templateManifest = buildProjectManifest({
+    projectName: "Full Stack EJS App",
+    sourceType: "folder",
+    rawFiles: [
+      { path: "package.json", size: pkgContent.length, content: pkgContent },
+      { path: "views/dashboard.ejs", size: ejsContent.length, content: ejsContent },
+      { path: "src/server.js", size: 50, content: "const express = require('express');" }
+    ]
+  });
+
+  assert(templateManifest.eligibleFileCount === 3, "Manifest counts package.json and views/dashboard.ejs as eligible files (3 total)");
+  const templateReview = await executeProjectReview({ manifest: templateManifest });
+  assert(templateReview.findings.some(f => f.rule === "SEC-DEP-WILDCARD"), "Detected wildcard dependency in package.json (SEC-DEP-WILDCARD)");
+  assert(templateReview.findings.some(f => f.rule === "SEC-INSECURE-HTTP"), "Detected insecure HTTP repo in package.json (SEC-INSECURE-HTTP)");
+  assert(templateReview.findings.some(f => f.rule === "SEC-EJS-UNESCAPED"), "Detected unescaped HTML interpolation in EJS template (SEC-EJS-UNESCAPED)");
+
   console.log("\n=== Project Unit Test Results: " + passed + " passed, " + failed + " failed ===\n");
   if (failed > 0) { process.exit(1); }
 }
