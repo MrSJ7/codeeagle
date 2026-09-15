@@ -26,5 +26,6 @@ router.post("/:projectId/reviews", projectController.createReview);
 router.get("/:projectId/reviews", projectController.getProjectReviews);
 router.get("/:projectId/reviews/:reviewId", projectController.getReview);
 router.post("/:projectId/files/:fileId/findings/:findingId/apply", projectController.applyPatch);
+router.post("/:projectId/files/:fileId/findings/:findingId/refactor", projectController.refactorFinding);
 
 export default router;

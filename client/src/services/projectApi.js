@@ -104,15 +104,15 @@ export async function getProjectFileApi(projectId, fileId) {
 }
 
 /**
- * Applies a verified fix to a project file and receives the re-analyzed review snapshot.
+ * Applies a verified fix or refactored patch to a project file and receives the re-analyzed review snapshot.
  */
-export async function applyProjectPatchApi({ projectId, fileId, findingId, reviewId, expectedHash }) {
+export async function applyProjectPatchApi({ projectId, fileId, findingId, reviewId, expectedHash, patch }) {
   const response = await fetch(
     buildApiUrl(`/api/projects/${projectId}/files/${fileId}/findings/${findingId}/apply`),
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reviewId, expectedHash }),
+      body: JSON.stringify({ reviewId, expectedHash, patch }),
     }
   );
 
@@ -120,6 +120,29 @@ export async function applyProjectPatchApi({ projectId, fileId, findingId, revie
     const data = await response.json().catch(() => ({}));
     const err = new Error(data.error?.message || "Failed to apply fix to file.");
     err.code = data.error?.code || "PATCH_FAILED";
+    throw err;
+  }
+
+  return response.json();
+}
+
+/**
+ * Generates an automated refactoring candidate for an issue in a project file.
+ */
+export async function generateProjectFindingRefactorApi({ projectId, fileId, findingId, issue }) {
+  const response = await fetch(
+    buildApiUrl(`/api/projects/${projectId}/files/${fileId}/findings/${findingId}/refactor`),
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ issue }),
+    }
+  );
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    const err = new Error(data.error?.message || "Failed to generate refactor.");
+    err.code = data.error?.code || "REFACTOR_FAILED";
     throw err;
   }
 

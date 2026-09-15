@@ -26,6 +26,7 @@ export async function applyProjectPatch({
   fileId,
   findingId,
   expectedHash = null,
+  patchOverride = null,
 }) {
   const project = await projectRepository.getProjectById(projectId);
   if (!project) {
@@ -81,14 +82,26 @@ export async function applyProjectPatch({
     throw err;
   }
 
+  // Support custom/refactored patch override if supplied
+  let patchFinding = finding;
+  if (patchOverride && typeof patchOverride === "object" && patchOverride.original && patchOverride.replacement) {
+    patchFinding = {
+      ...finding,
+      fix: {
+        original: patchOverride.original,
+        replacement: patchOverride.replacement,
+      },
+    };
+  }
+
   // Apply patch according to source (STATIC vs AI)
   let patchOutcome;
-  const isAi = finding.source === "AI";
+  const isAi = patchFinding.source === "AI";
 
   if (isAi) {
-    patchOutcome = applyAiPatch({ code: originalSource, codeHash: currentFileHash, issue: finding });
+    patchOutcome = applyAiPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
   } else {
-    patchOutcome = applyPatch({ code: originalSource, codeHash: currentFileHash, issue: finding });
+    patchOutcome = applyPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
   }
 
   if (!patchOutcome.success) {

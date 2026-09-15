@@ -8,8 +8,10 @@ export function PatchPreview({
   issue,
   previewData,
   onConfirmApply,
+  onApply,
   isApplying = false,
 }) {
+  const confirmHandler = onConfirmApply || onApply;
   // Handle Escape key to dismiss preview
   useEffect(() => {
     if (!isOpen) return;
@@ -127,7 +129,7 @@ export function PatchPreview({
           <Button
             variant="primary"
             size="md"
-            onClick={() => onConfirmApply(issue)}
+            onClick={() => confirmHandler && confirmHandler(issue)}
             disabled={isApplying}
             isLoading={isApplying}
             leftIcon={!isApplying ? <Sparkles className="w-3.5 h-3.5" /> : null}

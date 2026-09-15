@@ -97,27 +97,35 @@ export function CodeEditor({
     switch (activeSeverity) {
       case 'CRITICAL':
         return {
-          gutter: 'bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold border-l-2 border-red-500',
-          overlay: 'bg-red-50/70 dark:bg-red-950/30 border-l-2 border-red-500',
+          primaryGutter: 'bg-red-100 dark:bg-red-950/80 text-red-700 dark:text-red-300 font-bold border-l-2 border-red-500',
+          spanGutter: 'bg-red-50/50 dark:bg-red-950/40 text-red-600/80 dark:text-red-400/80 border-l-2 border-red-500/40',
+          primaryOverlay: 'bg-red-500/[0.12] dark:bg-red-500/[0.16] border-l-2 border-red-500',
+          spanOverlay: 'bg-red-500/[0.03] dark:bg-red-500/[0.04] border-l-2 border-red-500/30',
           badge: 'bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800/60',
         };
       case 'HIGH':
         return {
-          gutter: 'bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 font-bold border-l-2 border-orange-500',
-          overlay: 'bg-orange-50/70 dark:bg-orange-950/30 border-l-2 border-orange-500',
+          primaryGutter: 'bg-orange-100 dark:bg-orange-950/80 text-orange-700 dark:text-orange-300 font-bold border-l-2 border-orange-500',
+          spanGutter: 'bg-orange-50/50 dark:bg-orange-950/40 text-orange-600/80 dark:text-orange-400/80 border-l-2 border-orange-500/40',
+          primaryOverlay: 'bg-orange-500/[0.12] dark:bg-orange-500/[0.16] border-l-2 border-orange-500',
+          spanOverlay: 'bg-orange-500/[0.03] dark:bg-orange-500/[0.04] border-l-2 border-orange-500/30',
           badge: 'bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800/60',
         };
       case 'MEDIUM':
         return {
-          gutter: 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold border-l-2 border-amber-500',
-          overlay: 'bg-amber-50/70 dark:bg-amber-950/30 border-l-2 border-amber-500',
+          primaryGutter: 'bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 font-bold border-l-2 border-amber-500',
+          spanGutter: 'bg-amber-50/50 dark:bg-amber-950/40 text-amber-600/80 dark:text-amber-400/80 border-l-2 border-amber-500/40',
+          primaryOverlay: 'bg-amber-500/[0.12] dark:bg-amber-500/[0.16] border-l-2 border-amber-500',
+          spanOverlay: 'bg-amber-500/[0.03] dark:bg-amber-500/[0.04] border-l-2 border-amber-500/30',
           badge: 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60',
         };
       default:
         return {
-          gutter: 'bg-slate-100 dark:bg-obsidian-800/80 text-slate-700 dark:text-obsidian-300 font-bold border-l-2 border-slate-400 dark:border-obsidian-500',
-          overlay: 'bg-slate-100/50 dark:bg-obsidian-800/40 border-l-2 border-slate-400 dark:border-obsidian-500',
-          badge: 'bg-slate-100 dark:bg-obsidian-800 text-slate-700 dark:text-obsidian-300 border-slate-200 dark:border-obsidian-700',
+          primaryGutter: 'bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 font-bold border-l-2 border-blue-500',
+          spanGutter: 'bg-blue-50/50 dark:bg-blue-950/30 text-blue-600/70 dark:text-blue-400/70 border-l-2 border-blue-500/30',
+          primaryOverlay: 'bg-blue-500/[0.12] dark:bg-blue-500/[0.16] border-l-2 border-blue-500',
+          spanOverlay: 'bg-blue-500/[0.03] dark:bg-blue-500/[0.04] border-l-2 border-blue-500/20',
+          badge: 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800/60',
         };
     }
   };
@@ -139,14 +147,27 @@ export function CodeEditor({
           <span className="text-slate-300 dark:text-obsidian-600">•</span>
           <span className="text-[11px] font-mono text-slate-500 dark:text-obsidian-400">{lineCount} lines</span>
 
-          {/* Active Highlight Badge */}
+          {/* Active Highlight Badge & Jump */}
           {activeStartLine && (
-            <span
-              className={`flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[4px] border ml-2 ${highlightStyles.badge}`}
+            <button
+              type="button"
+              onClick={() => {
+                if (textareaRef.current) {
+                  const targetScroll = Math.max(0, (activeStartLine - 3) * 24);
+                  textareaRef.current.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                }
+              }}
+              className={`flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-0.5 rounded-[4px] border ml-2 cursor-pointer transition-colors shadow-xs ${highlightStyles.badge}`}
+              title="Click to jump directly to this issue"
             >
               <Hash className="w-3 h-3" />
-              Lines {activeStartLine}{activeEndLine && activeEndLine !== activeStartLine ? `-${activeEndLine}` : ''}
-            </span>
+              <span>
+                Lines {activeStartLine}{activeEndLine && activeEndLine !== activeStartLine ? `–${activeEndLine}` : ''}
+              </span>
+              {highlightedIssue?.rule && (
+                <span className="font-bold ml-1 opacity-90">[{highlightedIssue.rule}]</span>
+              )}
+            </button>
           )}
         </div>
 
@@ -238,15 +259,18 @@ export function CodeEditor({
         >
           {lines.map((_, index) => {
             const lineNum = index + 1;
-            const isTargetLine =
+            const isExactStart = activeStartLine !== null && lineNum === activeStartLine;
+            const isSpanLine =
               activeStartLine !== null &&
-              lineNum >= activeStartLine &&
+              lineNum > activeStartLine &&
               lineNum <= (activeEndLine || activeStartLine);
             const lineIssue = issuesByLine.get(lineNum);
 
-            let gutterItemClass = 'h-6 relative flex items-center justify-end font-mono';
-            if (isTargetLine) {
-              gutterItemClass += ` ${highlightStyles.gutter}`;
+            let gutterItemClass = 'h-6 relative flex items-center justify-end font-mono transition-colors';
+            if (isExactStart) {
+              gutterItemClass += ` ${highlightStyles.primaryGutter}`;
+            } else if (isSpanLine) {
+              gutterItemClass += ` ${highlightStyles.spanGutter}`;
             }
 
             return (
@@ -266,13 +290,13 @@ export function CodeEditor({
                   <span
                     className={`absolute left-2 w-1.5 h-1.5 rounded-full ${
                       lineIssue.severity === 'CRITICAL'
-                        ? 'bg-red-500'
+                        ? 'bg-red-500 ring-2 ring-red-500/20'
                         : lineIssue.severity === 'HIGH'
-                        ? 'bg-orange-500'
+                        ? 'bg-orange-500 ring-2 ring-orange-500/20'
                         : lineIssue.severity === 'MEDIUM'
-                        ? 'bg-amber-500'
-                        : 'bg-slate-400 dark:bg-obsidian-400'
-                    }`}
+                        ? 'bg-amber-500 ring-2 ring-amber-500/20'
+                        : 'bg-blue-500 ring-2 ring-blue-500/20'
+                    } ${isExactStart ? 'scale-125' : ''}`}
                   />
                 )}
                 <span>{lineNum}</span>
@@ -291,15 +315,23 @@ export function CodeEditor({
           >
             {lines.map((_, index) => {
               const lineNum = index + 1;
-              const isTargetLine =
+              const isExactStart = activeStartLine !== null && lineNum === activeStartLine;
+              const isSpanLine =
                 activeStartLine !== null &&
-                lineNum >= activeStartLine &&
+                lineNum > activeStartLine &&
                 lineNum <= (activeEndLine || activeStartLine);
+
+              let overlayClass = 'h-6 w-full transition-colors';
+              if (isExactStart) {
+                overlayClass += ` ${highlightStyles.primaryOverlay}`;
+              } else if (isSpanLine) {
+                overlayClass += ` ${highlightStyles.spanOverlay}`;
+              }
 
               return (
                 <div
                   key={lineNum}
-                  className={`h-6 w-full ${isTargetLine ? highlightStyles.overlay : ''}`}
+                  className={overlayClass}
                 />
               );
             })}

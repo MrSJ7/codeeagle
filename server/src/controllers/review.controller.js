@@ -147,3 +147,30 @@ export async function handleAiReviewRequest(req, res) {
     });
   }
 }
+
+export async function handleRefactorRequest(req, res) {
+  try {
+    const { code, issue, filename = 'source.js' } = req.body || {};
+    if (typeof code !== 'string' || !issue) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_PAYLOAD',
+          message: 'Both code string and issue object are required.',
+        },
+      });
+    }
+
+    const { generateFindingRefactor } = await import('../services/refactorService.js');
+    const result = await generateFindingRefactor({ code, issue, filename });
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in handleRefactorRequest:', error);
+    return res.status(500).json({
+      error: {
+        code: 'REFACTOR_ERROR',
+        message: error.message || 'Failed to generate refactor candidate.',
+      },
+    });
+  }
+}
+

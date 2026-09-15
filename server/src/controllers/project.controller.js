@@ -292,7 +292,7 @@ export const projectController = {
   async applyPatch(req, res, next) {
     try {
       const { projectId, fileId, findingId } = req.params;
-      const { reviewId, expectedHash } = req.body || {};
+      const { reviewId, expectedHash, patch } = req.body || {};
 
       if (!reviewId) {
         return res.status(400).json({
@@ -306,6 +306,7 @@ export const projectController = {
         fileId,
         findingId,
         expectedHash,
+        patchOverride: patch,
       });
 
       return res.status(200).json(outcome);
@@ -315,6 +316,52 @@ export const projectController = {
           error: { code: err.code || "PATCH_ERROR", message: err.message },
         });
       }
+      next(err);
+    }
+  },
+
+  /**
+   * Generate an automated refactoring candidate for an issue in a project file.
+   * POST /api/projects/:projectId/files/:fileId/findings/:findingId/refactor
+   */
+  async refactorFinding(req, res, next) {
+    try {
+      const { projectId, fileId, findingId } = req.params;
+      const project = await projectRepository.getProjectById(projectId);
+      if (!project) {
+        return res.status(404).json({
+          error: { code: "PROJECT_NOT_FOUND", message: "Project not found." },
+        });
+      }
+
+      const file = (project.files || []).find((f) => f.id === fileId || f.path === fileId);
+      if (!file || !file.content) {
+        return res.status(404).json({
+          error: { code: "FILE_NOT_FOUND", message: "File source not found." },
+        });
+      }
+
+      const review = await projectRepository.getLatestReview(projectId);
+      const reviewFile = (review?.files || []).find((f) => f.id === fileId || f.path === fileId);
+      const finding = (reviewFile?.issues || []).find((i) => i.id === findingId) ||
+        (review?.findings || []).find((i) => i.id === findingId) ||
+        req.body?.issue;
+
+      if (!finding) {
+        return res.status(404).json({
+          error: { code: "FINDING_NOT_FOUND", message: "Finding not found." },
+        });
+      }
+
+      const { generateFindingRefactor } = await import("../services/refactorService.js");
+      const refactorResult = await generateFindingRefactor({
+        code: file.content,
+        issue: finding,
+        filename: file.filename || file.path,
+      });
+
+      return res.status(200).json(refactorResult);
+    } catch (err) {
       next(err);
     }
   },

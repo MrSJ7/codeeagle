@@ -19,7 +19,12 @@ import { IssueDetails } from "../IssueDetails.jsx";
 import { PatchPreview } from "../PatchPreview.jsx";
 import { PatchDiffBanner } from "../PatchDiffBanner.jsx";
 import { Button } from "../ui/Button.jsx";
-import { getProjectFileApi, applyProjectPatchApi } from "../../services/projectApi.js";
+import { SeverityBadge } from "../SeverityBadge.jsx";
+import {
+  getProjectFileApi,
+  applyProjectPatchApi,
+  generateProjectFindingRefactorApi,
+} from "../../services/projectApi.js";
 import { useTheme } from "../../context/ThemeContext.jsx";
 import { cn } from "@/lib/utils";
 
@@ -98,12 +103,49 @@ export function ProjectWorkspace({
     }
   }
 
+  const [isGeneratingRefactor, setIsGeneratingRefactor] = useState(false);
+  const [refactorCandidate, setRefactorCandidate] = useState(null);
+
   const currentIssues = selectedFile?.issues || [];
   const selectedIssue = currentIssues.find((i) => i.id === selectedIssueId) || null;
 
+  // Generate automated refactoring candidate for a finding
+  async function handleGenerateRefactor(finding) {
+    const targetFinding = finding || selectedIssue;
+    if (!targetFinding || !selectedFile) return;
+
+    setIsGeneratingRefactor(true);
+    try {
+      const outcome = await generateProjectFindingRefactorApi({
+        projectId: project.id,
+        fileId: selectedFile.id,
+        findingId: targetFinding.id,
+        issue: targetFinding,
+      });
+
+      if (outcome.success) {
+        const candidate = {
+          ...targetFinding,
+          fix: {
+            original: outcome.original,
+            replacement: outcome.replacement,
+          },
+          explanation: outcome.explanation,
+        };
+        setRefactorCandidate(candidate);
+        setIsPatchModalOpen(true);
+      }
+    } catch (err) {
+      alert(err.message || "Failed to generate refactor.");
+    } finally {
+      setIsGeneratingRefactor(false);
+    }
+  }
+
   // Apply patch to active file in project
-  async function handleApplyPatch() {
-    if (!selectedFile || !selectedIssue || isPatching) return;
+  async function handleApplyPatch(candidate = null) {
+    const issueToApply = candidate?.fix ? candidate : refactorCandidate || selectedIssue;
+    if (!selectedFile || !issueToApply || isPatching) return;
 
     setIsPatching(true);
 
@@ -111,15 +153,17 @@ export function ProjectWorkspace({
       const outcome = await applyProjectPatchApi({
         projectId: project.id,
         fileId: selectedFile.id,
-        findingId: selectedIssue.id,
+        findingId: issueToApply.id,
         reviewId: review.id,
         expectedHash: selectedFile.contentHash,
+        patch: issueToApply.fix,
       });
 
       if (outcome.success) {
         setFileContent(outcome.patchedCode);
         setPatchDiff(outcome.diff);
         setIsPatchModalOpen(false);
+        setRefactorCandidate(null);
 
         // Update overall project review snapshot in parent
         if (onUpdateReview) {
@@ -253,29 +297,79 @@ export function ProjectWorkspace({
         <div className="md:col-span-4 h-full overflow-y-auto flex flex-col">
           {currentIssues.length > 0 ? (
             <div className="flex-1 flex flex-col">
-              {/* Issue Selector Tabs / List Header */}
+              {/* Problem List Selector for Current File */}
               <div className={cn(
-                "p-3 border-b flex items-center justify-between text-xs",
-                isLight ? "bg-slate-50 border-slate-200 text-slate-800" : "bg-[#111111] border-[#222222] text-obsidian-200"
+                "p-3 border-b flex flex-col gap-2 shrink-0",
+                isLight ? "bg-slate-50 border-slate-200" : "bg-[#111111] border-[#222222]"
               )}>
-                <span className="font-bold">File Findings ({currentIssues.length})</span>
-                <span className="text-[11px] text-muted-foreground font-mono">
-                  {selectedFile?.filename}
-                </span>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-foreground">File Findings ({currentIssues.length})</span>
+                  <span className="text-[11px] text-muted-foreground font-mono">
+                    {selectedFile?.filename}
+                  </span>
+                </div>
+
+                {/* List of problems in this file */}
+                <div className="flex flex-col gap-1 max-h-48 overflow-y-auto pr-1">
+                  {currentIssues.map((iss) => {
+                    const isSelected = iss.id === selectedIssueId;
+                    return (
+                      <button
+                        key={iss.id}
+                        type="button"
+                        onClick={() => setSelectedIssueId(iss.id)}
+                        className={cn(
+                          "w-full text-left p-2 rounded-[5px] border text-xs flex items-start gap-2.5 transition-all cursor-pointer",
+                          isSelected
+                            ? isLight
+                              ? "bg-blue-50/80 border-blue-300 text-blue-950 shadow-xs"
+                              : "bg-brand-500/15 border-brand-500/40 text-brand-200 shadow-xs"
+                            : isLight
+                              ? "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
+                              : "bg-[#161616] border-[#242424] text-obsidian-300 hover:border-[#333333]"
+                        )}
+                      >
+                        <div className="shrink-0 mt-0.5">
+                          <SeverityBadge severity={iss.severity} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground mb-0.5">
+                            <span className="font-semibold text-foreground">
+                              Line {iss.line}{iss.endLine && iss.endLine !== iss.line ? `–${iss.endLine}` : ''}
+                            </span>
+                            <span>•</span>
+                            <span className="text-blue-600 dark:text-brand-400 font-bold">{iss.rule}</span>
+                          </div>
+                          <div className="font-medium text-xs truncate leading-snug">
+                            {iss.title}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Finding Details Card */}
               {selectedIssue ? (
-                <div className="p-4 flex-1">
+                <div className="flex-1 overflow-hidden">
                   <IssueDetails
                     issue={selectedIssue}
                     code={fileContent}
                     filename={selectedFile?.filename || selectedFile?.path}
                     codeHash={selectedFile?.contentHash}
-                    onApplyPatch={handleApplyPatch}
-                    onApplyFix={handleApplyPatch}
-                    onPreviewAiPatch={() => setIsPatchModalOpen(true)}
-                    onPreviewPatch={() => setIsPatchModalOpen(true)}
+                    onApplyPatch={() => handleApplyPatch(selectedIssue)}
+                    onApplyFix={() => handleApplyPatch(selectedIssue)}
+                    onGenerateRefactor={handleGenerateRefactor}
+                    isGeneratingRefactor={isGeneratingRefactor}
+                    onPreviewAiPatch={() => {
+                      setRefactorCandidate(null);
+                      setIsPatchModalOpen(true);
+                    }}
+                    onPreviewPatch={() => {
+                      setRefactorCandidate(null);
+                      setIsPatchModalOpen(true);
+                    }}
                     isApplyingPatch={isPatching}
                     isApplying={isPatching}
                   />
@@ -299,12 +393,17 @@ export function ProjectWorkspace({
       </div>
 
       {/* Patch Preview Modal */}
-      {isPatchModalOpen && selectedIssue && (
+      {isPatchModalOpen && (refactorCandidate || selectedIssue) && (
         <PatchPreview
           isOpen={isPatchModalOpen}
-          onClose={() => setIsPatchModalOpen(false)}
-          onApply={handleApplyPatch}
-          issue={selectedIssue}
+          onClose={() => {
+            setIsPatchModalOpen(false);
+            setRefactorCandidate(null);
+          }}
+          onConfirmApply={() => handleApplyPatch(refactorCandidate || selectedIssue)}
+          onApply={() => handleApplyPatch(refactorCandidate || selectedIssue)}
+          issue={refactorCandidate || selectedIssue}
+          previewData={refactorCandidate?.fix}
           code={fileContent}
           codeHash={selectedFile?.contentHash}
           isApplying={isPatching}

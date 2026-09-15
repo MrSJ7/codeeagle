@@ -398,9 +398,62 @@ export default function App() {
     }
   };
 
+  const [isGeneratingRefactor, setIsGeneratingRefactor] = useState(false);
+
+  // Generate automated refactor for issues without static 1-line fixes
+  const handleGenerateRefactor = async (issue) => {
+    if (!issue) return;
+    setIsGeneratingRefactor(true);
+    try {
+      const response = await fetch('/api/review/refactor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, issue, filename: currentFilename }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        const previewIssue = {
+          ...issue,
+          fix: {
+            original: data.original,
+            replacement: data.replacement,
+          },
+          explanation: data.explanation,
+        };
+        setPreviewAiIssue(previewIssue);
+        setAiPreviewData({
+          applicable: true,
+          original: data.original,
+          replacement: data.replacement,
+          startLine: issue.line,
+          endLine: issue.endLine || issue.line,
+        });
+      } else {
+        showToast(data.error?.message || 'Failed to generate refactor candidate.', 'error');
+      }
+    } catch (err) {
+      showToast(err.message || 'Error generating refactor.', 'error');
+    } finally {
+      setIsGeneratingRefactor(false);
+    }
+  };
+
   // 5. AI Patch Verification & Preview flow
   const handlePreviewAiPatch = async (issue) => {
-    if (!issue || issue.source !== 'AI') return;
+    if (!issue) return;
+
+    if (issue.source !== 'AI') {
+      // Direct preview for static issues
+      setPreviewAiIssue(issue);
+      setAiPreviewData({
+        applicable: true,
+        original: issue.fix?.original,
+        replacement: issue.fix?.replacement,
+        startLine: issue.line,
+        endLine: issue.endLine || issue.line,
+      });
+      return;
+    }
 
     setIsVerifyingAiPatch(true);
     try {
@@ -423,13 +476,14 @@ export default function App() {
     }
   };
 
-  // 6. Confirmed AI Patch Application
+  // 6. Confirmed AI / Refactor Patch Application
   const handleApplyAiPatch = async () => {
     if (!previewAiIssue) return;
 
     setIsApplyingAiPatch(true);
     try {
-      const response = await applyAiPatchApi({
+      const apiFn = previewAiIssue.source === 'AI' ? applyAiPatchApi : applyPatchApi;
+      const response = await apiFn({
         code,
         codeHash: reviewData?.metadata?.codeHash,
         issue: previewAiIssue,
@@ -458,11 +512,11 @@ export default function App() {
 
         setPreviewAiIssue(null);
         setAiPreviewData(null);
-        showToast('AI Patch applied and re-analyzed your code.');
+        showToast('Fix applied and re-analyzed your code.');
       }
     } catch (err) {
-      console.error('Apply AI patch error:', err);
-      showToast(err.message || 'Failed to apply AI patch.', 'error');
+      console.error('Apply patch error:', err);
+      showToast(err.message || 'Failed to apply patch.', 'error');
     } finally {
       setIsApplyingAiPatch(false);
     }
@@ -730,7 +784,11 @@ export default function App() {
               <IssueDetails
                 issue={currentSelectedIssue}
                 onApplyPatch={handleApplyPatch}
+                onApplyFix={handleApplyPatch}
                 onPreviewAiPatch={handlePreviewAiPatch}
+                onPreviewPatch={handlePreviewAiPatch}
+                onGenerateRefactor={handleGenerateRefactor}
+                isGeneratingRefactor={isGeneratingRefactor}
                 reviewStatus={reviewStatus}
                 isStale={isStale}
                 isApplyingPatch={isApplyingPatch || isApplyingAiPatch}
