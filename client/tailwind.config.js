@@ -11,18 +11,18 @@ export default {
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       colors: {
-        slate: {
-          50: '#F8FAFC',
-          100: '#F1F5F9',
-          200: '#E2E8F0',
-          300: '#CBD5E1',
-          400: '#94A3B8',
-          500: '#64748B',
-          600: '#475569',
-          700: '#334155',
-          800: '#1E293B',
-          900: '#0F172A',
-          950: '#020617',
+        obsidian: {
+          950: '#08090A', // Root canvas
+          900: '#0D1117', // Code & primary surface
+          850: '#161B22', // Panels & headers
+          800: '#21262D', // Elevated cards & borders
+          750: '#262C36', // Hover surfaces
+          700: '#30363D', // Structural dividers
+          600: '#484F58', // Muted borders
+          400: '#8B949E', // Secondary labels
+          300: '#C9D1D9', // Body text
+          100: '#E6EDF3', // Code text
+          50: '#F0F6FC',  // Crisp white text
         },
         graphite: {
           50: '#F0F3F6',
@@ -33,75 +33,43 @@ export default {
           500: '#6E7681',
           600: '#484F58',
           700: '#30363D',
-          750: '#262C34',
+          750: '#262C36',
           800: '#21262D',
           850: '#161B22',
           900: '#0D1117',
           950: '#090C10',
         },
-        surface: {
-          app: '#F8FAFC',
-          card: '#FFFFFF',
-          subtle: '#F1F5F9',
-          border: '#E2E8F0',
-          dark: '#0D1117',
-        },
-        code: {
-          DEFAULT: '#0D1117',
-          canvas: '#0D1117',
-          gutter: '#090C10',
-          text: '#E6EDF3',
-          border: '#21262D',
-          highlight: '#1F242C',
-          lineHover: '#161B22',
-        },
         brand: {
-          50: '#ECFDF5',
-          100: '#D1FAE5',
-          200: '#A7F3D0',
-          300: '#6EE7B7',
-          400: '#34D399',
-          500: '#10B981', // Vibrant Emerald
-          600: '#059669', // Primary Dark Emerald
-          700: '#047857',
-          800: '#065F46',
-          900: '#064E3B',
+          50: '#FFF7ED',
+          100: '#FFEDD5',
+          200: '#FED7AA',
+          300: '#FDBA74',
+          400: '#FB923C',
+          500: '#F97316', // Primary Brand Orange
+          600: '#EA580C', // Hover Brand
+          700: '#C2410C', // Active Brand
+          800: '#9A3412',
+          900: '#7C2D12',
+          DEFAULT: '#F97316',
         },
-        teal: {
-          50: '#F0FDFA',
-          100: '#CCFBF1',
-          200: '#99F6E4',
-          400: '#2DD4BF',
-          500: '#14B8A6',
-          600: '#0D9488',
-          700: '#0F766E',
-        },
-        blue: {
-          50: '#EFF6FF',
-          100: '#DBEAFE',
-          400: '#60A5FA',
-          500: '#3B82F6',
-          600: '#2563EB',
-          700: '#1D4ED8',
-        },
-        cyan: {
-          50: '#ECFEFF',
-          400: '#38BDF8',
-          500: '#0EA5E9',
-          600: '#0284C7',
+        amber: {
+          400: '#FBBF24',
+          500: '#F59E0B',
+          600: '#D97706',
         },
         severity: {
-          critical: '#DC2626',
-          high: '#D97706',
-          medium: '#EAB308',
-          low: '#2563EB',
+          critical: '#F85149',
+          high: '#FB8532',
+          medium: '#D29922',
+          low: '#8B949E',
+          resolved: '#3FB950',
         },
       },
-      boxShadow: {
-        'dev-sm': '0 1px 2px 0 rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.06)',
-        'dev': '0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.06)',
-        'dev-lg': '0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.06)',
-        'dev-xl': '0 20px 35px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.08)',
+      borderRadius: {
+        'tight': '4px',
+        'btn': '5px',
+        'panel': '8px',
+        'shell': '10px',
       },
     },
   },

@@ -97,27 +97,27 @@ export function CodeEditor({
     switch (activeSeverity) {
       case 'CRITICAL':
         return {
-          gutter: 'bg-red-950/50 text-red-300 font-bold border-l-2 border-red-500',
-          overlay: 'bg-red-950/25 border-l-2 border-red-500',
+          gutter: 'bg-red-950/60 text-red-300 font-bold border-l-2 border-red-500',
+          overlay: 'bg-red-950/30 border-l-2 border-red-500',
           badge: 'bg-red-950/60 text-red-300 border-red-800/60',
         };
       case 'HIGH':
         return {
-          gutter: 'bg-orange-950/50 text-orange-300 font-bold border-l-2 border-orange-500',
-          overlay: 'bg-orange-950/25 border-l-2 border-orange-500',
+          gutter: 'bg-orange-950/60 text-orange-300 font-bold border-l-2 border-orange-500',
+          overlay: 'bg-orange-950/30 border-l-2 border-orange-500',
           badge: 'bg-orange-950/60 text-orange-300 border-orange-800/60',
         };
       case 'MEDIUM':
         return {
-          gutter: 'bg-amber-950/50 text-amber-300 font-bold border-l-2 border-amber-500',
-          overlay: 'bg-amber-950/25 border-l-2 border-amber-500',
+          gutter: 'bg-amber-950/60 text-amber-300 font-bold border-l-2 border-amber-500',
+          overlay: 'bg-amber-950/30 border-l-2 border-amber-500',
           badge: 'bg-amber-950/60 text-amber-300 border-amber-800/60',
         };
       default:
         return {
-          gutter: 'bg-cyan-950/50 text-cyan-300 font-bold border-l-2 border-cyan-400',
-          overlay: 'bg-cyan-950/25 border-l-2 border-cyan-400',
-          badge: 'bg-cyan-950/60 text-cyan-300 border-cyan-800/60',
+          gutter: 'bg-obsidian-800/80 text-obsidian-300 font-bold border-l-2 border-obsidian-500',
+          overlay: 'bg-obsidian-800/40 border-l-2 border-obsidian-500',
+          badge: 'bg-obsidian-800 text-obsidian-300 border-obsidian-700',
         };
     }
   };
@@ -125,24 +125,24 @@ export function CodeEditor({
   const highlightStyles = getHighlightColor();
 
   return (
-    <div className="flex flex-col h-full bg-[#0D1117] border-r border-[#21262D] overflow-hidden select-none">
+    <div className="flex flex-col h-full bg-obsidian-900 border-r border-obsidian-800 overflow-hidden select-none">
       {/* Editor Header Bar */}
-      <div className="h-10 px-4 bg-[#090C10] border-b border-[#21262D] flex items-center justify-between text-xs shrink-0 select-none">
+      <div className="h-10 px-4 bg-obsidian-950 border-b border-obsidian-800 flex items-center justify-between text-xs shrink-0 select-none">
         {/* Left: File metadata */}
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 font-mono text-[#E6EDF3] font-semibold">
-            <FileCode className="w-3.5 h-3.5 text-brand-400" />
+          <div className="flex items-center gap-1.5 font-mono text-obsidian-100 font-semibold">
+            <FileCode className="w-3.5 h-3.5 text-brand-500" />
             <span>{filename}</span>
           </div>
-          <span className="text-slate-600">•</span>
-          <span className="text-[11px] font-mono text-slate-400">{language}</span>
-          <span className="text-slate-600">•</span>
-          <span className="text-[11px] font-mono text-slate-400">{lineCount} lines</span>
+          <span className="text-obsidian-600">•</span>
+          <span className="text-[11px] font-mono text-obsidian-400">{language}</span>
+          <span className="text-obsidian-600">•</span>
+          <span className="text-[11px] font-mono text-obsidian-400">{lineCount} lines</span>
 
           {/* Active Highlight Badge */}
           {activeStartLine && (
             <span
-              className={`flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border ml-2 ${highlightStyles.badge}`}
+              className={`flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[4px] border ml-2 ${highlightStyles.badge}`}
             >
               <Hash className="w-3 h-3" />
               Lines {activeStartLine}{activeEndLine && activeEndLine !== activeStartLine ? `-${activeEndLine}` : ''}
@@ -155,22 +155,22 @@ export function CodeEditor({
           {/* Review Status Pill */}
           <div className="text-[11px] font-medium flex items-center gap-1.5 font-mono">
             {isStale ? (
-              <span className="flex items-center gap-1 text-orange-300 bg-orange-950/50 px-2 py-0.5 rounded border border-orange-800/40">
-                <AlertTriangle className="w-3 h-3" />
+              <span className="flex items-center gap-1 text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded-[4px] border border-amber-800/40">
+                <AlertTriangle className="w-3 h-3 text-amber-400" />
                 Modified
               </span>
             ) : reviewStatus === 'ANALYZING' ? (
-              <span className="flex items-center gap-1 text-brand-300 bg-brand-950/50 px-2 py-0.5 rounded border border-brand-800/40">
-                <Sparkles className="w-3 h-3 text-brand-400 animate-spin" />
+              <span className="flex items-center gap-1 text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded-[4px] border border-brand-500/30">
+                <Sparkles className="w-3 h-3 text-brand-500 animate-spin" />
                 Analyzing
               </span>
             ) : reviewStatus === 'SUCCESS' ? (
-              <span className="flex items-center gap-1 text-brand-300 bg-brand-950/40 px-2 py-0.5 rounded border border-brand-800/40">
-                <CheckCircle2 className="w-3 h-3 text-brand-400" />
+              <span className="flex items-center gap-1 text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded-[4px] border border-emerald-800/40">
+                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                 Reviewed
               </span>
             ) : (
-              <span className="text-graphite-400">Ready</span>
+              <span className="text-obsidian-400">Ready</span>
             )}
           </div>
 
@@ -180,11 +180,11 @@ export function CodeEditor({
               <button
                 type="button"
                 onClick={() => setIsPresetOpen((prev) => !prev)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-graphite-900 hover:bg-graphite-850 text-graphite-200 border border-graphite-750 text-xs font-mono font-medium transition-colors cursor-pointer shadow-dev-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-obsidian-850 hover:bg-obsidian-800 text-obsidian-200 border border-obsidian-750 text-xs font-mono font-medium transition-colors cursor-pointer shadow-sm"
                 title="Load sample code scenario"
               >
                 <span>Examples</span>
-                <ChevronDown className="w-3 h-3 text-graphite-400" />
+                <ChevronDown className="w-3 h-3 text-obsidian-400" />
               </button>
 
               {isPresetOpen && (
@@ -193,8 +193,8 @@ export function CodeEditor({
                     className="fixed inset-0 z-20"
                     onClick={() => setIsPresetOpen(false)}
                   />
-                  <div className="absolute right-0 mt-1.5 w-60 bg-graphite-900 border border-graphite-700 rounded-lg shadow-dev-lg z-30 py-1 font-sans text-xs">
-                    <div className="px-3 py-1.5 text-[10px] font-mono text-graphite-400 uppercase tracking-wider border-b border-graphite-800">
+                  <div className="absolute right-0 mt-1.5 w-60 bg-obsidian-900 border border-obsidian-700 rounded-[6px] shadow-2xl z-30 py-1 font-sans text-xs">
+                    <div className="px-3 py-1.5 text-[10px] font-mono text-obsidian-400 uppercase tracking-wider border-b border-obsidian-800">
                       Sample Scenarios
                     </div>
                     {presets.map((preset) => (
@@ -205,8 +205,8 @@ export function CodeEditor({
                           onSelectPreset(preset.id);
                           setIsPresetOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-graphite-800 transition-colors cursor-pointer ${
-                          selectedPresetId === preset.id ? 'bg-brand-950/60 text-brand-300' : 'text-graphite-200'
+                        className={`w-full text-left px-3 py-2 flex flex-col gap-0.5 hover:bg-obsidian-800 transition-colors cursor-pointer ${
+                          selectedPresetId === preset.id ? 'bg-brand-500/15 text-brand-300' : 'text-obsidian-200'
                         }`}
                       >
                         <div className="font-semibold text-xs flex items-center justify-between">
@@ -215,7 +215,7 @@ export function CodeEditor({
                             <span className="text-[10px] font-mono text-brand-400">Active</span>
                           )}
                         </div>
-                        <div className="text-[11px] text-graphite-400 truncate">
+                        <div className="text-[11px] text-obsidian-400 truncate">
                           {preset.description}
                         </div>
                       </button>
@@ -233,7 +233,7 @@ export function CodeEditor({
         {/* Line Numbers Gutter */}
         <div
           ref={gutterRef}
-          className="w-12 py-3 bg-[#090C10] border-r border-[#21262D] text-slate-500 text-right pr-3 select-none overflow-hidden shrink-0"
+          className="w-12 py-3 bg-obsidian-950 border-r border-obsidian-800 text-obsidian-500 text-right pr-3 select-none overflow-hidden shrink-0"
           aria-hidden="true"
         >
           {lines.map((_, index) => {
@@ -271,7 +271,7 @@ export function CodeEditor({
                         ? 'bg-orange-500'
                         : lineIssue.severity === 'MEDIUM'
                         ? 'bg-amber-500'
-                        : 'bg-cyan-400'
+                        : 'bg-obsidian-400'
                     }`}
                   />
                 )}
@@ -282,7 +282,7 @@ export function CodeEditor({
         </div>
 
         {/* Code Canvas Container */}
-        <div className="relative flex-1 h-full overflow-hidden bg-code">
+        <div className="relative flex-1 h-full overflow-hidden bg-obsidian-900">
           {/* Highlight Background Layer */}
           <div
             ref={overlayRef}
@@ -307,14 +307,14 @@ export function CodeEditor({
 
           {/* Empty State Overlay when buffer is cleared */}
           {!code.trim() && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none pointer-events-auto z-20 bg-code">
-              <div className="w-12 h-12 rounded-xl bg-graphite-900 border border-graphite-750 flex items-center justify-center mb-4 text-brand-400 shadow-dev-sm">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none pointer-events-auto z-20 bg-obsidian-900">
+              <div className="w-12 h-12 rounded-[8px] bg-obsidian-850 border border-obsidian-750 flex items-center justify-center mb-4 text-brand-500 shadow-sm">
                 <FileCode className="w-6 h-6" />
               </div>
-              <h3 className="text-sm font-bold text-graphite-100 font-sans mb-1">
+              <h3 className="text-sm font-bold text-obsidian-100 font-sans mb-1">
                 Source Code Buffer Empty
               </h3>
-              <p className="text-xs text-graphite-400 font-sans max-w-sm mb-5 leading-relaxed">
+              <p className="text-xs text-obsidian-400 font-sans max-w-sm mb-5 leading-relaxed">
                 Paste raw JavaScript or JSX source code to review, or select a pre-configured sample scenario:
               </p>
               <div className="flex items-center gap-2 flex-wrap justify-center font-mono text-xs">
@@ -323,7 +323,7 @@ export function CodeEditor({
                     key={preset.id}
                     type="button"
                     onClick={() => onSelectPreset(preset.id)}
-                    className="px-3 py-1.5 rounded-[6px] bg-graphite-900 hover:bg-graphite-850 text-graphite-200 border border-graphite-750 hover:border-brand-500/40 transition-colors cursor-pointer shadow-dev-sm"
+                    className="px-3 py-1.5 rounded-[4px] bg-obsidian-850 hover:bg-obsidian-800 text-obsidian-200 border border-obsidian-750 hover:border-brand-500/40 transition-colors cursor-pointer shadow-sm"
                   >
                     {preset.name}
                   </button>

@@ -34,7 +34,7 @@ export const LayoutTextFlip = ({
       <motion.span
         layout
         className={cn(
-          "relative inline-flex items-center justify-center overflow-hidden rounded-md border border-slate-300 bg-white px-3 py-1 font-mono text-xl sm:text-3xl font-bold tracking-tight text-slate-900 shadow-sm ring-1 ring-slate-900/5",
+          "relative inline-flex items-center justify-center overflow-hidden rounded-[5px] border border-obsidian-700 bg-obsidian-850 px-3 py-1 font-mono text-xl sm:text-3xl font-bold tracking-tight text-brand-400 shadow-sm",
           pillClassName
         )}
       >

@@ -17,12 +17,16 @@ export function SeverityBadge({ severity }) {
       dot: 'bg-amber-500',
     },
     LOW: {
-      pill: 'bg-cyan-950/60 text-cyan-300 border-cyan-800/60',
-      dot: 'bg-cyan-400',
+      pill: 'bg-obsidian-800/80 text-obsidian-300 border-obsidian-700/80',
+      dot: 'bg-obsidian-400',
+    },
+    RESOLVED: {
+      pill: 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60',
+      dot: 'bg-emerald-500',
     },
   }[norm] || {
-    pill: 'bg-cyan-950/60 text-cyan-300 border-cyan-800/60',
-    dot: 'bg-cyan-400',
+    pill: 'bg-obsidian-800/80 text-obsidian-300 border-obsidian-700/80',
+    dot: 'bg-obsidian-400',
   };
 
   return (

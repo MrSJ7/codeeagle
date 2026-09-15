@@ -15,25 +15,34 @@ export function Button({
   ...props
 }) {
   const baseStyles =
-    'inline-flex items-center justify-center font-sans select-none cursor-pointer transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]';
+    'inline-flex items-center justify-center font-sans font-medium select-none cursor-pointer transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian-950 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]';
 
   const sizeStyles = {
-    sm: 'px-2.5 py-1 text-xs gap-1.5 rounded-[6px]',
-    md: 'px-3.5 py-1.5 text-xs font-medium gap-2 rounded-[8px]',
-    lg: 'px-5 py-2.5 text-sm font-semibold gap-2.5 rounded-[8px]',
+    xs: 'h-7 px-2 text-[11px] gap-1 rounded-[4px]',
+    sm: 'h-8 px-3 text-xs gap-1.5 rounded-[5px]',
+    md: 'h-9 px-3.5 text-xs font-semibold gap-2 rounded-[5px]',
+    lg: 'h-11 px-5 text-sm font-semibold gap-2.5 rounded-[6px]',
   };
 
   const variantStyles = {
+    // Primary: Unmistakable vibrant brand orange with dark text for maximum contrast & authority
     primary:
-      'bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-dev-sm hover:shadow-dev border border-brand-700/40 active:bg-brand-800',
+      'bg-brand-500 hover:bg-brand-600 active:bg-brand-700 text-obsidian-950 font-bold border border-brand-400/30 hover:text-white shadow-[0_1px_3px_rgba(249,115,22,0.3)]',
+    // Secondary: Technical dark graphite with 1px border divider
     secondary:
-      'bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-medium border border-slate-200 hover:border-slate-300 shadow-dev-sm',
+      'bg-obsidian-800 hover:bg-obsidian-750 active:bg-obsidian-700 text-obsidian-300 hover:text-obsidian-50 font-medium border border-obsidian-700 hover:border-obsidian-600',
+    // Ghost: Quiet technical control
     ghost:
-      'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent',
+      'bg-transparent hover:bg-obsidian-800 text-obsidian-400 hover:text-obsidian-50 border border-transparent',
+    // Outline: Transparent with structural border
+    outline:
+      'bg-transparent hover:bg-obsidian-850 text-obsidian-300 hover:text-obsidian-50 border border-obsidian-700 hover:border-obsidian-600',
+    // Danger: Controlled red
     danger:
-      'bg-red-600 hover:bg-red-700 text-white font-semibold shadow-dev-sm border border-red-700/40',
-    accent:
-      'bg-teal-600 hover:bg-teal-700 text-white font-medium shadow-dev-sm border border-teal-700/40',
+      'bg-severity-critical/15 hover:bg-severity-critical/25 active:bg-severity-critical/30 text-severity-critical border border-severity-critical/30 font-semibold',
+    // Success: Emerald for resolved patches
+    success:
+      'bg-severity-resolved/15 hover:bg-severity-resolved/25 active:bg-severity-resolved/30 text-severity-resolved border border-severity-resolved/30 font-semibold',
   };
 
   const chosenVariant = variantStyles[variant] || variantStyles.primary;
@@ -60,5 +69,36 @@ export function Button({
         </>
       )}
     </button>
+  );
+}
+
+export const CodeEagleButton = Button;
+
+export function CodeEagleIconButton({
+  icon,
+  'aria-label': ariaLabel,
+  title,
+  variant = 'ghost',
+  size = 'md',
+  className = '',
+  ...props
+}) {
+  const sizeMap = {
+    xs: 'w-6 h-6 rounded-[4px]',
+    sm: 'w-7 h-7 rounded-[4px]',
+    md: 'w-8 h-8 rounded-[5px]',
+    lg: 'w-9 h-9 rounded-[5px]',
+  };
+
+  return (
+    <Button
+      variant={variant}
+      aria-label={ariaLabel || title}
+      title={title || ariaLabel}
+      className={`p-0 ${sizeMap[size] || sizeMap.md} ${className}`}
+      {...props}
+    >
+      {icon}
+    </Button>
   );
 }
