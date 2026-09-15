@@ -37,8 +37,7 @@ export function ReviewSummary({
           </div>
 
           {/* Idle Prompt */}
-          <div className="flex items-center gap-2 text-obsidian-400 text-xs font-sans">
-            <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
+          <div className="text-obsidian-400 text-xs font-sans">
             <span>Ready for review · AST static checks & Gemini semantic reasoning</span>
           </div>
 

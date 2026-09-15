@@ -6,22 +6,13 @@ import {
   FileCode,
   Layers,
   ListTree,
-  GitBranch,
   RotateCcw,
   Check,
-  Play,
-  Wrench,
-  AlertCircle,
   Cpu,
-  Terminal,
   Hash,
   Sparkles,
   Zap,
   Lock,
-  ChevronRight,
-  Code2,
-  Eye,
-  Brain,
 } from 'lucide-react';
 import { Button } from './ui/Button.jsx';
 import { Card3D } from './ui/Card3D.jsx';
@@ -133,9 +124,9 @@ export function LandingPage({
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button
                 onClick={() => onSelectScenarioAndStart('insecure-login')}
-                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono"
+                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-severity-critical" />
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-red-950/50 text-red-400 border border-red-800/50 font-bold">P0</span>
                 <span className="font-semibold text-obsidian-100">auth.js</span>
                 <span className="text-obsidian-400 text-[11px]">· Hardcoded Secret</span>
                 <ArrowRight className="w-3 h-3 text-obsidian-500 group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
@@ -143,9 +134,9 @@ export function LandingPage({
 
               <button
                 onClick={() => onSelectScenarioAndStart('buggy-react')}
-                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono"
+                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-severity-high" />
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-orange-950/50 text-orange-400 border border-orange-800/50 font-bold">P1</span>
                 <span className="font-semibold text-obsidian-100">ActivityFeed.jsx</span>
                 <span className="text-obsidian-400 text-[11px]">· Key Bug</span>
                 <ArrowRight className="w-3 h-3 text-obsidian-500 group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
@@ -153,9 +144,9 @@ export function LandingPage({
 
               <button
                 onClick={() => onSelectScenarioAndStart('complex-function')}
-                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono"
+                className="group flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-750 hover:border-obsidian-600 text-xs text-obsidian-300 hover:text-obsidian-50 transition-all font-mono cursor-pointer"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-severity-medium" />
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded-[3px] bg-amber-950/50 text-amber-400 border border-amber-800/50 font-bold">P2</span>
                 <span className="font-semibold text-obsidian-100">shippingFee.js</span>
                 <span className="text-obsidian-400 text-[11px]">· Logic Edge Case</span>
                 <ArrowRight className="w-3 h-3 text-obsidian-500 group-hover:text-brand-400 group-hover:translate-x-0.5 transition-all" />
@@ -181,13 +172,11 @@ export function LandingPage({
               <span className="text-xs font-mono text-obsidian-400 flex items-center gap-2">
                 <span>Status:</span>
                 {demoFixed ? (
-                  <span className="px-2.5 py-0.5 rounded-[4px] bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 font-semibold flex items-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.25)]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="px-2.5 py-0.5 rounded-[4px] bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 font-semibold">
                     RESOLVED (100/100) · +25 pts
                   </span>
                 ) : (
-                  <span className="px-2.5 py-0.5 rounded-[4px] bg-red-950/40 border border-red-800/60 text-red-300 font-semibold flex items-center gap-1.5 shadow-[0_0_10px_rgba(239,68,68,0.25)]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  <span className="px-2.5 py-0.5 rounded-[4px] bg-red-950/40 border border-red-800/60 text-red-300 font-semibold">
                     1 BLOCKER (50/100)
                   </span>
                 )}
@@ -212,25 +201,18 @@ export function LandingPage({
           >
             {/* Workbench IDE Header Bar */}
             <div className="h-11 bg-[#101010] px-4 flex items-center justify-between border-b border-[#202020] text-xs font-mono select-none">
-              {/* Left: Window Traffic Controls + Active File Tab */}
-              <div className="flex items-center gap-3.5">
-                <div className="flex items-center gap-1.5 pr-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/80 border border-[#E0443E]/50" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/80 border border-[#DEA123]/50" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/80 border border-[#1AAB29]/50" />
-                </div>
-
-                <div className="flex items-center gap-2 px-3 py-1 rounded-[5px] bg-[#0A0A0A] border border-[#262626] text-xs font-mono font-medium text-[#F5F3EF] shadow-[0_1px_3px_rgba(0,0,0,0.5),0_1px_0_rgba(255,255,255,0.04)_inset]">
+              {/* Left: Active File Tab */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-1 rounded-[4px] bg-[#0A0A0A] border border-[#262626] text-xs font-mono font-medium text-[#F5F3EF]">
                   <FileCode className="w-3.5 h-3.5 text-brand-400" />
                   <span>auth.js</span>
                   <span className="text-[10px] text-obsidian-500">· JS · 27 lines</span>
                 </div>
               </div>
 
-              {/* Right: Engine Indicator Pill with Pulsating Status */}
+              {/* Right: Engine Indicator Pill */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 px-2.5 py-1 rounded-[4px] bg-[#141414] border border-[#242424] text-[11px] font-mono text-obsidian-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse shadow-[0_0_6px_rgba(255,122,24,0.6)]" />
                   <span className="font-semibold text-obsidian-200">Babel AST Engine</span>
                   <span className="text-obsidian-600">·</span>
                   <span className="text-obsidian-400 text-[10px]">13 Rules Active</span>
@@ -366,8 +348,7 @@ export function LandingPage({
 
                   {/* Why this matters */}
                   <div className="p-3.5 rounded-[6px] bg-[#111111] border border-[#222222] hover:border-[#2C2C2C] transition-colors space-y-1.5 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
-                    <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider flex items-center gap-1.5">
-                      <AlertCircle className="w-3.5 h-3.5 text-severity-critical shrink-0" />
+                    <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider">
                       Why This Matters
                     </div>
                     <p className="text-xs text-[#A6A29B] leading-relaxed">
@@ -377,8 +358,7 @@ export function LandingPage({
 
                   {/* Recommendation */}
                   <div className="p-3.5 rounded-[6px] bg-[#111111] border border-[#222222] hover:border-[#2C2C2C] transition-colors space-y-1.5 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
-                    <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider flex items-center gap-1.5">
-                      <Wrench className="w-3.5 h-3.5 text-brand-500 shrink-0" />
+                    <div className="font-mono text-[11px] font-semibold text-obsidian-200 uppercase tracking-wider">
                       Recommendation
                     </div>
                     <p className="text-xs text-[#A6A29B] leading-relaxed">
@@ -392,8 +372,7 @@ export function LandingPage({
                   {/* Unified Diff Box */}
                   <div className="rounded-[6px] border border-[#242424] bg-[#0A0A0A] overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
                     <div className="px-3 py-1.5 bg-[#121212] border-b border-[#202020] text-[10px] font-mono text-obsidian-400 flex items-center justify-between select-none">
-                      <span className="flex items-center gap-1.5 font-medium text-obsidian-300">
-                        <GitBranch className="w-3 h-3 text-brand-400" />
+                      <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-obsidian-300">
                         Suggested Change (Unified Diff)
                       </span>
                       <span className="flex items-center gap-1 text-[10px]">
@@ -505,9 +484,8 @@ export function LandingPage({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5" />
-                SEE
+              <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
+                01 / SEE
               </span>
               <h3 className="text-base font-bold text-[#F5F3EF]">
                 Grounded Line-Anchored Precision
@@ -517,15 +495,14 @@ export function LandingPage({
               Every finding points directly to an exact start line and end line in your file. Clicking any finding in the triage queue auto-scrolls the code canvas and activates synchronized gutter severity pips.
             </p>
             <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-[11px] text-[#A6A29B]">
-              <span className="text-[#FF4D4D]">●</span> Line 6: const JWT_SECRET = "production_super_secret_key_12345";
+              <span className="text-red-400 font-semibold">Line 6: </span>const JWT_SECRET = &quot;production_super_secret_key_12345&quot;;
             </div>
           </Card3D>
 
           <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold flex items-center gap-1.5">
-                <Brain className="w-3.5 h-3.5" />
-                UNDERSTAND
+              <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
+                02 / UNDERSTAND
               </span>
               <h3 className="text-base font-bold text-[#F5F3EF]">
                 Senior Staff PR Review Comments
@@ -535,15 +512,14 @@ export function LandingPage({
               Findings are not cryptic compiler error codes. They are written as constructive, senior-level code review comments detailing the exact risk mechanism, exploit vector, and remediation advice.
             </p>
             <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] text-xs text-[#D4D0C8]">
-              <span className="text-[#FFA24D] font-semibold font-mono">Why this matters:</span> Token forging allows unauthenticated access across your entire API service.
+              <span className="text-brand-400 font-semibold font-mono">Why this matters: </span>Token forging allows unauthenticated access across your entire API service.
             </div>
           </Card3D>
 
           <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold flex items-center gap-1.5">
-                <Wrench className="w-3.5 h-3.5" />
-                FIX
+              <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
+                03 / FIX
               </span>
               <h3 className="text-base font-bold text-[#F5F3EF]">
                 Executable Unified Diffs
@@ -553,16 +529,15 @@ export function LandingPage({
               Review comments do not stop at theoretical advice. They provide concrete, syntactically verified unified diffs formatted for instant review and 1-click in-memory patch execution.
             </p>
             <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-[11px] space-y-1">
-              <div className="text-[#FF4D4D]">- const JWT_SECRET = "...";</div>
-              <div className="text-[#38C793]">+ const JWT_SECRET = process.env.JWT_SECRET;</div>
+              <div className="text-red-400">- const JWT_SECRET = &quot;...&quot;;</div>
+              <div className="text-emerald-400">+ const JWT_SECRET = process.env.JWT_SECRET;</div>
             </div>
           </Card3D>
 
           <Card3D maxTilt={1.5} className="p-6 bg-[#111111] border-[#262626] space-y-4">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-[4px] bg-[#FF7A18]/15 border border-[#FF7A18]/30 text-[#FFA24D] font-mono text-xs font-bold flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                VERIFY
+              <span className="px-2 py-0.5 rounded-[4px] bg-[#1A1A1A] border border-[#2E2E2E] text-brand-400 font-mono text-[11px] font-bold tracking-wider">
+                04 / VERIFY
               </span>
               <h3 className="text-base font-bold text-[#F5F3EF]">
                 Automated Score Re-Auditing
@@ -571,7 +546,7 @@ export function LandingPage({
             <p className="text-xs text-[#D4D0C8] leading-relaxed">
               Applying a patch automatically re-analyzes the modified code against the entire 13-rule AST catalog and recalculates your audit score in real time.
             </p>
-            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-xs text-[#38C793] flex items-center justify-between">
+            <div className="p-3 rounded-[5px] bg-[#0A0A0A] border border-[#222222] font-mono text-xs text-emerald-400 flex items-center justify-between">
               <span>Score: 50 → 75 (+25 pts)</span>
               <span className="text-[#A6A29B] text-[11px]">1 Blocker Resolved</span>
             </div>
@@ -672,8 +647,7 @@ export function LandingPage({
             description="Hardcoded secrets, unescaped SQL injections, eval() execution, and unverified token validations that immediately block deployment."
             className="border-severity-critical/30 hover:border-severity-critical/60"
             footer={
-              <span className="text-[11px] font-mono text-severity-critical font-semibold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-severity-critical animate-pulse" />
+              <span className="text-[11px] font-mono text-severity-critical font-semibold">
                 P0 Blocker · Immediate Fix
               </span>
             }
@@ -687,8 +661,7 @@ export function LandingPage({
             description="Unhandled asynchronous rejections, mutable global state side-effects, and React array-index key mutations causing state corruption."
             className="border-severity-high/30 hover:border-severity-high/60"
             footer={
-              <span className="text-[11px] font-mono text-severity-high font-semibold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-severity-high" />
+              <span className="text-[11px] font-mono text-severity-high font-semibold">
                 P1 High · Blocks Deployment
               </span>
             }
@@ -702,8 +675,7 @@ export function LandingPage({
             description="Cyclomatic complexity exceeding thresholds, deeply nested branching logic, and unoptimized resource allocations."
             className="border-severity-medium/30 hover:border-severity-medium/60"
             footer={
-              <span className="text-[11px] font-mono text-severity-medium font-semibold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-severity-medium" />
+              <span className="text-[11px] font-mono text-severity-medium font-semibold">
                 P2 Quality · Refactoring Req.
               </span>
             }
@@ -717,8 +689,7 @@ export function LandingPage({
             description="Unused identifier bindings, dead code paths, missing type annotations, and minor readability opportunities."
             className="border-obsidian-750 hover:border-obsidian-600"
             footer={
-              <span className="text-[11px] font-mono text-obsidian-400 font-semibold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-obsidian-500" />
+              <span className="text-[11px] font-mono text-obsidian-400 font-semibold">
                 P3 Style · Advisory Only
               </span>
             }
@@ -748,8 +719,7 @@ export function LandingPage({
             title="Deterministic AST Rules"
             description="Babel-powered AST static verification detects hardcoded secrets, SQL injections, and prototype pollution with zero false positives."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+              <span className="font-mono text-[10px] text-obsidian-400">
                 Deterministic AST static verification
               </span>
             }
@@ -762,8 +732,7 @@ export function LandingPage({
             title="Single-Authority Hash Guard"
             description="Cryptographic checksum validation guarantees string mutations match the authoritative buffer, preventing stale source corruption."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="font-mono text-[10px] text-obsidian-400">
                 Protects against stale source corruption
               </span>
             }
@@ -776,8 +745,7 @@ export function LandingPage({
             title="Local AST Execution"
             description="Static analyzer rules execute immediately in memory, returning instant baseline diagnostics before outbound network requests."
             footer={
-              <span className="font-mono text-[10px] text-obsidian-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+              <span className="font-mono text-[10px] text-obsidian-400">
                 Instant static analysis before network calls
               </span>
             }

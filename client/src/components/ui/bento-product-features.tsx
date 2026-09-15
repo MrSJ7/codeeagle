@@ -195,9 +195,8 @@ export function CodeEagleBentoShowcase({ className }: { className?: string }) {
             Catches nuanced race conditions, missing input sanitization, and subtle business logic vulnerabilities beyond deterministic syntax rules.
           </p>
         </div>
-        <div className="flex items-center gap-2 pt-3 border-t border-[#1C1C1C] text-[11px] font-mono text-brand-400">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-          <span>Hybrid AST + AI Synergy</span>
+        <div className="pt-3 border-t border-[#1C1C1C] text-[11px] font-mono text-brand-400">
+          Hybrid AST + AI Synergy
         </div>
       </BentoCard>
 

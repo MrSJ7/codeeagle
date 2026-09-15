@@ -3,11 +3,8 @@ import {
   Copy,
   Check,
   Sparkles,
-  AlertCircle,
-  Wrench,
   Info,
   ShieldCheck,
-  CheckCircle2,
   ArrowRight,
 } from 'lucide-react';
 import { SeverityBadge } from './SeverityBadge.jsx';
@@ -130,22 +127,20 @@ export function IssueDetails({
       <div className="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
         {/* Why this matters */}
         <div>
-          <div className="text-xs font-bold text-obsidian-100 mb-1.5 flex items-center gap-1.5">
-            <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span>Why this matters</span>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 font-semibold mb-1.5">
+            Why this matters
           </div>
-          <p className="text-obsidian-300 leading-relaxed pl-5 font-normal">
+          <p className="text-obsidian-200 leading-relaxed font-normal">
             {issue.description}
           </p>
         </div>
 
         {/* Recommendation */}
         <div>
-          <div className="text-xs font-bold text-obsidian-100 mb-1.5 flex items-center gap-1.5">
-            <Wrench className="w-3.5 h-3.5 text-brand-500 shrink-0" />
-            <span>Recommendation</span>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-obsidian-400 font-semibold mb-1.5">
+            Recommendation
           </div>
-          <p className="text-obsidian-300 leading-relaxed pl-5 font-normal">
+          <p className="text-obsidian-200 leading-relaxed font-normal">
             {issue.recommendation}
           </p>
         </div>
@@ -153,65 +148,58 @@ export function IssueDetails({
         {/* Suggested change */}
         {hasFix && issue.fix?.replacement && (
           <div>
-            <div className="flex items-center justify-between text-xs font-bold text-obsidian-100 mb-2">
-              <span className="flex items-center gap-1.5 text-emerald-400">
-                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                <span>Suggested change (Unified Diff)</span>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-obsidian-300 font-semibold">
+                Suggested Change (Unified Diff)
               </span>
 
               <button
                 type="button"
                 onClick={handleCopy}
                 className="flex items-center gap-1 text-[11px] font-mono text-obsidian-400 hover:text-obsidian-100 cursor-pointer transition-colors"
+                title="Copy suggested fix"
               >
                 {copyStatus === 'copied' ? (
                   <>
-                    <Check className="w-3 h-3 text-emerald-400" />
-                    <span className="text-emerald-400 font-semibold">Copied</span>
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="text-emerald-400">Copied</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="w-3 h-3" />
+                    <Copy className="w-3.5 h-3.5" />
                     <span>Copy</span>
                   </>
                 )}
               </button>
             </div>
 
-            {/* In-situ Diff Box: Deep Graphite Surface */}
-            <div className="rounded-[6px] border border-obsidian-750 bg-obsidian-950 text-obsidian-100 font-mono text-[11px] p-3 space-y-1 shadow-sm overflow-x-auto">
-              {originalLines.map((line, idx) => (
-                <div
-                  key={`orig-${idx}`}
-                  className="text-red-300 bg-red-950/40 px-2 py-0.5 rounded-[3px] border border-red-900/40 flex items-baseline gap-2"
-                >
-                  <span className="text-red-400 select-none font-bold shrink-0">-</span>
-                  <span className="whitespace-pre">{line}</span>
+            <div className="rounded-[6px] overflow-hidden border border-obsidian-750 bg-obsidian-950 font-mono text-xs shadow-inner">
+              <div className="p-3 space-y-1">
+                {issue.fix.original && (
+                  <div className="flex items-start gap-2 text-red-400 bg-red-950/20 px-2.5 py-1 rounded-[3px] border border-red-500/20">
+                    <span className="select-none font-bold text-red-500">-</span>
+                    <span className="whitespace-pre-wrap break-all">{issue.fix.original}</span>
+                  </div>
+                )}
+                <div className="flex items-start gap-2 text-emerald-300 bg-emerald-950/20 px-2.5 py-1 rounded-[3px] border border-emerald-500/20">
+                  <span className="select-none font-bold text-emerald-400">+</span>
+                  <span className="whitespace-pre-wrap break-all">{issue.fix.replacement}</span>
                 </div>
-              ))}
-
-              {replacementLines.map((line, idx) => (
-                <div
-                  key={`rep-${idx}`}
-                  className="text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded-[3px] border border-emerald-900/40 flex items-baseline gap-2"
-                >
-                  <span className="text-emerald-400 select-none font-bold shrink-0">+</span>
-                  <span className="whitespace-pre">{line}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-obsidian-400 mt-2">
-              <ShieldCheck className="w-3.5 h-3.5 text-brand-500" />
-              <span>Source verified · Single-occurrence SHA-256 match</span>
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* 3. Action Callout Footer: Unmistakably Visible Primary Action */}
-      {hasFix && (
-        <div className="p-4 border-t border-obsidian-800 bg-obsidian-850 shrink-0 flex flex-col gap-2">
+      {/* 3. Sticky Action Footer */}
+      {(hasFix || isAi) && (
+        <div className="p-4 border-t border-obsidian-800 bg-obsidian-900/90 backdrop-blur-xs space-y-2 shrink-0">
+          {/* Integrity Note */}
+          <div className="flex items-center gap-1.5 text-[11px] font-mono text-obsidian-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-brand-500 shrink-0" />
+            <span>Source verified · Single-occurrence SHA-256 match</span>
+          </div>
+
           {isStatic && (
             <Button
               variant="primary"
@@ -219,7 +207,6 @@ export function IssueDetails({
               onClick={() => onApplyPatch(issue)}
               disabled={isStale || isApplyingPatch}
               isLoading={isApplyingPatch}
-              leftIcon={<CheckCircle2 className="w-4 h-4" />}
               rightIcon={<ArrowRight className="w-4 h-4" />}
               className="w-full shadow-[0_2px_8px_rgba(249,115,22,0.35)]"
             >

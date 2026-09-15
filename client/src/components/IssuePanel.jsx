@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CheckCircle2, Wrench, Play, Loader2 } from 'lucide-react';
+import { CheckCircle2, Play, Loader2 } from 'lucide-react';
 import { filterIssues, sortIssues, getSeverityCounts } from '../utils/reviewHelpers.js';
 import { Button } from './ui/Button.jsx';
 
@@ -195,10 +195,9 @@ export function IssuePanel({
                     {hasFix && (
                       <span
                         title="Verified patch available"
-                        className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded-[3px] bg-emerald-950/40 text-emerald-300 border border-emerald-800/60 flex items-center gap-0.5 shrink-0"
+                        className="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px] bg-emerald-950/40 text-emerald-400 border border-emerald-800/60 shrink-0"
                       >
-                        <Wrench className="w-2.5 h-2.5" />
-                        <span>Fix</span>
+                        PATCH
                       </span>
                     )}
                   </div>
