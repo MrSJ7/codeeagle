@@ -15,6 +15,7 @@ import {
   getReviewByIdApi,
   verifyAiPatchApi,
   applyAiPatchApi,
+  buildApiUrl,
 } from './services/reviewApi.js';
 import { AlertTriangle, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { LandingPage } from './components/LandingPage.jsx';
@@ -405,7 +406,7 @@ export default function App() {
     if (!issue) return;
     setIsGeneratingRefactor(true);
     try {
-      const response = await fetch('/api/review/refactor', {
+      const response = await fetch(buildApiUrl('/api/review/refactor'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, issue, filename: currentFilename }),

@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "start": "node server/src/app.js",
     "build": "npm --prefix client run build",
@@ -11,6 +15,15 @@
     "server": "npm --prefix server run dev",
     "install:all": "npm install && npm --prefix server install && npm --prefix client install",
     "test": "npm --prefix server run test && node client/test/contract.test.js && node client/test/history.test.js"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.29.8",
+    "@babel/traverse": "^7.29.8",
+    "@google/genai": "^2.22.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^9.10.0"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

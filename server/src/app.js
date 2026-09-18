@@ -7,6 +7,7 @@ import rulesRouter from './routes/rules.routes.js';
 import patchRouter from './routes/patch.routes.js';
 import reviewsRouter from './routes/reviews.routes.js';
 import projectRouter from './routes/project.routes.js';
+import { fileURLToPath } from 'url';
 import { connectDatabase } from './config/database.js';
 
 dotenv.config();
@@ -127,8 +128,13 @@ connectDatabase().catch((err) => {
   console.warn('[Database] Initial connection error:', err.message);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+// Only listen when run directly as main entry point and not in a serverless environment
+const isMainModule = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+
+if (!process.env.VERCEL && isMainModule) {
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
+}
 
 export default app;

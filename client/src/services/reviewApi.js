@@ -20,10 +20,9 @@ export function getApiBaseUrl() {
     (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production');
 
   if (isProd) {
-    throw new Error(
-      'Deployment Configuration Error: VITE_API_BASE_URL is not configured for production. ' +
-      'Please configure VITE_API_BASE_URL in your Vercel environment settings pointing to your Render backend URL.'
-    );
+    // When VITE_API_BASE_URL is not set, default to relative path ("")
+    // enabling same-domain Vercel serverless functions or proxying
+    return '';
   }
 
   return 'http://localhost:5001';

@@ -54,3 +54,9 @@ Thumbs.db
 .opencode/
 skills-lock.json
 
+scratch/
+.vercel
+
+# Generated reports & documents
+*.pdf
+*report*.html
