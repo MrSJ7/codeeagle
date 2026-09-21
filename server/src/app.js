@@ -15,11 +15,61 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Allowed frontend origins from environment (e.g. FRONTEND_ORIGIN=https://codelens.vercel.app)
-const configuredOrigins = [
+// Known production and preview frontend origins
+const defaultOrigins = [
+  'https://codeeagle.vercel.app',
+  'https://code-reviewer-delta-fawn.vercel.app',
+  'https://codelens.vercel.app',
+];
+
+// Allowed frontend origins from environment (supports comma/space separated lists)
+const rawConfiguredOrigins = [
   process.env.FRONTEND_ORIGIN,
   process.env.CLIENT_URL,
-].filter(Boolean).map((o) => o.trim().replace(/\/+$/, ''));
+].filter(Boolean);
+
+const configuredOrigins = rawConfiguredOrigins
+  .flatMap((entry) => entry.split(/[\s,]+/))
+  .map((o) => o.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+export function isOriginAllowed(origin) {
+  // Allow non-browser requests: curl, health monitors, server-to-server
+  if (!origin) {
+    return true;
+  }
+
+  const cleanOrigin = origin.replace(/\/+$/, '');
+
+  // Allow wildcard if configured
+  if (configuredOrigins.includes('*')) {
+    return true;
+  }
+
+  // Allow any Vercel domain (e.g. https://codeeagle.vercel.app, preview deployments, custom aliases)
+  const isVercel = /^https?:\/\/([a-zA-Z0-9_-]+\.)*vercel\.app$/.test(cleanOrigin);
+  if (isVercel) {
+    return true;
+  }
+
+  // Allow localhost / local loopback variants in all environments
+  const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin);
+  if (isLocalhost) {
+    return true;
+  }
+
+  // Explicitly configured or default recognized domains
+  if (configuredOrigins.includes(cleanOrigin) || defaultOrigins.includes(cleanOrigin)) {
+    return true;
+  }
+
+  // Development: allow all if no explicit origins configured
+  if (process.env.NODE_ENV !== 'production' && configuredOrigins.length === 0) {
+    return true;
+  }
+
+  return false;
+}
 
 // Lightweight production security headers
 app.use((req, res, next) => {
@@ -36,26 +86,9 @@ app.use((req, res, next) => {
 // Environment-aware CORS configuration
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow non-browser requests: curl, health monitors, server-to-server
-    if (!origin) {
+    if (isOriginAllowed(origin)) {
       return callback(null, true);
     }
-
-    const cleanOrigin = origin.replace(/\/+$/, '');
-
-    if (process.env.NODE_ENV === 'production') {
-      if (configuredOrigins.includes(cleanOrigin)) {
-        return callback(null, true);
-      }
-      return callback(new Error('Origin not allowed by CORS policy.'));
-    }
-
-    // Development: allow localhost variants and configured origins
-    const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin);
-    if (isLocalhost || configuredOrigins.includes(cleanOrigin) || configuredOrigins.length === 0) {
-      return callback(null, true);
-    }
-
     return callback(new Error('Origin not allowed by CORS policy.'));
   },
   credentials: true,
@@ -65,6 +98,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json({ limit: '35mb' }));
 
