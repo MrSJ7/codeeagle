@@ -12,7 +12,8 @@ import {
   GitBranch,
   RefreshCw,
   Clock,
-  ExternalLink
+  ExternalLink,
+  Lightbulb
 } from "lucide-react";
 import { Button } from "../ui/Button.jsx";
 import { useTheme } from "../../context/ThemeContext.jsx";
@@ -199,68 +200,121 @@ export function ProjectOverview({
           </div>
 
           <div className="space-y-3">
-            {topPriorities.map((finding, idx) => (
-              <div
-                key={finding.id || idx}
-                onClick={() => onSelectFinding(finding)}
-                className={cn(
-                  "p-4 rounded-xl border flex items-center justify-between gap-4 cursor-pointer transition-all hover:scale-[1.005] group",
-                  isLight
-                    ? "bg-white border-slate-200 hover:border-blue-500/50 hover:shadow-md"
-                    : "bg-[#0E0E0E] border-[#222222] hover:border-brand-500/40 hover:bg-[#121212]"
-                )}
-              >
-                <div className="flex items-start gap-3.5 min-w-0">
-                  <div className={cn(
-                    "w-6 h-6 rounded-md flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5",
-                    finding.severity === "CRITICAL"
-                      ? "bg-red-500/10 text-red-500 border border-red-500/20"
-                      : finding.severity === "HIGH"
-                      ? "bg-brand-500/10 text-brand-500 border border-brand-500/20"
-                      : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
-                  )}>
-                    {idx + 1}
-                  </div>
+            {topPriorities.map((finding, idx) => {
+              const lineDisplay = finding.endLine && finding.endLine !== finding.line
+                ? `Lines ${finding.line}–${finding.endLine}`
+                : `Line ${finding.line}`;
 
-                  <div className="min-w-0 space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="text-sm font-bold truncate group-hover:text-brand-400 transition-colors">
-                        {finding.title}
-                      </h4>
-                      <span className={cn(
-                        "px-1.5 py-0.2 rounded text-[10px] font-mono font-bold uppercase",
-                        finding.severity === "CRITICAL"
-                          ? "bg-red-500/15 text-red-500"
-                          : finding.severity === "HIGH"
-                          ? "bg-brand-500/15 text-brand-500"
-                          : "bg-amber-500/15 text-amber-500"
-                      )}>
-                        {finding.severity}
-                      </span>
-                    </div>
-
-                    <p className={cn("text-xs line-clamp-1", isLight ? "text-slate-600" : "text-obsidian-400")}>
-                      {finding.description}
-                    </p>
-
-                    <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground pt-0.5">
-                      <span className="font-semibold text-slate-800 dark:text-obsidian-200">{finding.path}</span>
-                      <span>:</span>
-                      <span>Line {finding.line}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                  className="shrink-0"
+              return (
+                <div
+                  key={finding.id || idx}
+                  onClick={() => onSelectFinding(finding)}
+                  className={cn(
+                    "p-4 rounded-xl border flex flex-col sm:flex-row sm:items-start justify-between gap-4 cursor-pointer transition-all hover:scale-[1.003] group",
+                    isLight
+                      ? "bg-white border-slate-200 hover:border-blue-500/50 hover:shadow-md"
+                      : "bg-[#0E0E0E] border-[#222222] hover:border-brand-500/40 hover:bg-[#121212]"
+                  )}
                 >
-                  Jump to Line
-                </Button>
-              </div>
-            ))}
+                  <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                    <div className={cn(
+                      "w-6 h-6 rounded-md flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5",
+                      finding.severity === "CRITICAL"
+                        ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                        : finding.severity === "HIGH"
+                        ? "bg-brand-500/10 text-brand-500 border border-brand-500/20"
+                        : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                    )}>
+                      {idx + 1}
+                    </div>
+
+                    <div className="min-w-0 space-y-2 flex-1">
+                      {/* Header: Title, Severity, Rule, Category */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="text-sm font-bold group-hover:text-brand-400 transition-colors">
+                          {finding.title}
+                        </h4>
+                        <span className={cn(
+                          "px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase",
+                          finding.severity === "CRITICAL"
+                            ? "bg-red-500/15 text-red-500"
+                            : finding.severity === "HIGH"
+                            ? "bg-brand-500/15 text-brand-500"
+                            : "bg-amber-500/15 text-amber-500"
+                        )}>
+                          {finding.severity}
+                        </span>
+                        {finding.rule && (
+                          <span className={cn(
+                            "px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold border",
+                            isLight
+                              ? "bg-slate-100 border-slate-200 text-slate-700"
+                              : "bg-[#181818] border-[#2E2E2E] text-obsidian-300"
+                          )}>
+                            {finding.rule}
+                          </span>
+                        )}
+                        {finding.category && (
+                          <span className={cn(
+                            "text-[10px] font-mono uppercase tracking-wider font-semibold",
+                            isLight ? "text-slate-500" : "text-obsidian-400"
+                          )}>
+                            {finding.category}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Exact Defect Description (Unclamped) */}
+                      <p className={cn("text-xs leading-relaxed font-sans", isLight ? "text-slate-600" : "text-obsidian-300")}>
+                        {finding.description}
+                      </p>
+
+                      {/* Actionable Recommendation Callout */}
+                      {finding.recommendation && (
+                        <div className={cn(
+                          "p-2.5 rounded-lg border text-xs flex items-start gap-2.5",
+                          isLight
+                            ? "bg-amber-50/70 border-amber-200/80 text-amber-900"
+                            : "bg-amber-500/10 border-amber-500/20 text-amber-300"
+                        )}>
+                          <Lightbulb className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
+                          <div className="space-y-0.5 min-w-0">
+                            <span className="font-semibold block text-[10px] uppercase tracking-wider">
+                              Recommended Fix
+                            </span>
+                            <span className={cn("leading-relaxed block", isLight ? "text-amber-800" : "text-amber-200/90")}>
+                              {finding.recommendation}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* File Path & Line Location */}
+                      <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground pt-0.5 flex-wrap">
+                        <span className="font-semibold text-slate-800 dark:text-obsidian-200">{finding.path}</span>
+                        <span>:</span>
+                        <span className="text-slate-600 dark:text-obsidian-400">{lineDisplay}</span>
+                        {typeof finding.confidence === 'number' && (
+                          <>
+                            <span>•</span>
+                            <span className="text-slate-500 dark:text-obsidian-500">{Math.round(finding.confidence * 100)}% confidence</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                    className="shrink-0 self-start sm:self-center"
+                  >
+                    Jump to Line
+                  </Button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

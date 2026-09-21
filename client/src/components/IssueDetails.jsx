@@ -15,35 +15,36 @@ import { Button } from './ui/Button.jsx';
 
 function getArchitecturePattern(issue) {
   const rule = issue?.rule || '';
-  if (rule === 'QUAL-LENGTH') {
+
+  if (rule === 'COMP-HIGH') {
     return {
-      title: 'Modular Function Decomposition',
-      summary: 'Decompose monolithic function into single-responsibility helpers (Setup, Execution, Assertions) to maintain function length under 25 lines.',
-      snippet: `// Recommended Solution: Modular Step Decomposition
-async function testArchanaBrowserUpload() {
-  // 1. Setup session & browser context
-  const session = await initTestSession();
+      title: 'Modular Function Decomposition & Guard Clauses',
+      summary: 'High cyclomatic complexity indicates excessive branch paths (if/else, loops, switch cases, logical operators). Flatten decision branches using early returns (guard clauses) and extract sub-routines into single-responsibility helpers.',
+      snippet: `// Recommended Solution: Guard Clauses & Sub-routine Extraction
+function processOrder(order) {
+  // 1. Guard clauses eliminate nested branch conditions early
+  if (!order || !order.items?.length) return { status: 'invalid' };
+  if (!validatePayment(order)) return { status: 'payment_failed' };
 
-  // 2. Execute document upload flow
-  const uploadResult = await executeDocumentUpload(session, {
-    file: 'archana_document.pdf'
-  });
+  // 2. Delegate execution branches to dedicated helpers
+  const discounts = calculateDiscounts(order);
+  const total = computeTotal(order.items, discounts);
 
-  // 3. Verify upload assertions
-  await verifyUploadSuccess(uploadResult);
+  return { status: 'confirmed', total };
 }`,
       steps: [
-        'Extract environment initialization into a dedicated setup helper.',
-        'Encapsulate upload actions into a focused execution function.',
-        'Move assertions into an assertion helper to keep orchestrator under 20 lines.',
+        'Identify all conditional decision points (if/else, switch cases, ternary operators).',
+        'Extract independent validation checks into top-level guard clauses.',
+        'Decompose multi-step sequential blocks into focused helper functions.',
+        'Write isolated unit tests for each extracted helper to ensure 100% path coverage.',
       ],
     };
   }
 
-  if (rule === 'QUAL-NESTING') {
+  if (rule === 'COMP-NESTING' || rule === 'QUAL-NESTING') {
     return {
       title: 'Guard Clause / Early Return Pattern',
-      summary: 'Flatten nested conditional blocks by checking guard conditions early and returning immediately.',
+      summary: 'Flatten nested conditional blocks by checking guard conditions early and returning immediately, eliminating pyramid-of-doom indentation.',
       snippet: `// Recommended Solution: Early Return Guard Clauses
 function processPayload(payload) {
   if (!payload || !payload.id) return null;
@@ -54,8 +55,33 @@ function processPayload(payload) {
 }`,
       steps: [
         'Invert condition checks at the top of the function.',
-        'Return early on error or invalid state.',
+        'Return early on error, null, or invalid state.',
         'Keep the happy path at the outermost indentation level.',
+      ],
+    };
+  }
+
+  if (rule === 'QUAL-LENGTH') {
+    return {
+      title: 'Modular Function Decomposition',
+      summary: 'Decompose monolithic function into single-responsibility helpers (Setup, Execution, Assertions) to maintain function length under 30 lines.',
+      snippet: `// Recommended Solution: Modular Step Decomposition
+async function testUploadWorkflow() {
+  // 1. Setup session & browser context
+  const session = await initTestSession();
+
+  // 2. Execute document upload flow
+  const uploadResult = await executeDocumentUpload(session, {
+    file: 'document.pdf'
+  });
+
+  // 3. Verify upload assertions
+  await verifyUploadSuccess(uploadResult);
+}`,
+      steps: [
+        'Extract environment initialization into a dedicated setup helper.',
+        'Encapsulate upload actions into a focused execution function.',
+        'Move assertions into an assertion helper to keep orchestrator under 25 lines.',
       ],
     };
   }
@@ -75,6 +101,115 @@ try {
         'Capture the error parameter in the catch clause.',
         'Log diagnostic metadata (message, stack, or context).',
         'Decide whether to re-throw or return an explicit fallback object.',
+      ],
+    };
+  }
+
+  if (rule === 'QUAL-VAR') {
+    return {
+      title: 'Block-Scoped Declarations (const / let)',
+      summary: "Replace function-scoped 'var' with 'const' (by default) or 'let' (for reassignment) to prevent hoisting bugs and accidental re-declarations.",
+      snippet: `// Before:
+// var count = 0;
+// var total = calculateTotal();
+
+// Recommended Solution:
+const total = calculateTotal();
+let count = 0;`,
+      steps: [
+        "Replace 'var' with 'const' if the variable is never reassigned.",
+        "Use 'let' if the variable requires reassignment in a loop or branch.",
+        "Verify scope boundaries: 'let' and 'const' are strictly block-scoped.",
+      ],
+    };
+  }
+
+  if (rule === 'SEC-SECRET') {
+    return {
+      title: 'Environment Variable & Secrets Vault Extraction',
+      summary: 'Never commit plaintext credentials, API keys, or tokens to source code. Load them from environment variables via process.env.',
+      snippet: `// Before:
+// const API_KEY = "AIzaSyD...";
+
+// Recommended Solution:
+const API_KEY = process.env.API_KEY;
+if (!API_KEY) {
+  throw new Error('API_KEY environment variable is required');
+}`,
+      steps: [
+        'Add the secret variable to your .env file or deployment secret store.',
+        'Ensure .env is listed in .gitignore to prevent accidental commits.',
+        'Reference the secret at runtime using process.env.<NAME>.',
+      ],
+    };
+  }
+
+  if (rule === 'SEC-SQLI') {
+    return {
+      title: 'Parameterized Queries with Bind Parameters',
+      summary: 'Prevent SQL injection by substituting user inputs with parameter placeholders ($1, ?, :param) supplied by the database driver.',
+      snippet: `// Before (Vulnerable to SQL Injection):
+// const query = \`SELECT * FROM users WHERE email = '\${email}'\`;
+
+// Recommended Solution: Parameterized Query
+const query = 'SELECT * FROM users WHERE email = $1';
+const result = await db.query(query, [email]);`,
+      steps: [
+        'Replace string concatenation / template literals with parameter placeholders.',
+        'Pass user input values in the driver-supported parameters array.',
+        'Ensure input validation and type checking are performed before querying.',
+      ],
+    };
+  }
+
+  if (rule === 'REACT-INDEX-KEY') {
+    return {
+      title: 'Stable Item Identifier as React Key',
+      summary: 'Use unique, deterministic identifiers (e.g. item.id) instead of array index to prevent list reconciliation glitches and stale state.',
+      snippet: `// Before:
+// items.map((item, index) => <ItemCard key={index} data={item} />)
+
+// Recommended Solution:
+items.map((item) => <ItemCard key={item.id} data={item} />)`,
+      steps: [
+        'Find a unique, persistent identifier on the data object (e.g., id, uuid, slug).',
+        'Avoid using Math.random() or timestamps generated during render.',
+        'Pass the stable identifier to the key prop on the outermost JSX element.',
+      ],
+    };
+  }
+
+  if (rule === 'REACT-HOOK-DEPS') {
+    return {
+      title: 'Exhaustive Dependencies or Ref Stashing',
+      summary: 'Include all referenced outer variables in the dependency array to ensure the effect closure stays synchronized with latest state.',
+      snippet: `// Recommended Solution:
+useEffect(() => {
+  fetchData(userId, filterType);
+}, [userId, filterType]); // Include all reactive values used inside`,
+      steps: [
+        'Identify all outer props, state, and functions referenced inside useEffect.',
+        'Add them to the dependency array.',
+        'Wrap functions created inside the component with useCallback if needed.',
+      ],
+    };
+  }
+
+  if (rule === 'PERF-EFFECT-CLEANUP') {
+    return {
+      title: 'Event Listener / Subscription Teardown',
+      summary: 'Return a cleanup function from useEffect to unregister event listeners and prevent memory leaks.',
+      snippet: `useEffect(() => {
+  const handleResize = () => setWidth(window.innerWidth);
+  window.addEventListener('resize', handleResize);
+
+  // Teardown: Remove listener on unmount / re-render
+  return () => window.removeEventListener('resize', handleResize);
+}, []);`,
+      steps: [
+        'Define the handler with a named reference so it can be referenced in cleanup.',
+        'Return a cleanup function from useEffect that unregisters the listener.',
+        'Ensure the handler reference passed to removeEventListener is identical to addEventListener.',
       ],
     };
   }
@@ -215,20 +350,20 @@ export function IssueDetails({
 
       {/* 2. Scrollable Body: Pure Whitespace & Clean Typography */}
       <div className="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
-        {/* Why this matters */}
+        {/* Defect Analysis & Root Cause */}
         <div>
           <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 dark:text-obsidian-400 font-semibold mb-1.5">
-            Why this matters
+            Defect Analysis & Root Cause
           </div>
           <p className="text-sm text-slate-700 dark:text-obsidian-200 leading-relaxed font-normal">
             {issue.description}
           </p>
         </div>
 
-        {/* Recommendation */}
+        {/* Actionable Remediation */}
         <div>
           <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 dark:text-obsidian-400 font-semibold mb-1.5">
-            Recommendation
+            Actionable Remediation
           </div>
           <p className="text-sm text-slate-700 dark:text-obsidian-200 leading-relaxed font-normal">
             {issue.recommendation}

@@ -359,7 +359,32 @@ import { validateReviewContract } from '../src/utils/contractValidator.js';
     assert(rule !== undefined, `Rule ${ruleId} exists in RULE_REGISTRY`);
     assert(rule.severity === expected.severity, `Rule ${ruleId} severity is ${expected.severity} (got ${rule.severity})`);
     assert(rule.category === expected.category, `Rule ${ruleId} category is ${expected.category} (got ${rule.category})`);
+    assert(typeof rule.description === 'string' && rule.description.length >= 30, `Rule ${ruleId} has clear, detailed description`);
+    assert(typeof rule.recommendation === 'string' && rule.recommendation.length >= 20, `Rule ${ruleId} has actionable recommendation`);
   }
+
+  // Verify COMP-HIGH produces clear, explanatory description and actionable recommendation
+  const complexFnCode = `
+function complexBranchingFn(a, b, c, d, e, f, g, h, i, j, k) {
+  if (a) return 1;
+  if (b) return 2;
+  if (c) return 3;
+  if (d) return 4;
+  if (e) return 5;
+  if (f) return 6;
+  if (g) return 7;
+  if (h) return 8;
+  if (i) return 9;
+  if (j) return 10;
+  if (k) return 11;
+  return 0;
+}
+  `;
+  const complexRes = analyzeCode(complexFnCode);
+  const compHighIssue = complexRes.issues.find(i => i.rule === 'COMP-HIGH');
+  assert(compHighIssue !== undefined, 'COMP-HIGH issue generated for complex function');
+  assert(compHighIssue.description.includes('branching decision points'), 'COMP-HIGH description explains exact branching decision points');
+  assert(compHighIssue.recommendation.includes('Decompose'), 'COMP-HIGH recommendation offers concrete decomposition advice');
 
   // Verify validateReviewContract on complex sample
   const sample = analyzeCode('const a = 1;\nfunction f() { return a; }');
