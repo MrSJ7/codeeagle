@@ -170,6 +170,15 @@ async function runProjectTests() {
   const skillsLockClass = classifyProjectFile("skills-lock.json", 1200);
   assert(skillsLockClass.status === "SKIPPED" && skillsLockClass.skipReason === "IGNORED_DIRECTORY", "skills-lock.json lockfile marked SKIPPED");
 
+  const testFileClass = classifyProjectFile("src/services/auth.test.ts", 1500);
+  assert(testFileClass.status === "SKIPPED" && testFileClass.skipReason === "TEST_FILE", "Unit test file (.test.ts) marked SKIPPED");
+
+  const scriptDirClass = classifyProjectFile("scripts/verify-pipeline.js", 2000);
+  assert(scriptDirClass.status === "SKIPPED" && scriptDirClass.skipReason === "IGNORED_DIRECTORY", "scripts/ directory files marked SKIPPED");
+
+  const eslintConfigClass = classifyProjectFile("eslint.config.mjs", 800);
+  assert(eslintConfigClass.status === "SKIPPED" && eslintConfigClass.skipReason === "CONFIG_FILE", "eslint.config.mjs marked SKIPPED");
+
   console.log("\n--- 3. GitHub URL Validation & SSRF Defense ---");
   const validGh = parseAndValidateGithubUrl("https://github.com/facebook/react");
   assert(validGh.owner === "facebook" && validGh.repo === "react", "Valid public GitHub URL parsed");

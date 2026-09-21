@@ -10,7 +10,10 @@ import {
   CheckCircle2,
   Loader2,
   AlertCircle,
-  FolderTree
+  FolderTree,
+  Copy,
+  Check,
+  AlertTriangle
 } from "lucide-react";
 import { ProjectFileTree } from "./ProjectFileTree.jsx";
 import { CodeEditor } from "../CodeEditor.jsx";
@@ -56,6 +59,16 @@ export function ProjectWorkspace({
   const [isPatching, setIsPatching] = useState(false);
   const [patchDiff, setPatchDiff] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [hasCopiedPath, setHasCopiedPath] = useState(false);
+
+  const handleCopyPath = async () => {
+    if (!selectedFile?.path) return;
+    try {
+      await navigator.clipboard.writeText(selectedFile.path);
+      setHasCopiedPath(true);
+      setTimeout(() => setHasCopiedPath(false), 2000);
+    } catch {}
+  };
 
   // Initialize selected file
   useEffect(() => {
@@ -216,20 +229,46 @@ export function ProjectWorkspace({
 
           <span className="text-muted-foreground">/</span>
 
-          <span className="font-bold truncate">{project?.name || "Project"}</span>
+          <span className="font-bold truncate max-w-[120px]">{project?.name || "Project"}</span>
 
           <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
 
           <div className="flex items-center gap-1.5 font-mono min-w-0">
             <FileCode className="w-3.5 h-3.5 text-brand-500 shrink-0" />
             <span className="font-semibold text-foreground truncate">{selectedFile?.path || "Select a file"}</span>
+            {selectedFile?.path && (
+              <button
+                type="button"
+                onClick={handleCopyPath}
+                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-[#202020] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                title="Copy relative path"
+              >
+                {hasCopiedPath ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+              </button>
+            )}
           </div>
 
-          {selectedFile?.findingCount > 0 && (
+          {selectedFile?.language && (
+            <span className="hidden lg:inline px-1.5 py-0.2 rounded text-[10px] font-mono uppercase bg-slate-200/60 dark:bg-[#1E1E1E] text-muted-foreground border border-slate-300/60 dark:border-[#2A2A2A]">
+              {selectedFile.language}
+            </span>
+          )}
+
+          {selectedFile?.hasCycle && (
+            <span className="px-2 py-0.2 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30 flex items-center gap-1 shrink-0">
+              <AlertTriangle className="w-3 h-3" /> Cycle
+            </span>
+          )}
+
+          {selectedFile?.findingCount > 0 ? (
             <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-brand-500/15 text-brand-500 shrink-0">
               {selectedFile.findingCount} {selectedFile.findingCount === 1 ? "issue" : "issues"}
             </span>
-          )}
+          ) : selectedFile ? (
+            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-500 shrink-0">
+              <CheckCircle2 className="w-3 h-3" /> Clean
+            </span>
+          ) : null}
         </div>
 
         <div className="flex items-center gap-3">
@@ -322,9 +361,67 @@ export function ProjectWorkspace({
                   </span>
                 </div>
 
+                {/* Category filter tabs */}
+                <div className="flex items-center gap-1 overflow-x-auto pb-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setActiveCategory("all")}
+                    className={cn(
+                      "px-2 py-0.5 rounded text-[10px] font-mono transition-colors shrink-0 cursor-pointer",
+                      activeCategory === "all"
+                        ? isLight ? "bg-slate-900 text-white font-bold" : "bg-white text-black font-bold"
+                        : isLight ? "bg-slate-200/70 text-slate-600 hover:bg-slate-200" : "bg-[#1E1E1E] text-obsidian-300 hover:bg-[#252525]"
+                    )}
+                  >
+                    All ({currentIssues.length})
+                  </button>
+                  {currentIssues.some(i => i.category === 'SECURITY') && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveCategory("SECURITY")}
+                      className={cn(
+                        "px-2 py-0.5 rounded text-[10px] font-mono transition-colors shrink-0 cursor-pointer",
+                        activeCategory === "SECURITY"
+                          ? "bg-red-500 text-white font-bold"
+                          : isLight ? "bg-red-50 text-red-700 hover:bg-red-100" : "bg-red-950/40 text-red-400 hover:bg-red-900/50"
+                      )}
+                    >
+                      Security ({currentIssues.filter(i => i.category === 'SECURITY').length})
+                    </button>
+                  )}
+                  {currentIssues.some(i => i.category === 'QUALITY') && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveCategory("QUALITY")}
+                      className={cn(
+                        "px-2 py-0.5 rounded text-[10px] font-mono transition-colors shrink-0 cursor-pointer",
+                        activeCategory === "QUALITY"
+                          ? "bg-amber-500 text-white font-bold"
+                          : isLight ? "bg-amber-50 text-amber-700 hover:bg-amber-100" : "bg-amber-950/40 text-amber-400 hover:bg-amber-900/50"
+                      )}
+                    >
+                      Quality ({currentIssues.filter(i => i.category === 'QUALITY').length})
+                    </button>
+                  )}
+                  {currentIssues.some(i => i.category === 'COMPLEXITY') && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveCategory("COMPLEXITY")}
+                      className={cn(
+                        "px-2 py-0.5 rounded text-[10px] font-mono transition-colors shrink-0 cursor-pointer",
+                        activeCategory === "COMPLEXITY"
+                          ? "bg-purple-500 text-white font-bold"
+                          : isLight ? "bg-purple-50 text-purple-700 hover:bg-purple-100" : "bg-purple-950/40 text-purple-400 hover:bg-purple-900/50"
+                      )}
+                    >
+                      Complexity ({currentIssues.filter(i => i.category === 'COMPLEXITY').length})
+                    </button>
+                  )}
+                </div>
+
                 {/* List of problems in this file */}
                 <div className="flex flex-col gap-1 max-h-48 overflow-y-auto pr-1">
-                  {currentIssues.map((iss) => {
+                  {currentIssues.filter(i => activeCategory === 'all' || i.category === activeCategory).map((iss) => {
                     const isSelected = iss.id === selectedIssueId;
                     return (
                       <button

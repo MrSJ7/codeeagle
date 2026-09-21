@@ -1,9 +1,11 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { FileCode, Hash, AlertTriangle, CheckCircle2, ChevronDown, Sparkles } from 'lucide-react';
+import { FileCode, Hash, AlertTriangle, CheckCircle2, ChevronDown, Sparkles, Copy, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function CodeEditor({
   code = '',
   onChange,
+  readOnly = false,
   issues = [],
   highlightedIssue = null,
   highlightedLine = null,
@@ -20,6 +22,16 @@ export function CodeEditor({
   const gutterRef = useRef(null);
   const overlayRef = useRef(null);
   const [isPresetOpen, setIsPresetOpen] = useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
+
+  const handleCopy = async () => {
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      setHasCopied(true);
+      setTimeout(() => setHasCopied(false), 2000);
+    } catch {}
+  };
 
   const lines = code.split('\n');
   const lineCount = lines.length;
@@ -246,6 +258,27 @@ export function CodeEditor({
               )}
             </div>
           )}
+
+          {code && (
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="flex items-center gap-1 px-2 py-1 rounded-[4px] bg-slate-100 hover:bg-slate-200 dark:bg-obsidian-850 dark:hover:bg-obsidian-800 text-slate-700 dark:text-obsidian-300 border border-slate-200 dark:border-obsidian-750 text-xs font-mono transition-colors cursor-pointer"
+              title="Copy code to clipboard"
+            >
+              {hasCopied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 opacity-60" />
+                  <span className="text-[11px]">Copy</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
 
@@ -364,19 +397,23 @@ export function CodeEditor({
             </div>
           )}
 
-          {/* Editable Textarea Surface */}
+          {/* Code Textarea Surface */}
           <textarea
             ref={textareaRef}
             value={code}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => !readOnly && onChange && onChange(e.target.value)}
             onScroll={handleScroll}
-            onKeyDown={handleKeyDown}
+            onKeyDown={readOnly ? undefined : handleKeyDown}
+            readOnly={readOnly}
             spellCheck={false}
             autoCapitalize="off"
             autoComplete="off"
             autoCorrect="off"
             aria-label={`Code editor for ${filename}`}
-            className="absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-900 dark:text-[#E6EDF3] resize-none outline-none font-mono text-[13px] leading-6 selection:bg-blue-500/25 dark:selection:bg-brand-500/25 dark-editor-scrollbar overflow-auto z-10"
+            className={cn(
+              "absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-900 dark:text-[#E6EDF3] resize-none outline-none font-mono text-[13px] leading-6 selection:bg-blue-500/25 dark:selection:bg-brand-500/25 dark-editor-scrollbar overflow-auto z-10",
+              readOnly && "cursor-default"
+            )}
             style={{ tabSize: 2 }}
           />
         </div>

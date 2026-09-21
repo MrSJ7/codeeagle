@@ -41,6 +41,17 @@ const IGNORED_DIRECTORY_NAMES = new Set([
   ".svelte-kit",
   ".angular",
   ".docusaurus",
+  "scripts",
+  "test",
+  "tests",
+  "__tests__",
+  "__mocks__",
+  "fixtures",
+  "spec",
+  "specs",
+  "e2e",
+  "cypress",
+  "playwright",
 ]);
 
 // Lockfiles and generated metadata to skip from code analysis
@@ -95,6 +106,48 @@ export function isMinifiedFile(filename) {
     lower.endsWith(".min.css") ||
     lower.endsWith(".bundle.js") ||
     lower.endsWith(".chunk.js")
+  );
+}
+
+/**
+ * Checks if a file is a test or spec file that should be excluded from production code review.
+ */
+export function isTestFile(filename) {
+  const lower = filename.toLowerCase();
+  return (
+    lower.endsWith(".test.js") ||
+    lower.endsWith(".test.jsx") ||
+    lower.endsWith(".test.ts") ||
+    lower.endsWith(".test.tsx") ||
+    lower.endsWith(".test.mjs") ||
+    lower.endsWith(".spec.js") ||
+    lower.endsWith(".spec.jsx") ||
+    lower.endsWith(".spec.ts") ||
+    lower.endsWith(".spec.tsx") ||
+    lower.endsWith(".spec.mjs")
+  );
+}
+
+/**
+ * Checks if a file is a build or tooling configuration file (e.g. eslint, postcss, tailwind, drizzle, vite).
+ */
+export function isToolingConfigFile(filename) {
+  const lower = filename.toLowerCase();
+  return (
+    lower.startsWith("eslint.config.") ||
+    lower.startsWith("postcss.config.") ||
+    lower.startsWith("tailwind.config.") ||
+    lower.startsWith("prettier.config.") ||
+    lower.startsWith("drizzle.config.") ||
+    lower.startsWith("vite.config.") ||
+    lower.startsWith("vitest.config.") ||
+    lower.startsWith("jest.config.") ||
+    lower.startsWith("playwright.config.") ||
+    lower.startsWith("webpack.config.") ||
+    lower.startsWith("rollup.config.") ||
+    lower.startsWith("babel.config.") ||
+    lower.startsWith("commitlint.config.") ||
+    lower === "components.json"
   );
 }
 
@@ -267,7 +320,29 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
     };
   }
 
-  // 8. File size limits
+  // 8. Test file exclusion
+  if (isTestFile(filename)) {
+    return {
+      status: "SKIPPED",
+      language: "test",
+      extension: ext,
+      skipReason: "TEST_FILE",
+      skipMessage: "Test file (excluded from production code review)",
+    };
+  }
+
+  // 9. Tooling configuration file check
+  if (isToolingConfigFile(filename)) {
+    return {
+      status: "SKIPPED",
+      language: "config",
+      extension: ext,
+      skipReason: "CONFIG_FILE",
+      skipMessage: "Build or tooling configuration file",
+    };
+  }
+
+  // 10. File size limits
   if (size > PROJECT_LIMITS.MAX_SOURCE_FILE_BYTES) {
     return {
       status: "SKIPPED",
@@ -278,7 +353,7 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
     };
   }
 
-  // 9. Language support check
+  // 11. Language support check
   if (ext === ".js" || ext === ".mjs" || ext === ".cjs") {
     return {
       status: "ELIGIBLE",

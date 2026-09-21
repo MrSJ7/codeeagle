@@ -492,10 +492,10 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady }) {
               {/* Skipped files note */}
               <div className={cn("text-xs space-y-1.5", isLight ? "text-slate-600" : "text-obsidian-400")}>
                 <p>
-                  <strong>Analysis Scope:</strong> {discoveredProject.eligibleFileCount} JavaScript & JSX source files will be reviewed with deterministic AST checks and Gemini semantic reasoning.
+                  <strong>Analysis Scope:</strong> {discoveredProject.eligibleFileCount} production source files will be reviewed with deterministic AST checks and Gemini semantic reasoning.
                 </p>
                 <p className="text-[11px] text-muted-foreground">
-                  Skipped files include dependencies (<code className="font-mono">node_modules</code>), lockfiles, binaries, and sensitive environment variables (<code className="font-mono">.env</code>).
+                  Skipped files include dependencies (<code className="font-mono">node_modules</code>), test suites & scripts (<code className="font-mono">scripts/</code>, <code className="font-mono">test/</code>), build configs, lockfiles, binaries, and sensitive environment variables (<code className="font-mono">.env</code>).
                 </p>
               </div>
 
