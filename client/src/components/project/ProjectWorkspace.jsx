@@ -346,9 +346,9 @@ export function ProjectWorkspace({
         </div>
 
         {/* Panel 3: Findings List & Issue Details */}
-        <div className="md:col-span-4 h-full overflow-y-auto flex flex-col">
+        <div className="md:col-span-4 h-full overflow-hidden flex flex-col min-h-0">
           {currentIssues.length > 0 ? (
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
               {/* Problem List Selector for Current File */}
               <div className={cn(
                 "p-3 border-b flex flex-col gap-2 shrink-0",
@@ -420,7 +420,7 @@ export function ProjectWorkspace({
                 </div>
 
                 {/* List of problems in this file */}
-                <div className="flex flex-col gap-1 max-h-48 overflow-y-auto pr-1">
+                <div className="flex flex-col gap-1 max-h-40 overflow-y-auto pr-1">
                   {currentIssues.filter(i => activeCategory === 'all' || i.category === activeCategory).map((iss) => {
                     const isSelected = iss.id === selectedIssueId;
                     return (
@@ -462,7 +462,7 @@ export function ProjectWorkspace({
 
               {/* Finding Details Card */}
               {selectedIssue ? (
-                <div className="flex-1 overflow-hidden">
+                <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
                   <IssueDetails
                     issue={selectedIssue}
                     code={fileContent}

@@ -595,8 +595,8 @@ export default function App() {
             onNavigateHome={() => navigateTo('landing')}
             onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
             filename={activeProject?.name || 'Project'}
-            language="Project Scope"
-            lineCount={activeProjectReview.filesAnalyzed}
+            language={activeProject?.sourceType?.toUpperCase() || 'GITHUB'}
+            filesCount={activeProjectReview.filesAnalyzed}
             issueCount={activeProjectReview.findings?.length || 0}
             reviewStatus={isProjectAnalyzing ? 'ANALYZING' : 'SUCCESS'}
             activeLens={projectNavView === 'overview' ? 'overview' : 'findings'}

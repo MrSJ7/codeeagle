@@ -96,11 +96,15 @@ export function CodeEditor({
   useEffect(() => {
     if (activeStartLine && textareaRef.current) {
       const lineHeight = 24; // matches leading-6
-      const targetScroll = Math.max(0, (activeStartLine - 3) * lineHeight);
-      textareaRef.current.scrollTo({
-        top: targetScroll,
-        behavior: 'smooth',
-      });
+      if (activeStartLine <= 8) {
+        textareaRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const targetScroll = (activeStartLine - 4) * lineHeight;
+        textareaRef.current.scrollTo({
+          top: Math.max(0, targetScroll),
+          behavior: 'smooth',
+        });
+      }
     }
   }, [activeStartLine, filename, code]);
 

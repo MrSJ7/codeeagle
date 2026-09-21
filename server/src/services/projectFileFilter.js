@@ -184,7 +184,11 @@ const SENSITIVE_PATTERNS = [
 export function isIgnoredDirectory(relativePath) {
   const parts = relativePath.split("/");
   for (let i = 0; i < parts.length - 1; i++) {
-    if (IGNORED_DIRECTORY_NAMES.has(parts[i].toLowerCase())) {
+    const part = parts[i];
+    if (part.startsWith(".") && part !== "." && part !== "..") {
+      return true;
+    }
+    if (IGNORED_DIRECTORY_NAMES.has(part.toLowerCase())) {
       return true;
     }
   }

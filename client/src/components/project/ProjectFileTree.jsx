@@ -44,6 +44,13 @@ function buildTreeStructure(files = [], searchQuery = "", onlyIssues = false) {
   const query = searchQuery.trim().toLowerCase();
 
   const filteredFiles = files.filter((f) => {
+    // Exclude any dot-directory files (e.g. .agents, .claude, .cursor, .github)
+    const parts = (f.path || "").split("/");
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (parts[i].startsWith(".") && parts[i] !== "." && parts[i] !== "..") {
+        return false;
+      }
+    }
     if (onlyIssues && (f.findingCount || 0) === 0) return false;
     if (!query) return true;
     return (f.path || "").toLowerCase().includes(query) || (f.filename || "").toLowerCase().includes(query);
@@ -224,13 +231,29 @@ export function ProjectFileTree({ files = [], activeFileId, onSelectFile, classN
   const [searchQuery, setSearchQuery] = useState("");
   const [onlyIssues, setOnlyIssues] = useState(false);
 
-  const filesWithIssuesCount = useMemo(() => {
-    return files.filter((f) => (f.findingCount || 0) > 0).length;
+  const cleanFiles = useMemo(() => {
+    return files.filter((f) => {
+      const parts = (f.path || "").split("/");
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (parts[i].startsWith(".") && parts[i] !== "." && parts[i] !== "..") {
+          return false;
+        }
+      }
+      return true;
+    });
   }, [files]);
 
+  const codeFilesCount = useMemo(() => {
+    return cleanFiles.filter((f) => f.status !== "SKIPPED").length;
+  }, [cleanFiles]);
+
+  const filesWithIssuesCount = useMemo(() => {
+    return cleanFiles.filter((f) => (f.findingCount || 0) > 0).length;
+  }, [cleanFiles]);
+
   const tree = useMemo(() => {
-    return buildTreeStructure(files, searchQuery, onlyIssues);
-  }, [files, searchQuery, onlyIssues]);
+    return buildTreeStructure(cleanFiles, searchQuery, onlyIssues);
+  }, [cleanFiles, searchQuery, onlyIssues]);
 
   const hasSearch = searchQuery.trim().length > 0;
 
@@ -244,7 +267,7 @@ export function ProjectFileTree({ files = [], activeFileId, onSelectFile, classN
         <div className="flex items-center justify-between text-xs font-bold tracking-wider uppercase">
           <span className={isLight ? "text-slate-700" : "text-obsidian-200"}>Explorer</span>
           <span className="font-mono text-[11px] font-normal text-muted-foreground">
-            {files.length} {files.length === 1 ? "file" : "files"}
+            {codeFilesCount} {codeFilesCount === 1 ? "code file" : "code files"}
           </span>
         </div>
 

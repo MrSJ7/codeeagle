@@ -74,14 +74,13 @@ export function calculateProjectScore(allIssues = [], filesAnalyzed = 1) {
 
   // Anti-double-counting: track line-level penalties and maintainability cap
   const seenLineRanges = new Set();
-  let totalPenalty = 0;
   let maintainabilityPenaltyTotal = 0;
   const MAX_MAINTAINABILITY_PENALTY = 15;
+  const scaleFactor = filesAnalyzed > 5 ? Math.sqrt(filesAnalyzed / 5) : 1.0;
 
   for (const issue of allIssues) {
     const sev = (issue.severity || "LOW").toUpperCase();
     const basePenalty = SEVERITY_BASE_PENALTIES[sev] || SEVERITY_BASE_PENALTIES.LOW;
-    const impactMultiplier = typeof issue.impactWeight === "number" ? issue.impactWeight : 1.0;
 
     // Severity counts
     if (sev === "CRITICAL") severityCounts.critical++;
@@ -104,7 +103,7 @@ export function calculateProjectScore(allIssues = [], filesAnalyzed = 1) {
     }
 
     // Maintainability heuristics cap
-    const isMaintainabilityHeuristic = (issue.ruleClass === "MAINTAINABILITY" || sev === "LOW") && categoryKey === "quality";
+    const isMaintainabilityHeuristic = issue.ruleClass === "MAINTAINABILITY" || (sev === "LOW" && categoryKey === "quality");
     if (isMaintainabilityHeuristic) {
       if (maintainabilityPenaltyTotal + effectivePenalty > MAX_MAINTAINABILITY_PENALTY) {
         effectivePenalty = Math.max(0, MAX_MAINTAINABILITY_PENALTY - maintainabilityPenaltyTotal);
@@ -112,15 +111,29 @@ export function calculateProjectScore(allIssues = [], filesAnalyzed = 1) {
       maintainabilityPenaltyTotal += effectivePenalty;
     }
 
-    totalPenalty += effectivePenalty;
+    // Scale non-critical penalties for larger multi-file codebases
+    if (sev !== "CRITICAL" && scaleFactor > 1.0) {
+      effectivePenalty = effectivePenalty / scaleFactor;
+    }
+
     categoryPenalties[categoryKey] += effectivePenalty;
 
     // Attach calculated priority score
     issue.priorityScore = calculateFindingPriority(issue);
   }
 
+  // Cap non-security category penalties so minor issues cannot zero out project health
+  const cappedQualityPenalty = Math.min(25, categoryPenalties.quality);
+  const cappedComplexityPenalty = Math.min(25, categoryPenalties.complexity);
+  const cappedPerformancePenalty = Math.min(20, categoryPenalties.performance);
+  const cappedSecurityPenalty = categoryPenalties.security;
+
+  const totalWeightedPenalty = Math.round(
+    cappedSecurityPenalty + cappedQualityPenalty + cappedComplexityPenalty + cappedPerformancePenalty
+  );
+
   // Normalize project score (0 - 100)
-  const normalizedScore = Math.max(0, Math.min(100, Math.round(100 - totalPenalty)));
+  const normalizedScore = Math.max(0, Math.min(100, 100 - totalWeightedPenalty));
 
   // Calculate categorical scores (0 - 100)
   const breakdown = {

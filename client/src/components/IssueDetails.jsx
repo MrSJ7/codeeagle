@@ -301,7 +301,7 @@ export function IssueDetails({
   return (
     <section
       aria-label={`Finding details for ${issue.title}`}
-      className={`bg-obsidian-900 flex flex-col h-full overflow-hidden select-none font-sans ${className}`}
+      className={`bg-white dark:bg-obsidian-900 flex flex-col h-full min-h-0 overflow-hidden select-none font-sans ${className}`}
     >
       {/* 1. Header: Senior PR Review Comment Meta */}
       <div className="px-5 py-4 border-b border-slate-200 dark:border-obsidian-800 shrink-0 bg-slate-50 dark:bg-obsidian-850">
@@ -349,7 +349,7 @@ export function IssueDetails({
       </div>
 
       {/* 2. Scrollable Body: Pure Whitespace & Clean Typography */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-5 text-xs">
+      <div className="flex-1 min-h-0 overflow-y-auto p-5 space-y-5 text-xs">
         {/* Defect Analysis & Root Cause */}
         <div>
           <div className="text-[11px] font-mono uppercase tracking-wider text-slate-500 dark:text-obsidian-400 font-semibold mb-1.5">

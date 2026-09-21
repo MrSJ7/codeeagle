@@ -128,6 +128,12 @@ async function runProjectTests() {
   const vendorClass = classifyProjectFile("vendor/bundle.js", 8000);
   assert(vendorClass.status === "SKIPPED" && vendorClass.skipReason === "IGNORED_DIRECTORY", "vendor directory skipped automatically");
 
+  const agentsClass = classifyProjectFile(".agents/skills/high-end/SKILL.md", 1000);
+  assert(agentsClass.status === "SKIPPED" && agentsClass.skipReason === "IGNORED_DIRECTORY", ".agents directory skipped automatically");
+
+  const claudeClass = classifyProjectFile(".claude/skills/playwright/SKILL.md", 1000);
+  assert(claudeClass.status === "SKIPPED" && claudeClass.skipReason === "IGNORED_DIRECTORY", ".claude directory skipped automatically");
+
   const pnpClass = classifyProjectFile(".pnp.js", 1000);
   assert(pnpClass.status === "SKIPPED" && pnpClass.skipReason === "IGNORED_DIRECTORY", ".pnp.js lockfile skipped automatically");
 
@@ -233,6 +239,18 @@ async function runProjectTests() {
 
   assert(typeof reviewRecord.score === "number" && reviewRecord.score < 100, "Calculated overall project health score (" + reviewRecord.score + "/100)");
   assert(reviewRecord.topPriorities.length > 0, "Generated deterministic top priorities list");
+
+  const multiFileIssues = Array.from({ length: 80 }, (_, i) => ({
+    id: `QUAL-${i}`,
+    rule: "QUAL-LENGTH",
+    severity: "LOW",
+    category: "QUALITY",
+    ruleClass: "MAINTAINABILITY",
+    line: 10,
+    endLine: 60,
+  }));
+  const multiScore = calculateProjectScore(multiFileIssues, 100);
+  assert(multiScore.score >= 75, "Multi-file repo with 80 minor quality notices preserves healthy score (" + multiScore.score + "/100)");
 
   console.log("\n--- 6. Safe Patch Application & Automated Re-Review ---");
   if (secretFinding) {

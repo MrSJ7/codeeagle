@@ -42,6 +42,7 @@ export function Navbar({
   filename = 'auth.js',
   language = 'JavaScript',
   lineCount = null,
+  filesCount = null,
   issueCount = null,
   reviewStatus = 'IDLE',
   score = null,
@@ -208,9 +209,9 @@ export function Navbar({
             <span className="font-semibold">{filename}</span>
           </div>
 
-          <span className={cn("text-[11px] hidden md:inline font-medium", isLight ? "text-slate-500" : "text-[#A6A29B]")}>
+          <span className={cn("text-[11px] hidden md:inline font-medium whitespace-nowrap shrink-0", isLight ? "text-slate-500" : "text-[#A6A29B]")}>
             {language}
-            {lineCount ? ` · ${lineCount} lines` : ''}
+            {filesCount ? ` · ${filesCount} ${filesCount === 1 ? 'file' : 'files'} analyzed` : lineCount ? ` · ${lineCount} lines` : ''}
           </span>
 
           {/* Status Indicator */}
