@@ -12,6 +12,7 @@ export function parseSource(code = '', language = 'javascript') {
       allowReturnOutsideFunction: true,
       allowSuperOutsideMethod: true,
       plugins: [
+        'typescript',
         'jsx',
         'asyncGenerators',
         'dynamicImport',
@@ -20,6 +21,8 @@ export function parseSource(code = '', language = 'javascript') {
         'nullishCoalescingOperator',
         'optionalChaining',
         'classProperties',
+        'topLevelAwait',
+        'decorators-legacy',
       ],
     });
 

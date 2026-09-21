@@ -284,10 +284,16 @@ export function resolveImportSpecifier(specifier = '', importerFilePath = '', al
     normalized,
     `${normalized}.js`,
     `${normalized}.jsx`,
+    `${normalized}.ts`,
+    `${normalized}.tsx`,
     `${normalized}.mjs`,
     `${normalized}.cjs`,
+    `${normalized}.mts`,
+    `${normalized}.cts`,
     `${normalized}/index.js`,
     `${normalized}/index.jsx`,
+    `${normalized}/index.ts`,
+    `${normalized}/index.tsx`,
     `${normalized}/index.mjs`,
     `${normalized}.json`,
   ];
@@ -409,10 +415,15 @@ export function buildProjectContext(files = [], staticIssues = []) {
     incomingAdjacency.set(file.path, new Set());
   }
 
-  // Parse dependencies for JavaScript / JSX files
+  // Parse dependencies for JavaScript / TypeScript / JSX files
   for (const file of files) {
-    const isJs = file.language === 'javascript' || file.language === 'jsx' || file.path.endsWith('.js') || file.path.endsWith('.jsx');
-    if (!isJs || !file.content) continue;
+    const isCode =
+      file.language === 'javascript' ||
+      file.language === 'jsx' ||
+      file.language === 'typescript' ||
+      file.language === 'tsx' ||
+      /\.(js|jsx|mjs|cjs|ts|tsx|mts|cts)$/i.test(file.path);
+    if (!isCode || !file.content) continue;
 
     const { ast } = parseSource(file.content, file.language);
     if (!ast) continue;

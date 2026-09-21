@@ -33,6 +33,14 @@ const IGNORED_DIRECTORY_NAMES = new Set([
   "bin",
   "obj",
   "lib-cov",
+  ".github",
+  ".husky",
+  ".output",
+  ".storybook",
+  "storybook-static",
+  ".svelte-kit",
+  ".angular",
+  ".docusaurus",
 ]);
 
 // Lockfiles and generated metadata to skip from code analysis
@@ -50,6 +58,46 @@ const IGNORED_FILE_NAMES = new Set([
   "Thumbs.db",
 ]);
 
+/**
+ * Checks if a file is a lockfile or package metadata file that should never be analyzed.
+ */
+export function isLockOrMetadataFile(filename) {
+  if (IGNORED_FILE_NAMES.has(filename)) return true;
+  const lower = filename.toLowerCase();
+  return (
+    lower.endsWith(".lock") ||
+    lower.endsWith("-lock.json") ||
+    lower.endsWith(".lockb") ||
+    lower === "skills-lock.json"
+  );
+}
+
+/**
+ * Checks if a file is a TypeScript declaration file.
+ */
+export function isDeclarationFile(filename) {
+  const lower = filename.toLowerCase();
+  return (
+    lower.endsWith(".d.ts") ||
+    lower.endsWith(".d.mts") ||
+    lower.endsWith(".d.cts")
+  );
+}
+
+/**
+ * Checks if a file is a minified or generated bundle.
+ */
+export function isMinifiedFile(filename) {
+  const lower = filename.toLowerCase();
+  return (
+    lower.endsWith(".min.js") ||
+    lower.endsWith(".min.mjs") ||
+    lower.endsWith(".min.css") ||
+    lower.endsWith(".bundle.js") ||
+    lower.endsWith(".chunk.js")
+  );
+}
+
 // Binary file extensions
 const BINARY_EXTENSIONS = new Set([
   ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".bmp", ".tiff", ".svg",
@@ -58,7 +106,7 @@ const BINARY_EXTENSIONS = new Set([
   ".mp3", ".wav", ".ogg", ".flac", ".m4a",
   ".woff", ".woff2", ".ttf", ".otf", ".eot",
   ".exe", ".dll", ".so", ".dylib", ".bin", ".iso",
-  ".pyc", ".class", ".wasm", ".jar",
+  ".pyc", ".class", ".wasm", ".jar", ".map",
 ]);
 
 // Sensitive credential and environment files that MUST NOT be analyzed or leaked
@@ -165,7 +213,7 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
   }
 
   // 3. Check ignored lockfile / metadata
-  if (IGNORED_FILE_NAMES.has(filename)) {
+  if (isLockOrMetadataFile(filename)) {
     return {
       status: "SKIPPED",
       language: "metadata",
@@ -197,7 +245,29 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
     };
   }
 
-  // 5. File size limits
+  // 6. Minified or generated bundle check
+  if (isMinifiedFile(filename)) {
+    return {
+      status: "SKIPPED",
+      language: "minified",
+      extension: ext,
+      skipReason: "MINIFIED_FILE",
+      skipMessage: "Generated or minified bundle",
+    };
+  }
+
+  // 7. TypeScript declaration file check
+  if (isDeclarationFile(filename)) {
+    return {
+      status: "SKIPPED",
+      language: "typescript",
+      extension: ext,
+      skipReason: "DECLARATION_FILE",
+      skipMessage: "TypeScript declaration file",
+    };
+  }
+
+  // 8. File size limits
   if (size > PROJECT_LIMITS.MAX_SOURCE_FILE_BYTES) {
     return {
       status: "SKIPPED",
@@ -208,7 +278,7 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
     };
   }
 
-  // 6. Language support check
+  // 9. Language support check
   if (ext === ".js" || ext === ".mjs" || ext === ".cjs") {
     return {
       status: "ELIGIBLE",
@@ -229,6 +299,26 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
     };
   }
 
+  if (ext === ".ts" || ext === ".mts" || ext === ".cts") {
+    return {
+      status: "ELIGIBLE",
+      language: "typescript",
+      extension: ext,
+      skipReason: null,
+      skipMessage: null,
+    };
+  }
+
+  if (ext === ".tsx") {
+    return {
+      status: "ELIGIBLE",
+      language: "tsx",
+      extension: ext,
+      skipReason: null,
+      skipMessage: null,
+    };
+  }
+
   if (ext === ".ejs") {
     return {
       status: "ELIGIBLE",
@@ -239,7 +329,7 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
     };
   }
 
-  if (filename === "package.json" || ext === ".json") {
+  if (filename === "package.json") {
     return {
       status: "ELIGIBLE",
       language: "json",
@@ -249,11 +339,18 @@ export function classifyProjectFile(relativePath, size = 0, gitignoreRules = [])
     };
   }
 
+  if (ext === ".json") {
+    return {
+      status: "SKIPPED",
+      language: "json",
+      extension: ext,
+      skipReason: "CONFIG_FILE",
+      skipMessage: "Configuration file (only package.json is audited for dependencies)",
+    };
+  }
+
   // Supported source tree representation for non-JS files
   const langMap = {
-    ".ts": "typescript",
-    ".tsx": "typescript",
-    ".json": "json",
     ".md": "markdown",
     ".html": "html",
     ".css": "css",

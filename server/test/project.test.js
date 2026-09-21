@@ -152,8 +152,23 @@ async function runProjectTests() {
   const imageClass = classifyProjectFile("public/logo.png", 50000);
   assert(imageClass.status === "SKIPPED" && imageClass.skipReason === "BINARY_FILE", "Image binary skipped from analysis");
 
-  const tsClass = classifyProjectFile("src/types.ts", 1200);
-  assert(tsClass.status === "SKIPPED" && tsClass.skipReason === "UNSUPPORTED_LANGUAGE", "TypeScript file listed in tree as skipped");
+  const tsClass = classifyProjectFile("src/services/auth.ts", 1200);
+  assert(tsClass.status === "ELIGIBLE" && tsClass.language === "typescript", "TypeScript .ts file marked ELIGIBLE");
+
+  const tsxClass = classifyProjectFile("src/components/Dashboard.tsx", 2400);
+  assert(tsxClass.status === "ELIGIBLE" && tsxClass.language === "tsx", "TypeScript .tsx file marked ELIGIBLE");
+
+  const dtsClass = classifyProjectFile("src/types/globals.d.ts", 800);
+  assert(dtsClass.status === "SKIPPED" && dtsClass.skipReason === "DECLARATION_FILE", "TypeScript declaration file (.d.ts) marked SKIPPED");
+
+  const minJsClass = classifyProjectFile("public/vendor.min.js", 15000);
+  assert(minJsClass.status === "SKIPPED" && minJsClass.skipReason === "MINIFIED_FILE", "Minified bundle (.min.js) marked SKIPPED");
+
+  const tsConfigClass = classifyProjectFile("tsconfig.json", 600);
+  assert(tsConfigClass.status === "SKIPPED" && tsConfigClass.skipReason === "CONFIG_FILE", "tsconfig.json config file marked SKIPPED");
+
+  const skillsLockClass = classifyProjectFile("skills-lock.json", 1200);
+  assert(skillsLockClass.status === "SKIPPED" && skillsLockClass.skipReason === "IGNORED_DIRECTORY", "skills-lock.json lockfile marked SKIPPED");
 
   console.log("\n--- 3. GitHub URL Validation & SSRF Defense ---");
   const validGh = parseAndValidateGithubUrl("https://github.com/facebook/react");

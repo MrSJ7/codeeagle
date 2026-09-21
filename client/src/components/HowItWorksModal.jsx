@@ -63,7 +63,7 @@ export function HowItWorksModal({ isOpen, onClose, onStartReview }) {
                 Deterministic AST Static Analysis
               </h3>
               <p>
-                CodeEagle parses JavaScript/JSX into an Abstract Syntax Tree (AST) using Babel. 13 deterministic security and quality rules run in milliseconds to catch SQL injection, hardcoded credentials, eval usage, prototype pollution, and dangerous DOM mutations with zero hallucinations.
+                CodeEagle parses TypeScript and JavaScript into an Abstract Syntax Tree (AST) using Babel. 13 deterministic security and quality rules run in milliseconds to catch SQL injection, hardcoded credentials, eval usage, prototype pollution, and dangerous DOM mutations with zero hallucinations.
               </p>
             </div>
           </div>

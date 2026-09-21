@@ -26,6 +26,8 @@ export function normalizeLanguage(lang = 'javascript') {
   const lower = String(lang).toLowerCase().trim();
   if (lower === 'js' || lower === 'javascript') return 'javascript';
   if (lower === 'jsx') return 'jsx';
+  if (lower === 'ts' || lower === 'typescript') return 'typescript';
+  if (lower === 'tsx') return 'tsx';
   return lower;
 }
 

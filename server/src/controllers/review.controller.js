@@ -3,7 +3,7 @@ import { getRegisteredRules } from '../analyzers/ruleRegistry.js';
 import { reviewCode } from '../services/reviewService.js';
 import { reviewRepository } from '../repositories/reviewRepository.js';
 
-const SUPPORTED_LANGUAGES = new Set(['javascript', 'jsx']);
+const SUPPORTED_LANGUAGES = new Set(['javascript', 'jsx', 'typescript', 'tsx']);
 const MAX_CODE_LENGTH = 150000; // ~150KB safe payload limit
 
 export async function handleReviewRequest(req, res) {
@@ -44,7 +44,7 @@ export async function handleReviewRequest(req, res) {
       return res.status(400).json({
         error: {
           code: 'UNSUPPORTED_LANGUAGE',
-          message: `Unsupported language "${language}". Currently only JavaScript and JSX are supported.`,
+          message: `Unsupported language "${language}". Currently JavaScript, JSX, TypeScript, and TSX are supported.`,
         },
       });
     }
@@ -118,7 +118,7 @@ export async function handleAiReviewRequest(req, res) {
       return res.status(400).json({
         error: {
           code: 'UNSUPPORTED_LANGUAGE',
-          message: `Unsupported language "${language}". Currently only JavaScript and JSX are supported.`,
+          message: `Unsupported language "${language}". Currently JavaScript, JSX, TypeScript, and TSX are supported.`,
         },
       });
     }

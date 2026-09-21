@@ -63,7 +63,7 @@ export function ProjectOverview({
             <h1 className="text-2xl font-bold tracking-tight">{review.projectName || project?.name || "Code Project"}</h1>
           </div>
           <div className={cn("flex flex-wrap items-center gap-4 text-xs font-sans", isLight ? "text-slate-500" : "text-obsidian-400")}>
-            <span>{review.filesAnalyzed} JavaScript/JSX files analyzed</span>
+            <span>{review.filesAnalyzed} code files analyzed</span>
             <span>·</span>
             <span>{review.filesSkipped} files skipped</span>
             <span>·</span>
@@ -354,8 +354,17 @@ export function ProjectOverview({
                       {file.findingCount} {file.findingCount === 1 ? "issue" : "issues"}
                     </span>
                   ) : isSkipped ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-muted-foreground border shrink-0">
-                      Skipped
+                    <span
+                      className="px-2 py-0.5 rounded-full text-[10px] font-mono text-muted-foreground border shrink-0"
+                      title={file.skipMessage || "Skipped from review"}
+                    >
+                      {file.skipReason === "CONFIG_FILE"
+                        ? "Config"
+                        : file.skipReason === "DECLARATION_FILE"
+                        ? "Types"
+                        : file.skipReason === "MINIFIED_FILE"
+                        ? "Bundle"
+                        : "Skipped"}
                     </span>
                   ) : (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-500 shrink-0 flex items-center gap-1">
