@@ -203,7 +203,7 @@ async function runProjectTests() {
   console.log("\n--- 4. Safe ZIP Extraction & Manifest Generation ---");
   const testZip = createTestZip([
     { name: "test-project/src/auth.js", content: "const JWT_SECRET = \"sk-test-secret-12345\";\nfunction login() { return true; }", deflate: true },
-    { name: "test-project/src/components/Login.jsx", content: "export function Login() { return <div dangerouslySetInnerHTML={{ __html: \"<p>hi</p>\" }} />; }", deflate: true },
+    { name: "test-project/src/components/Login.jsx", content: "export function Login({ html }) { return <div dangerouslySetInnerHTML={{ __html: html }} />; }", deflate: true },
     { name: "test-project/.env", content: "DATABASE_PASSWORD=supersecret", deflate: false },
     { name: "test-project/README.md", content: "# Test Project", deflate: false },
   ]);

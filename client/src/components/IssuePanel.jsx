@@ -1,230 +1,45 @@
-import React, { useState, useMemo } from 'react';
-import { CheckCircle2, Play, Loader2 } from 'lucide-react';
-import { filterIssues, sortIssues, getSeverityCounts } from '../utils/reviewHelpers.js';
-import { Button } from './ui/Button.jsx';
+import React, { useMemo, useState } from 'react';
+import { CheckCircle2, Loader2, Search } from 'lucide-react';
+import { sortIssues } from '../utils/reviewHelpers.js';
 
-export function IssuePanel({
-  issues = [],
-  selectedIssueId,
-  onSelectIssue,
-  reviewStatus = 'IDLE',
-  onRunReview = null,
-  isStale = false,
-  filename = 'auth.js',
-  className = '',
-  externalCategoryFilter = null,
-  onClearCategoryFilter = null,
-}) {
-  const [severityFilter, setSeverityFilter] = useState('ALL');
+const advisory = (issue) => issue.severity === 'LOW' && (issue.impactWeight ?? 1) <= 0.25;
 
-  // Compute severity counts
-  const counts = getSeverityCounts(issues);
+export function IssuePanel({ issues = [], selectedIssueId, onSelectIssue, reviewStatus = 'IDLE', onRunReview, isStale, filename = 'source.js', className = '', externalCategoryFilter, onClearCategoryFilter }) {
+  const [view, setView] = useState('focus');
+  const [query, setQuery] = useState('');
+  const focusCount = issues.filter((issue) => !advisory(issue)).length;
+  const advisoryCount = issues.length - focusCount;
+  const displayed = useMemo(() => sortIssues(issues).filter((issue) =>
+    (view === 'focus' ? !advisory(issue) : advisory(issue)) &&
+    (!externalCategoryFilter || externalCategoryFilter === 'ALL' || issue.category?.toUpperCase() === externalCategoryFilter.toUpperCase()) &&
+    (issue.title + issue.rule + issue.description).toLowerCase().includes(query.toLowerCase())
+  ), [issues, view, query, externalCategoryFilter]);
 
-  // Sort deterministically (CRITICAL -> HIGH -> MEDIUM -> LOW, then line number)
-  const sorted = sortIssues(issues);
-
-  // Apply filters
-  const displayedIssues = useMemo(() => {
-    let result = filterIssues(sorted, severityFilter);
-    if (externalCategoryFilter && externalCategoryFilter !== 'ALL') {
-      result = result.filter(
-        (i) => i.category?.toUpperCase() === externalCategoryFilter.toUpperCase()
-      );
-    }
-    return result;
-  }, [sorted, severityFilter, externalCategoryFilter]);
-
-  const filterTabs = [
-    { key: 'ALL', label: 'All', count: counts.ALL },
-    { key: 'CRITICAL', label: 'Critical', count: counts.CRITICAL },
-    { key: 'HIGH', label: 'High', count: counts.HIGH },
-    { key: 'MEDIUM', label: 'Medium', count: counts.MEDIUM },
-    { key: 'LOW', label: 'Low', count: counts.LOW },
-  ];
-
-  return (
-    <aside
-      aria-label="Findings queue"
-      className={`bg-obsidian-900 border-r border-obsidian-800 flex flex-col h-full overflow-hidden select-none font-sans ${className}`}
-    >
-      {/* Rail Header */}
-      <div className="px-4 py-3 border-b border-slate-200 dark:border-obsidian-800 flex items-center justify-between shrink-0 bg-slate-50 dark:bg-obsidian-850">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xs font-bold text-slate-900 dark:text-obsidian-100">
-            Needs Attention
-          </h2>
-          {reviewStatus !== 'IDLE' && (
-            <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-[4px] bg-slate-100 dark:bg-obsidian-800 text-slate-700 dark:text-obsidian-300 font-bold border border-slate-200 dark:border-obsidian-700">
-              {issues.length}
-            </span>
-          )}
-        </div>
-
-        {isStale && (
-          <span className="text-[10px] font-mono text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 px-1.5 py-0.5 rounded-[4px] font-medium">
-            Stale
-          </span>
-        )}
+  return <aside aria-label="Review findings" className={`flex flex-col min-h-0 bg-white dark:bg-[#11110f] ${className}`}>
+    <div className="px-5 pt-5 pb-4 border-b border-slate-200 dark:border-[#292824]">
+      <div className="flex items-center justify-between gap-3">
+        <div><p className="text-[10px] uppercase tracking-[.19em] font-semibold text-orange-600 dark:text-orange-400">Review queue</p><h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-[#f6f2e9] mt-1">Findings <span className="text-slate-400 dark:text-[#8a867f]">{issues.length}</span></h2></div>
+        {isStale && <span className="text-xs text-amber-700 dark:text-amber-300">Needs rerun</span>}
       </div>
-
-      {/* Category Filter Notice */}
-      {externalCategoryFilter && externalCategoryFilter !== 'ALL' && (
-        <div className="px-3 py-1.5 bg-blue-50 dark:bg-brand-500/10 border-b border-blue-200 dark:border-brand-500/30 flex items-center justify-between text-xs text-blue-700 dark:text-brand-400 font-medium shrink-0">
-          <span>Filtered by {externalCategoryFilter}</span>
-          {onClearCategoryFilter && (
-            <button
-              type="button"
-              onClick={onClearCategoryFilter}
-              className="text-[11px] underline hover:text-blue-900 dark:hover:text-brand-300 cursor-pointer font-semibold"
-            >
-              Reset
-            </button>
-          )}
+      {reviewStatus !== 'IDLE' && <>
+        <div className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-[#22211e] rounded-lg mt-5" role="group" aria-label="Finding priority">
+          {[['focus', `Focus · ${focusCount}`], ['advisory', `Advisory · ${advisoryCount}`]].map(([key, label]) => <button key={key} type="button" onClick={() => setView(key)} aria-pressed={view === key} className={`min-h-9 rounded-md text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-orange-500 ${view === key ? 'bg-white dark:bg-[#39362e] text-slate-950 dark:text-white shadow-sm' : 'text-slate-500 dark:text-[#aaa59b]'}`}>{label}</button>)}
         </div>
-      )}
-
-      {/* Severity Filter Tabs */}
-      {reviewStatus !== 'IDLE' && issues.length > 0 && (
-        <div className="px-3 py-1.5 border-b border-slate-200 dark:border-obsidian-800 flex items-center gap-1 overflow-x-auto text-[11px] shrink-0 bg-slate-50/50 dark:bg-obsidian-900">
-          {filterTabs.map((tab) => {
-            const isActive = severityFilter === tab.key;
-            if (tab.key !== 'ALL' && tab.count === 0) return null;
-
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setSeverityFilter(tab.key)}
-                className={`px-2 py-0.5 rounded-[4px] text-[11px] font-medium transition-colors flex items-center gap-1 cursor-pointer ${
-                  isActive
-                    ? 'bg-white dark:bg-obsidian-800 text-slate-900 dark:text-obsidian-50 font-semibold shadow-xs border border-slate-200 dark:border-obsidian-700'
-                    : 'text-slate-600 dark:text-obsidian-400 hover:text-slate-900 dark:hover:text-obsidian-200 hover:bg-slate-100 dark:hover:bg-obsidian-850'
-                }`}
-              >
-                <span>{tab.label}</span>
-                <span className={`text-[10px] font-mono ${isActive ? 'text-blue-600 dark:text-brand-400 font-bold' : 'text-slate-400 dark:text-obsidian-500'}`}>
-                  {tab.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Content Area */}
-      <div className="flex-1 overflow-y-auto">
-        {reviewStatus === 'IDLE' ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
-            <div className="w-9 h-9 rounded-[6px] bg-slate-100 dark:bg-obsidian-850 border border-slate-200 dark:border-obsidian-750 flex items-center justify-center mb-3 text-blue-600 dark:text-brand-500 shadow-xs">
-              <Play className="w-4 h-4 fill-current ml-0.5" />
-            </div>
-            <p className="text-xs font-semibold text-slate-900 dark:text-obsidian-200 mb-1">
-              Ready to review
-            </p>
-            <p className="text-xs text-slate-500 dark:text-obsidian-400 mb-4 max-w-[200px] leading-relaxed">
-              Click Run Review or press ⌘↵ to start analysis.
-            </p>
-            {onRunReview && (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={onRunReview}
-                leftIcon={<Play className="w-3 h-3 fill-current" />}
-              >
-                Run Review
-              </Button>
-            )}
-          </div>
-        ) : reviewStatus === 'ANALYZING' ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
-            <Loader2 className="w-6 h-6 animate-spin text-blue-600 dark:text-brand-500 mb-2" />
-            <p className="text-xs font-semibold text-slate-900 dark:text-obsidian-200">
-              Analyzing code...
-            </p>
-          </div>
-        ) : displayedIssues.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
-            <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mb-2" />
-            <p className="text-xs font-semibold text-slate-900 dark:text-obsidian-200">
-              {issues.length === 0 ? 'No findings detected' : 'No matching issues'}
-            </p>
-            <p className="text-xs text-slate-500 dark:text-obsidian-500 mt-1 max-w-[200px] leading-relaxed">
-              {issues.length === 0
-                ? 'The enabled checks found no issues.'
-                : 'Try choosing another filter.'}
-            </p>
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-100 dark:divide-obsidian-800">
-            {displayedIssues.map((issue) => {
-              const isSelected = selectedIssueId === issue.id;
-              const hasFix = Boolean(issue.fix);
-              const isAi = issue.source === 'AI';
-
-              return (
-                <button
-                  key={issue.id}
-                  type="button"
-                  onClick={() => onSelectIssue(issue.id)}
-                  className={`w-full text-left px-4 py-3 transition-all flex flex-col gap-1 cursor-pointer border-l-2 ${
-                    isSelected
-                      ? 'bg-blue-50/60 dark:bg-obsidian-800 text-slate-900 dark:text-obsidian-50 border-l-blue-600 dark:border-l-brand-500 shadow-xs'
-                      : 'border-l-transparent hover:bg-slate-50 dark:hover:bg-obsidian-850 text-slate-700 dark:text-obsidian-300'
-                  }`}
-                >
-                  {/* Title & Severity */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-baseline gap-2 min-w-0">
-                      <span
-                        className={`w-2 h-2 rounded-full shrink-0 mt-1 ${
-                          issue.severity === 'CRITICAL'
-                            ? 'bg-red-500'
-                            : issue.severity === 'HIGH'
-                            ? 'bg-orange-500'
-                            : issue.severity === 'MEDIUM'
-                            ? 'bg-amber-500'
-                            : 'bg-slate-400 dark:bg-obsidian-400'
-                        }`}
-                        aria-hidden="true"
-                      />
-                      <span className={`text-sm font-bold leading-snug truncate ${isSelected ? 'text-slate-950 dark:text-obsidian-50' : 'text-slate-800 dark:text-obsidian-200'}`}>
-                        {issue.title}
-                      </span>
-                    </div>
-
-                    {hasFix && (
-                      <span
-                        title="Verified patch available"
-                        className="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[3px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shrink-0"
-                      >
-                        PATCH
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Location & Provenance */}
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 dark:text-obsidian-400 pl-4">
-                    <span className="text-slate-700 dark:text-obsidian-300">
-                      {filename}:{issue.line}
-                      {issue.endLine && issue.endLine !== issue.line ? `-${issue.endLine}` : ''}
-                    </span>
-                    <span className="text-slate-300 dark:text-obsidian-600">•</span>
-                    <span
-                      className={`text-[9px] uppercase px-1.5 py-0.2 rounded-[3px] font-bold ${
-                        isAi
-                          ? 'text-blue-700 dark:text-brand-400 bg-blue-50 dark:bg-brand-500/15 border border-blue-200 dark:border-brand-500/30'
-                          : 'text-slate-700 dark:text-obsidian-300 bg-slate-100 dark:bg-obsidian-800 border border-slate-200 dark:border-obsidian-700'
-                      }`}
-                    >
-                      {isAi ? 'AI' : 'AST'}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </aside>
-  );
+        <label className="flex items-center gap-2 h-10 mt-3 px-3 border border-slate-200 dark:border-[#38362f] rounded-lg text-slate-500 dark:text-[#aaa59b]"><Search size={15}/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search findings" className="w-full bg-transparent outline-none text-sm text-slate-900 dark:text-white placeholder:text-slate-400"/></label>
+        {externalCategoryFilter && externalCategoryFilter !== 'ALL' && <button type="button" onClick={onClearCategoryFilter} className="text-xs text-orange-600 dark:text-orange-400 mt-3 hover:underline">{externalCategoryFilter} filter · Clear</button>}
+      </>}
+    </div>
+    <div className="flex-1 min-h-0 overflow-y-auto">
+      {reviewStatus === 'IDLE' ? <div className="p-7 text-center text-slate-500 dark:text-[#aaa59b]"><h3 className="text-base text-slate-900 dark:text-white font-semibold">Ready to review</h3><p className="text-sm mt-2">Run a review to inspect issues in this file.</p><button type="button" onClick={onRunReview} className="mt-5 px-4 py-2 bg-orange-500 text-black font-semibold rounded-md">Run review</button></div>
+      : reviewStatus === 'ANALYZING' ? <div className="p-7 text-center text-sm text-slate-500 dark:text-[#aaa59b]"><Loader2 className="animate-spin mx-auto mb-3"/>Analyzing source…</div>
+      : displayed.length === 0 ? <div className="p-7 text-center text-slate-500 dark:text-[#aaa59b]"><CheckCircle2 size={27} className="mx-auto mb-4 text-emerald-500"/><h3 className="text-base text-slate-900 dark:text-white font-semibold">{issues.length === 0 ? 'No findings from enabled checks' : view === 'focus' && focusCount === 0 ? 'No actionable findings' : 'No matching findings'}</h3><p className="text-sm mt-2">{view === 'focus' && advisoryCount > 0 ? 'Low impact suggestions are in Advisory.' : 'Try another filter or review your code.'}</p></div>
+      : <div className="p-2.5 space-y-1.5">{displayed.map((issue, index) => <button key={issue.id} type="button" onClick={() => onSelectIssue(issue.id)} aria-current={selectedIssueId === issue.id ? 'true' : undefined} className={`w-full text-left rounded-lg p-3.5 border transition-colors focus-visible:outline-2 focus-visible:outline-orange-500 ${selectedIssueId === issue.id ? 'bg-orange-50 border-orange-300 dark:bg-[#2b2319] dark:border-orange-500/50' : 'bg-white border-transparent hover:bg-slate-50 dark:bg-transparent dark:hover:bg-[#22211e]'}`}>
+        <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider"><span className={`w-2 h-2 rounded-full ${issue.severity === 'CRITICAL' ? 'bg-red-500' : issue.severity === 'HIGH' ? 'bg-orange-500' : issue.severity === 'MEDIUM' ? 'bg-amber-500' : 'bg-slate-400'}`}/><span className="text-slate-600 dark:text-[#b8b1a5]">{issue.severity}</span><span className="ml-auto text-slate-400 dark:text-[#77736d]">{String(index + 1).padStart(2, '0')}</span></div>
+        <h3 className="text-sm font-semibold leading-snug text-slate-950 dark:text-[#f6f2e9] mt-2 line-clamp-2">{issue.title}</h3>
+        <p className="text-xs leading-relaxed text-slate-600 dark:text-[#aaa59b] mt-1.5 line-clamp-2">{issue.description}</p>
+        <div className="flex items-center gap-2 mt-3 text-[11px] font-mono text-slate-500 dark:text-[#8e8a83]"><span>{issue.path || filename}:{issue.line}</span><span>·</span><span>{issue.rule}</span>{issue.fix && <span className="ml-auto text-emerald-700 dark:text-emerald-400">Fix ready</span>}</div>
+      </button>)}</div>}
+    </div>
+    <div className="px-5 py-3 border-t border-slate-200 dark:border-[#292824] text-[11px] text-slate-500 dark:text-[#8e8a83]">Verify the behavior before applying a suggestion.</div>
+  </aside>;
 }

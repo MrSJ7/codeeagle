@@ -52,6 +52,8 @@ export function getConfidenceMultiplier(issue) {
  * @returns {number} Integer deduction
  */
 export function calculateIssueDeduction(issue) {
+  // Advisory style findings are visible, but do not imply a code defect.
+  if (issue.severity === 'LOW' && Number.isFinite(issue.impactWeight) && issue.impactWeight <= 0.25) return 0;
   const base = SEVERITY_DEDUCTIONS[issue.severity] || 3;
   const multiplier = getConfidenceMultiplier(issue);
   const impact = Number.isFinite(issue.impactWeight)

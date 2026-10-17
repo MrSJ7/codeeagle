@@ -118,6 +118,13 @@ export const RULE_REGISTRY = {
     description: 'Catch block contains no statements, silently swallowing errors without logging or handling. Swallowed exceptions conceal runtime failures and make root-cause debugging in production nearly impossible.',
     recommendation: 'Log the caught error (\'console.error(err)\') with diagnostic context or provide an explicit fallback recovery path.',
   },
+  'QUAL-ASYNC-FOREACH': {
+    rule: 'QUAL-ASYNC-FOREACH', category: 'QUALITY', ruleClass: 'CORRECTNESS',
+    severity: 'HIGH', defaultSeverity: 'HIGH', confidence: 0.98, impactWeight: 0.85,
+    title: 'Async forEach does not wait for promises',
+    description: 'Array.forEach ignores the promise returned by an async callback. The surrounding function can finish before the work does, and callback rejections are not handled by an outer await.',
+    recommendation: 'Use for...of with await for sequential work, or await Promise.all(items.map(async item => ...)) for concurrent work.',
+  },
   'QUAL-VAR': {
     rule: 'QUAL-VAR',
     category: 'QUALITY',

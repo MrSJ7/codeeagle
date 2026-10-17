@@ -43,7 +43,13 @@ assert.ok(!realCleanup.issues.some((issue) => issue.rule === 'PERF-EFFECT-CLEANU
 assert.ok(!analyzeCode('if (value == null) handleMissing();').issues.some((issue) => issue.rule === 'QUAL-EQEQ'));
 
 const styleReview = analyzeCode('var first = 1;\nvar second = 2;');
-assert.equal(styleReview.score, 98, 'Two low-impact style findings have small deductions');
+assert.equal(styleReview.score, 100, 'Low-impact style suggestions do not reduce the defect score');
+assert.ok(styleReview.issues.length === 2, 'Style suggestions remain visible as advisories');
+assert.ok(analyzeCode('items.forEach(async (item) => { await save(item); });').issues.some((issue) => issue.rule === 'QUAL-ASYNC-FOREACH'), 'Async forEach is flagged as a correctness risk');
+assert.ok(analyzeCode(`useEffect(() => {
+  window.addEventListener('resize', onResize);
+  return () => window.removeEventListener('scroll', onResize);
+}, []);`).issues.some((issue) => issue.rule === 'PERF-EFFECT-CLEANUP'), 'Cleanup with a mismatched event does not suppress the issue');
 assert.deepEqual(
   { score: styleReview.score, breakdown: styleReview.breakdown },
   calculateScores(styleReview.issues),

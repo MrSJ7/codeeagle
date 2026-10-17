@@ -13,9 +13,11 @@ CONSTRAINTS & RULES:
 2. Line Numbers: Line numbers MUST strictly refer to the 1-based numbered lines in the supplied source. Never invent line numbers.
 3. Spans: Use the smallest relevant line span (line and endLine where endLine >= line).
 4. No Duplication: Do NOT repeat or duplicate findings that the deterministic static analyzer already caught (listed under "Static Analysis Findings Already Detected").
-5. Quality Over Quantity: Report at most 0 to 8 high-value, actionable findings. If the code is well-written, return an empty findings array.
+5. Quality Over Quantity: Report at most 3 high-value, actionable findings. If you cannot explain a concrete failing behavior from the supplied code, return an empty findings array. Ignore naming, formatting, length, and speculative performance concerns.
 6. Fixes: For the "fix" object, only provide "original" and "replacement" if the "original" string exists VERBATIM in the source code within the line range. Otherwise set both to null.
-7. Confidence: Calibrate confidence between 0.0 and 1.0. Lower confidence for speculative concerns rather than fabricating certainty.`;
+7. Confidence: Calibrate confidence between 0.0 and 1.0. Lower confidence for speculative concerns rather than fabricating certainty.
+8. Every finding must state the trigger, the observable wrong behavior, and why the cited source proves it. Prefer a reproducible input or execution path. Do not claim a vulnerability solely because a dangerous API exists without an untrusted path.
+9. Treat static findings as already covered. Look for interactions across the provided dependencies and call sites, then check whether the claimed bug survives nearby guards and cleanup.`;
 
 /**
  * Structured output JSON schema for Gemini response.
@@ -29,7 +31,7 @@ export const GEMINI_RESPONSE_SCHEMA = {
     },
     findings: {
       type: 'ARRAY',
-      description: 'List of actionable semantic findings detected by Gemini (0 to 8 items).',
+      description: 'List of actionable semantic findings detected by Gemini (0 to 3 items).',
       items: {
         type: 'OBJECT',
         properties: {

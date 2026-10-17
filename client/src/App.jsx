@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from './components/Navbar.jsx';
-import { ReviewSummary } from './components/ReviewSummary.jsx';
 import { CodeEditor } from './components/CodeEditor.jsx';
 import { IssuePanel } from './components/IssuePanel.jsx';
 import { IssueDetails } from './components/IssueDetails.jsx';
@@ -57,7 +56,8 @@ export default function App() {
   const [reviewData, setReviewData] = useState(null);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState(null);
-  const [activeLens, setActiveLens] = useState('overview'); // 'overview' | 'findings' | 'architecture'
+  const [activeLens, setActiveLens] = useState('findings'); // 'overview' | 'findings' | 'architecture'
+  const [mobileReviewPane, setMobileReviewPane] = useState('findings');
   const [currentReviewId, setCurrentReviewId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [toast, setToast] = useState(null);
@@ -142,7 +142,8 @@ export default function App() {
       const result = await runReview(sourceCode, 'javascript', filenameToUse);
       setReviewData(result);
       setReviewStatus('SUCCESS');
-      setActiveLens('overview');
+      setActiveLens('findings');
+      setMobileReviewPane('findings');
       setSelectedIssueId(result.issues[0]?.id || null);
       setCurrentReviewId(result.reviewId || null);
       setIsHistoricalView(false);
@@ -340,7 +341,8 @@ export default function App() {
       setCode(data.code || '');
       setReviewData(data);
       setReviewStatus('SUCCESS');
-      setActiveLens('overview');
+      setActiveLens('findings');
+      setMobileReviewPane('findings');
       setSelectedIssueId(data.issues?.[0]?.id || null);
       setCurrentReviewId(data.reviewId);
       setIsHistoricalView(true);
@@ -684,26 +686,14 @@ export default function App() {
             </nav>
           )}
 
-          {/* Review Summary Bar - visible in findings mode or when diff is present */}
-          {reviewData && (activeLens === 'findings' || patchDiff || isStale) && (
-            <ReviewSummary
-              reviewData={reviewData}
-              reviewStatus={reviewStatus}
-              isStale={isStale}
-              isHistorical={isHistoricalView}
-              historicalCreatedAt={historicalCreatedAt}
-              filename={currentFilename}
-              language="JavaScript"
-              lineCount={code.split('\n').length}
-              activeCategory={activeCategoryFilter}
-              onSelectCategory={(cat) =>
-                setActiveCategoryFilter((prev) => (prev === cat ? null : cat))
-              }
-              onRunReview={handleRunReview}
-              patchDiff={patchDiff}
-              onDismissDiff={() => setPatchDiff(null)}
-            />
-          )}
+          {reviewData && activeLens === 'findings' && <div className="shrink-0 px-4 md:px-6 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 bg-[#191916] border-b border-[#38362f] text-xs text-[#c5beb2]">
+            <span className="font-semibold text-[#f7f1e7]">{reviewData.issues?.filter((issue) => !(issue.severity === 'LOW' && issue.impactWeight <= 0.25)).length || 0} to inspect</span>
+            <span>{reviewData.issues?.filter((issue) => issue.severity === 'CRITICAL' || issue.severity === 'HIGH').length || 0} high priority</span>
+            <span>{reviewData.issues?.filter((issue) => issue.severity === 'LOW' && issue.impactWeight <= 0.25).length || 0} advisory</span>
+            <span className="md:ml-auto">{isAiConfigured ? 'Static + AI review' : 'Static checks only'} · {currentFilename}</span>
+            {isStale && <button type="button" onClick={handleRunReview} className="text-orange-400 font-semibold underline">Changes need a new review</button>}
+            {patchDiff && <button type="button" onClick={() => setPatchDiff(null)} className="text-orange-400 underline">Dismiss applied patch notice</button>}
+          </div>}
 
           {/* Review in Progress Banner */}
           {isReviewing && (
@@ -763,23 +753,26 @@ export default function App() {
             </main>
           ) : (
             /* Findings Lens / Code Workspace (Three-Column Layout) */
-            <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden bg-white dark:bg-obsidian-950">
+            <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-obsidian-950">
+              {reviewData && <nav aria-label="Review workspace panels" className="lg:hidden flex shrink-0 p-1 gap-1 bg-[#161613] border-b border-[#33312b]">
+                {['findings', 'code', 'details'].map((pane) => <button key={pane} type="button" onClick={() => setMobileReviewPane(pane)} aria-pressed={mobileReviewPane === pane} className={`flex-1 py-2.5 rounded-md capitalize text-sm font-semibold focus-visible:outline-2 focus-visible:outline-orange-500 ${mobileReviewPane === pane ? 'bg-orange-500 text-[#18130c]' : 'text-[#aaa49a]'}`}>{pane}</button>)}
+              </nav>}
               {/* Left Column: Review findings / Findings Queue */}
               {reviewData && <IssuePanel
                 issues={reviewData?.issues || []}
                 selectedIssueId={selectedIssueId}
-                onSelectIssue={setSelectedIssueId}
+                onSelectIssue={(issueId) => { setSelectedIssueId(issueId); setMobileReviewPane('details'); }}
                 reviewStatus={reviewStatus}
                 onRunReview={handleRunReview}
                 isStale={isStale}
                 filename={currentFilename}
                 externalCategoryFilter={activeCategoryFilter}
                 onClearCategoryFilter={() => setActiveCategoryFilter(null)}
-                className="order-1 w-full lg:w-72 xl:w-80 shrink-0 !h-52 lg:!h-full border-b lg:border-b-0 border-r border-slate-200 dark:border-obsidian-800"
+                className={`order-1 w-full lg:w-80 xl:w-[350px] shrink-0 h-full border-r border-slate-200 dark:border-[#33312b] ${mobileReviewPane === 'findings' ? '' : 'hidden lg:flex'}`}
               />}
 
               {/* Center Column: Code Editor */}
-              <section className={`order-3 lg:order-2 ${reviewData ? 'flex-none h-[62vh] min-h-[390px]' : 'flex-1 h-full min-h-0'} lg:flex-1 lg:h-full lg:min-h-0 flex flex-col overflow-hidden min-w-0`}>
+              <section className={`order-2 flex-1 h-full min-h-0 flex flex-col overflow-hidden min-w-0 ${reviewData && mobileReviewPane !== 'code' ? 'hidden lg:flex' : ''}`}>
                 <CodeEditor
                   code={code}
                   onChange={handleCodeChange}
@@ -792,7 +785,7 @@ export default function App() {
                   presets={PRESETS}
                   selectedPresetId={selectedPresetId}
                   onSelectPreset={handleSelectPreset}
-                  onSelectIssue={setSelectedIssueId}
+                  onSelectIssue={(issueId) => { setSelectedIssueId(issueId); setMobileReviewPane('details'); }}
                 />
               </section>
 
@@ -811,7 +804,8 @@ export default function App() {
                 isApplyingPatch={isApplyingPatch || isApplyingAiPatch}
                 isVerifyingAiPatch={isVerifyingAiPatch}
                 filename={currentFilename}
-                className="order-2 lg:order-3 w-full lg:w-80 xl:w-96 shrink-0 !h-auto lg:!h-full border-t lg:border-t-0 border-l border-slate-200 dark:border-obsidian-800"
+                code={code}
+                className={`order-3 w-full lg:w-80 xl:w-[380px] shrink-0 h-full border-l border-slate-200 dark:border-[#33312b] ${mobileReviewPane === 'details' ? '' : 'hidden lg:flex'}`}
               />}
             </main>
           )}

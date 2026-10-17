@@ -33,6 +33,87 @@ const KNOWN_TOKEN_PATTERNS = [
 ];
 
 const SQL_KEYWORDS_REGEX = /\b(SELECT\s+.+\s+FROM|INSERT\s+INTO\s+.+|UPDATE\s+.+\s+SET|DELETE\s+FROM\s+.+|WHERE\s+.+=)\b/i;
+const SQL_SINKS = new Set(['query', 'execute', 'exec', 'raw', '$queryRawUnsafe']);
+
+function memberName(node) {
+  if (node?.type !== 'MemberExpression') return null;
+  return node.computed ? node.property?.value : node.property?.name;
+}
+
+function isNumericSqlValue(path, seen = new Set()) {
+  if (path.isNumericLiteral() || path.isBooleanLiteral()) return true;
+  if (path.isUnaryExpression({ operator: '+' }) || path.isUnaryExpression({ operator: '-' })) {
+    return isNumericSqlValue(path.get('argument'), seen);
+  }
+  if (path.isCallExpression() && ['Number', 'parseInt', 'parseFloat'].includes(path.node.callee?.name)) {
+    return true;
+  }
+  if (path.isIdentifier()) {
+    const binding = path.scope.getBinding(path.node.name);
+    if (!binding?.constant || !binding.path.isVariableDeclarator() || seen.has(binding)) return false;
+    seen.add(binding);
+    const init = binding.path.get('init');
+    return Boolean(init?.node && isNumericSqlValue(init, seen));
+  }
+  return false;
+}
+
+function sqlParts(path, seen = new Set()) {
+  if (!path?.node) return null;
+  if (path.isIdentifier()) {
+    const binding = path.scope.getBinding(path.node.name);
+    if (!binding?.constant || !binding.path.isVariableDeclarator() || seen.has(binding)) return null;
+    seen.add(binding);
+    return sqlParts(binding.path.get('init'), seen);
+  }
+  if (path.isStringLiteral()) return { sourcePath: path, text: path.node.value, values: [] };
+  if (path.isTemplateLiteral()) {
+    return {
+      sourcePath: path,
+      text: path.node.quasis.map((part) => part.value.cooked || part.value.raw).join(' '),
+      values: path.get('expressions'),
+    };
+  }
+  if (path.isBinaryExpression({ operator: '+' })) {
+    const left = sqlParts(path.get('left'), new Set(seen));
+    const right = sqlParts(path.get('right'), new Set(seen));
+    return {
+      sourcePath: path,
+      text: [left?.text, right?.text].filter(Boolean).join(' '),
+      values: [...(left?.values || (left ? [] : [path.get('left')])), ...(right?.values || (right ? [] : [path.get('right')]))],
+    };
+  }
+  return null;
+}
+
+function isSafeHtmlValue(path, seen = new Set()) {
+  if (!path?.node) return false;
+  if (path.isStringLiteral() || (path.isTemplateLiteral() && path.node.expressions.length === 0)) return true;
+  if (path.isCallExpression()) {
+    const callee = path.node.callee;
+    return (memberName(callee) === 'sanitize' && callee.object?.name === 'DOMPurify') ||
+      callee.name === 'sanitizeHtml';
+  }
+  if (path.isIdentifier()) {
+    const binding = path.scope.getBinding(path.node.name);
+    if (!binding?.constant || !binding.path.isVariableDeclarator() || seen.has(binding)) return false;
+    seen.add(binding);
+    return isSafeHtmlValue(binding.path.get('init'), seen);
+  }
+  return false;
+}
+
+function isRequestDerived(path, code) {
+  const source = getNodeSource(code, path.node) || '';
+  if (/\b(req|request)\.(body|query|params|headers)\b/.test(source)) return true;
+  if (!path.isIdentifier()) return false;
+  const binding = path.scope.getBinding(path.node.name);
+  const declaration = binding?.path?.isVariableDeclarator()
+    ? binding.path
+    : binding?.path?.findParent((parent) => parent.isVariableDeclarator());
+  const bindingSource = declaration ? getNodeSource(code, declaration.node) : '';
+  return /\b(req|request)\.(body|query|params|headers)\b/.test(bindingSource || '');
+}
 
 /**
  * Deterministic Security Static Analysis Rules
@@ -47,6 +128,38 @@ export function analyzeSecurity(ast, code = '') {
       reportedKeys.add(dedupKey);
       issues.push(issue);
     }
+  }
+
+  function inspectSqlCall(path) {
+    if (!SQL_SINKS.has(memberName(path.node.callee))) return;
+    const queryArg = path.get('arguments.0');
+    const parts = sqlParts(queryArg);
+    if (!parts || !SQL_KEYWORDS_REGEX.test(parts.text)) return;
+    const unsafeValues = parts.values.filter((value) => !isNumericSqlValue(value));
+    if (unsafeValues.length === 0) return;
+
+    const line = parts.sourcePath.node.loc?.start.line || path.node.loc?.start.line || 1;
+    const endLine = parts.sourcePath.node.loc?.end.line || line;
+    const meta = RULE_REGISTRY['SEC-SQLI'];
+    const sink = getNodeSource(code, path.node.callee) || 'query()';
+    const requestInput = unsafeValues.some((value) => isRequestDerived(value, code));
+    const valueNames = unsafeValues.map((value) => getNodeSource(code, value.node) || 'value').slice(0, 3);
+    addIssue({
+      id: `SEC-SQLI-${line}`,
+      rule: meta.rule,
+      source: 'STATIC',
+      severity: requestInput ? 'CRITICAL' : 'HIGH',
+      category: meta.category,
+      ruleClass: meta.ruleClass,
+      title: 'Dynamic values reach a SQL query',
+      line,
+      endLine,
+      description: `${valueNames.join(', ')} ${unsafeValues.length === 1 ? 'is' : 'are'} interpolated into SQL text passed to ${sink}. ${requestInput ? 'The value comes from request input and can change query structure.' : 'If a value is untrusted, it can change query structure.'}`,
+      recommendation: 'Pass the SQL text and values separately using bind parameters supported by this database driver. Do not build query text with interpolation or concatenation.',
+      confidence: requestInput ? 0.95 : 0.82,
+      impactWeight: meta.impactWeight ?? 1.0,
+      fix: null,
+    });
   }
 
   traverse(ast, {
@@ -123,6 +236,7 @@ export function analyzeSecurity(ast, code = '') {
     CallExpression(path) {
       const callee = path.node.callee;
       const line = path.node.loc?.start.line || 1;
+      inspectSqlCall(path);
 
       if (callee.type === 'Identifier' && callee.name === 'eval') {
         const meta = RULE_REGISTRY['SEC-EVAL'];
@@ -192,6 +306,13 @@ export function analyzeSecurity(ast, code = '') {
     // Rule: SEC-DANGEROUS-HTML
     JSXAttribute(path) {
       if (path.node.name?.name === 'dangerouslySetInnerHTML') {
+        const value = path.get('value');
+        const expression = value.isJSXExpressionContainer() ? value.get('expression') : null;
+        const htmlProperty = expression?.isObjectExpression()
+          ? expression.get('properties').find((prop) => prop.isObjectProperty() &&
+              (prop.node.key?.name === '__html' || prop.node.key?.value === '__html'))
+          : null;
+        if (htmlProperty && isSafeHtmlValue(htmlProperty.get('value'))) return;
         const line = path.node.loc?.start.line || 1;
         const meta = RULE_REGISTRY['SEC-DANGEROUS-HTML'];
         addIssue({
@@ -204,7 +325,7 @@ export function analyzeSecurity(ast, code = '') {
           title: meta.title,
           line,
           endLine: line,
-          description: meta.description,
+          description: 'Raw HTML is passed to dangerouslySetInnerHTML without a visible sanitization step. If the value contains user content, scripts or unsafe markup can reach the browser.',
           recommendation: meta.recommendation,
           confidence: meta.confidence ?? 0.90,
           impactWeight: meta.impactWeight ?? 0.85,
@@ -213,67 +334,6 @@ export function analyzeSecurity(ast, code = '') {
       }
     },
 
-    // Rule: SEC-SQLI (Template literals with dynamic expressions)
-    TemplateLiteral(path) {
-      const quasis = path.node.quasis.map((q) => q.value.raw).join(' ');
-      const hasExpressions = path.node.expressions.length > 0;
-
-      if (hasExpressions && SQL_KEYWORDS_REGEX.test(quasis)) {
-        const line = path.node.loc?.start.line || 1;
-        const endLine = path.node.loc?.end.line || line;
-        const meta = RULE_REGISTRY['SEC-SQLI'];
-
-        addIssue({
-          id: `SEC-SQLI-${line}`,
-          rule: meta.rule,
-          source: 'STATIC',
-          severity: meta.defaultSeverity,
-          category: meta.category,
-          ruleClass: meta.ruleClass,
-          title: 'Potential SQL injection via dynamic template string',
-          line,
-          endLine,
-          description: 'SQL keywords were detected inside a dynamic template string containing interpolated expressions. If interpolated variables contain unvalidated user input, this enables SQL injection.',
-          recommendation: meta.recommendation,
-          confidence: meta.confidence ?? 0.95,
-          impactWeight: meta.impactWeight ?? 1.0,
-          fix: null,
-        });
-      }
-    },
-
-    // Rule: SEC-SQLI (String concatenation with dynamic expressions)
-    BinaryExpression(path) {
-      if (path.node.operator === '+') {
-        const left = path.node.left;
-        const right = path.node.right;
-
-        const leftIsSql = left.type === 'StringLiteral' && SQL_KEYWORDS_REGEX.test(left.value);
-        const rightIsDynamic = right.type === 'Identifier' || right.type === 'MemberExpression' || right.type === 'CallExpression';
-
-        if (leftIsSql && rightIsDynamic) {
-          const line = path.node.loc?.start.line || 1;
-          const meta = RULE_REGISTRY['SEC-SQLI'];
-
-          addIssue({
-            id: `SEC-SQLI-${line}`,
-            rule: meta.rule,
-            source: 'STATIC',
-            severity: meta.defaultSeverity,
-            category: meta.category,
-            ruleClass: meta.ruleClass,
-            title: 'Potential SQL injection via string concatenation',
-            line,
-            endLine: line,
-            description: 'SQL query string is concatenated dynamically with an expression. If the expression contains unvalidated user input, this enables SQL injection.',
-            recommendation: meta.recommendation,
-            confidence: meta.confidence ?? 0.95,
-            impactWeight: meta.impactWeight ?? 1.0,
-            fix: null,
-          });
-        }
-      }
-    },
   });
 
   return issues;

@@ -146,16 +146,16 @@ const userRole = "admin";
 
 // 2.6 Positive: SQL Injection via Template Literal
 {
-  const code = 'const q = `SELECT * FROM accounts WHERE id = ${accountId}`;';
+  const code = 'const q = `SELECT * FROM accounts WHERE id = ${accountId}`; db.query(q);';
   const res = analyzeCode(code);
   const issue = res.issues.find(i => i.rule === 'SEC-SQLI');
   assert(issue !== undefined, 'Detects dynamic template SQL injection');
-  assert(issue?.confidence === 0.85, 'SQL injection has heuristic confidence (0.85)');
+  assert(issue?.confidence === 0.82, 'SQL injection confidence reflects unknown input provenance');
 }
 
 // 2.7 Positive: SQL Injection via String Concatenation (+)
 {
-  const code = 'const q = "SELECT * FROM users WHERE email = " + userEmail;';
+  const code = 'const q = "SELECT * FROM users WHERE email = " + userEmail; db.query(q);';
   const res = analyzeCode(code);
   const issue = res.issues.find(i => i.rule === 'SEC-SQLI');
   assert(issue !== undefined, 'Detects string concatenation SQL injection');
@@ -167,6 +167,23 @@ const userRole = "admin";
   const res = analyzeCode(code);
   const sqlIssues = res.issues.filter(i => i.rule === 'SEC-SQLI');
   assert(sqlIssues.length === 0, 'Static SQL query without dynamic input does NOT trigger SEC-SQLI');
+}
+
+{
+  const res = analyzeCode('const preview = `SELECT * FROM users WHERE id = ${id}`;');
+  assert(!res.issues.some(i => i.rule === 'SEC-SQLI'), 'SQL-like display text without an execution sink is ignored');
+}
+{
+  const res = analyzeCode('db.query("SELECT * FROM users WHERE id = $1", [req.params.id]);');
+  assert(!res.issues.some(i => i.rule === 'SEC-SQLI'), 'Parameterized SQL is ignored');
+}
+{
+  const res = analyzeCode('const id = Number(req.params.id); db.query(`SELECT * FROM users WHERE id = ${id}`);');
+  assert(!res.issues.some(i => i.rule === 'SEC-SQLI'), 'Numeric-coerced SQL interpolation is ignored');
+}
+{
+  const res = analyzeCode('const id = req.params.id; db.query(`SELECT * FROM users WHERE id = ${id}`);');
+  assert(res.issues.some(i => i.rule === 'SEC-SQLI' && i.severity === 'CRITICAL'), 'Request-derived SQL interpolation is critical');
 }
 
 // -------------------------------------------------------------

@@ -49,14 +49,20 @@ function isMethodCall(node, method) {
     !node.callee.computed && node.callee.property.name === method;
 }
 
-function hasMissingListenerCleanup(callbackPath) {
-  let subscribes = false;
+function hasMissingListenerCleanup(callbackPath, code) {
+  const subscriptions = [];
+  const signature = (node) => {
+    const target = getNodeSource(code, node.callee.object);
+    const event = getNodeSource(code, node.arguments[0]);
+    const handler = getNodeSource(code, node.arguments[1]);
+    return `${target}|${event}|${handler}`;
+  };
   callbackPath.traverse({
     CallExpression(callPath) {
-      if (isMethodCall(callPath.node, 'addEventListener')) subscribes = true;
+      if (isMethodCall(callPath.node, 'addEventListener')) subscriptions.push(signature(callPath.node));
     },
   });
-  if (!subscribes) return false;
+  if (subscriptions.length === 0) return false;
 
   const body = callbackPath.get('body');
   if (!body.isBlockStatement()) return true;
@@ -64,13 +70,13 @@ function hasMissingListenerCleanup(callbackPath) {
     if (!statement.isReturnStatement()) continue;
     const cleanup = statement.get('argument');
     if (!cleanup?.isFunction()) continue;
-    let removes = false;
+    const removals = new Set();
     cleanup.traverse({
       CallExpression(callPath) {
-        if (isMethodCall(callPath.node, 'removeEventListener')) removes = true;
+        if (isMethodCall(callPath.node, 'removeEventListener')) removals.add(signature(callPath.node));
       },
     });
-    if (removes) return false;
+    if (subscriptions.every((entry) => removals.has(entry))) return false;
   }
   return true;
 }
@@ -213,6 +219,15 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
     // Track .map((item, index) => ...)
     CallExpression(path) {
       const callee = path.node.callee;
+      if (isMethodCall(path.node, 'forEach') && path.node.arguments[0]?.async) {
+        const line = path.node.loc?.start.line || 1;
+        const meta = RULE_REGISTRY['QUAL-ASYNC-FOREACH'];
+        addIssue({ id: `${meta.rule}-${line}`, rule: meta.rule, source: 'STATIC',
+          severity: meta.defaultSeverity, category: meta.category, ruleClass: meta.ruleClass,
+          title: meta.title, line, endLine: path.node.loc?.end.line || line,
+          description: meta.description, recommendation: meta.recommendation,
+          confidence: meta.confidence, impactWeight: meta.impactWeight, fix: null });
+      }
 
       // React Rules: useEffect
       if (isEffectCall(callee)) {
@@ -226,7 +241,7 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         ) {
           const callbackBody = effectCallback.body;
           // React Rule: Missing event listener cleanup
-          if (hasMissingListenerCleanup(path.get('arguments.0'))) {
+          if (hasMissingListenerCleanup(path.get('arguments.0'), code)) {
               const meta = RULE_REGISTRY['PERF-EFFECT-CLEANUP'];
               addIssue({
                 id: `PERF-EFFECT-CLEANUP-${line}`,

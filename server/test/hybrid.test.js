@@ -29,8 +29,10 @@ async function runHybridTests() {
 }`;
 
   const vulnerableCode = `const JWT_SECRET = "super_production_secret_key_889900";
-function queryUser(userId) {
+function queryUser(req) {
+  const userId = req.params.id;
   const q = \`SELECT * FROM users WHERE id = \${userId}\`;
+  db.query(q);
   return q;
 }`;
 
