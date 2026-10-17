@@ -4,13 +4,7 @@ import { analyzeSecurity } from './securityAnalyzer.js';
 import { analyzeQuality } from './qualityAnalyzer.js';
 import { countLines, verifyFixSnippet } from '../utils/sourceUtils.js';
 import { computeCodeHash } from '../utils/codeHasher.js';
-
-const SEVERITY_DEDUCTIONS = {
-  CRITICAL: 25,
-  HIGH: 15,
-  MEDIUM: 8,
-  LOW: 3,
-};
+import { calculateScores } from '../services/scoreCalculator.js';
 
 const SEVERITY_ORDER = {
   CRITICAL: 1,
@@ -85,34 +79,14 @@ function buildAnalysisResult(issues, totalLines, baseMetadata, metrics = null) {
     return (a.id || '').localeCompare(b.id || '');
   });
 
-  let overallScore = 100;
-  let securityScore = 100;
-  let qualityScore = 100;
-  let performanceScore = 100;
-  let complexityScore = 100;
-
-  sortedIssues.forEach((issue) => {
-    const penalty = SEVERITY_DEDUCTIONS[issue.severity] || 5;
-    overallScore -= penalty;
-    if (issue.category === 'SECURITY') {
-      securityScore -= penalty;
-    } else if (issue.category === 'PERFORMANCE') {
-      performanceScore -= penalty;
-    } else if (issue.category === 'COMPLEXITY') {
-      complexityScore -= penalty;
-    } else {
-      qualityScore -= penalty;
-    }
-  });
+  const { score, breakdown } = calculateScores(
+    sortedIssues,
+    sortedIssues.some((issue) => issue.rule === 'SYNTAX')
+  );
 
   return {
-    score: Math.max(0, Math.min(100, Math.round(overallScore))),
-    breakdown: {
-      security: Math.max(0, Math.min(100, Math.round(securityScore))),
-      quality: Math.max(0, Math.min(100, Math.round(qualityScore))),
-      performance: Math.max(0, Math.min(100, Math.round(performanceScore))),
-      complexity: Math.max(0, Math.min(100, Math.round(complexityScore))),
-    },
+    score,
+    breakdown,
     metrics: metrics || {
       lines: totalLines,
       functions: 0,

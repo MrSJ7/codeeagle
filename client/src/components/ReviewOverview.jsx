@@ -1,255 +1,139 @@
 import React from 'react';
-import {
-  FileCode,
-  AlertTriangle,
-  CheckCircle2,
-  ArrowRight,
-  Shield,
-  Zap,
-  Cpu,
-  Layers,
-} from 'lucide-react';
-import { Button } from './ui/Button.jsx';
-import { SeverityBadge } from './SeverityBadge.jsx';
+import { ArrowUpRight, Check, FileCode2, ShieldAlert } from 'lucide-react';
+
+const CATEGORIES = [
+  ['security', 'Security'],
+  ['quality', 'Correctness & quality'],
+  ['performance', 'Performance'],
+  ['complexity', 'Complexity'],
+];
 
 export function ReviewOverview({
   reviewData,
-  filename = 'auth.js',
+  filename = 'source.js',
   language = 'JavaScript',
-  lineCount = 27,
+  lineCount = 0,
   onNavigateFindings,
   onSelectIssue,
   className = '',
 }) {
   if (!reviewData) return null;
-
   const { score = 100, breakdown = {}, issues = [], metadata = {} } = reviewData;
-  const normScore = Math.max(0, Math.min(100, Math.round(score)));
+  const scoreValue = Math.max(0, Math.min(100, Math.round(score)));
+  const topIssues = issues.slice(0, 5);
+  const aiUsed = metadata.aiStatus === 'USED';
+  const verdict = issues.length === 0
+    ? 'No findings in this review'
+    : issues.some((issue) => issue.severity === 'CRITICAL')
+      ? 'Critical findings need review'
+      : issues.some((issue) => issue.severity === 'HIGH')
+        ? 'Prioritize these findings'
+        : 'Review the suggested improvements';
 
-  const totalFindings = issues.length;
-  const criticalIssues = issues.filter((i) => i.severity === 'CRITICAL');
-  const highIssues = issues.filter((i) => i.severity === 'HIGH');
-  const otherIssues = issues.filter(
-    (i) => i.severity !== 'CRITICAL' && i.severity !== 'HIGH'
-  );
-
-  const getVerdict = (s) => {
-    if (s === 100) return 'Ready to ship';
-    if (s >= 90) return 'Minor issues';
-    if (s >= 70) return 'Needs attention';
-    if (s >= 50) return 'Significant issues';
-    return 'High risk';
+  const openIssue = (issue) => {
+    onSelectIssue?.(issue.id);
+    onNavigateFindings?.();
   };
 
-  const verdict = getVerdict(normScore);
-
-  // Top blockers to show in "What's stopping this"
-  const blockers = [...criticalIssues, ...highIssues, ...otherIssues];
-  const topBlocker = blockers[0] || null;
-
   return (
-    <div
-      className={`h-full overflow-y-auto bg-slate-50 dark:bg-obsidian-950 p-6 sm:p-10 font-sans select-none text-slate-900 dark:text-obsidian-50 ${className}`}
-    >
-      <div className="max-w-3xl mx-auto space-y-8">
-        {/* 1. Review Header Briefing */}
-        <div className="border-b border-slate-200 dark:border-obsidian-800 pb-6">
-          <div className="flex items-center justify-between gap-4 mb-3 flex-wrap">
-            <div className="flex items-center gap-2 font-mono text-xs text-slate-500 dark:text-obsidian-400">
-              <FileCode className="w-4 h-4 text-blue-600 dark:text-brand-500" />
-              <span className="font-bold text-slate-900 dark:text-obsidian-100 text-sm">{filename}</span>
-              <span className="text-slate-300 dark:text-obsidian-600 font-sans">•</span>
-              <span>{language}</span>
-              <span className="text-slate-300 dark:text-obsidian-600 font-sans">•</span>
-              <span>{lineCount} lines</span>
+    <div className={`h-full overflow-y-auto bg-[#f6f5f2] dark:bg-[#0c0d0d] text-slate-900 dark:text-[#ecece7] ${className}`}>
+      <div className="max-w-6xl mx-auto px-5 sm:px-10 py-8 sm:py-12 space-y-10">
+        <header className="grid lg:grid-cols-[1fr_auto] gap-8 items-end border-b border-slate-200 dark:border-[#292b2b] pb-10">
+          <div className="space-y-5">
+            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-slate-500 dark:text-[#aaa9a2]">
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+              Review report
             </div>
-
-            <SeverityBadge severity={totalFindings === 0 ? 'RESOLVED' : 'CRITICAL'} />
-          </div>
-
-          <div className="flex items-baseline gap-4 flex-wrap mt-3">
-            <div className="flex items-baseline gap-1.5 px-3.5 py-1.5 rounded-[5px] bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-750 font-mono shadow-xs">
-              <span
-                className={`text-2xl font-black ${
-                  normScore >= 80
-                    ? 'text-emerald-600 dark:text-emerald-400'
-                    : normScore >= 50
-                    ? 'text-amber-600 dark:text-amber-400'
-                    : 'text-red-600 dark:text-red-400'
-                }`}
-              >
-                {normScore}
-              </span>
-              <span className="text-xs text-slate-400 dark:text-obsidian-500 font-normal">/ 100</span>
-            </div>
-
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-obsidian-50 tracking-tight">
+              <h1 className="text-[clamp(2rem,5vw,4.2rem)] leading-[1.04] tracking-[-0.055em] font-semibold text-balance max-w-[16ch]">
                 {verdict}
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-obsidian-400 font-medium">
-                {totalFindings === 0
-                  ? 'Zero vulnerabilities or regressions detected.'
-                  : `${totalFindings} ${
-                      totalFindings === 1 ? 'finding needs' : 'findings need'
-                    } attention before merging.`}
+              </h1>
+              <p className="mt-4 text-sm sm:text-base text-slate-600 dark:text-[#a8a9a3] max-w-2xl leading-relaxed">
+                {issues.length === 0
+                  ? 'The enabled checks found no issues in this file. Run tests and review behavior before shipping.'
+                  : `${issues.length} ${issues.length === 1 ? 'finding' : 'findings'} in ${filename}, ordered by severity. Open a finding to inspect evidence and a suggested next step.`}
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* 2. What's Stopping This (The Blocker Checklist) */}
-        {totalFindings > 0 ? (
-          <div>
-            <div className="flex items-center justify-between gap-2 mb-3">
-              <h3 className="text-xs font-mono font-bold text-slate-700 dark:text-obsidian-300">
-                What's Stopping This Code
-              </h3>
-              <span className="text-xs text-slate-400 dark:text-obsidian-500 font-mono">
-                {totalFindings} issues ranked by risk
-              </span>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500 dark:text-[#9c9d97] font-mono">
+              <span className="inline-flex items-center gap-1.5"><FileCode2 className="w-3.5 h-3.5" />{filename}</span>
+              <span>{language}</span>
+              <span>{lineCount} lines</span>
+              <span className="text-slate-700 dark:text-[#c8c9c3]">{aiUsed ? 'Static + AI checks' : 'Static checks only'}</span>
             </div>
+          </div>
+          <div className="lg:text-right">
+            <div className="text-[11px] font-mono uppercase tracking-[0.17em] text-slate-500 dark:text-[#9c9d97] mb-1">Review score</div>
+            <div className="font-mono tabular-nums tracking-[-0.08em] leading-none text-[clamp(4rem,8vw,7rem)] font-semibold">
+              {scoreValue}<span className="text-xl tracking-normal text-slate-400 dark:text-[#696b68]">/100</span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-[#9c9d97] mt-2">A weighted summary of detected issues</p>
+          </div>
+        </header>
 
-            <div className="divide-y divide-slate-200 dark:divide-obsidian-800 rounded-[8px] border border-slate-200 dark:border-obsidian-800 bg-white dark:bg-obsidian-900 shadow-xs overflow-hidden">
-              {blockers.map((issue, idx) => (
-                <div
-                  key={issue.id}
-                  onClick={() => {
-                    if (onSelectIssue) onSelectIssue(issue.id);
-                    if (onNavigateFindings) onNavigateFindings();
-                  }}
-                  className="p-4 hover:bg-slate-50 dark:hover:bg-obsidian-850 transition-colors flex items-center justify-between gap-4 cursor-pointer group"
-                >
-                  <div className="flex items-start gap-3 min-w-0">
-                    <span className="text-xs font-mono font-bold text-slate-400 dark:text-obsidian-500 mt-0.5 w-4 shrink-0">
-                      0{idx + 1}
-                    </span>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span
-                          className={`w-2 h-2 rounded-full shrink-0 ${
-                            issue.severity === 'CRITICAL'
-                              ? 'bg-red-500'
-                              : issue.severity === 'HIGH'
-                              ? 'bg-orange-500'
-                              : issue.severity === 'MEDIUM'
-                              ? 'bg-amber-500'
-                              : 'bg-slate-400 dark:bg-obsidian-400'
-                          }`}
-                        />
-                        <span className="text-sm font-semibold text-slate-900 dark:text-obsidian-100 group-hover:text-blue-600 dark:group-hover:text-brand-400 transition-colors truncate">
-                          {issue.title}
-                        </span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[3px] bg-slate-100 dark:bg-obsidian-800 text-slate-700 dark:text-obsidian-300 border border-slate-200 dark:border-obsidian-700">
-                          {issue.category}
-                        </span>
-                      </div>
-
-                      <div className="text-sm text-slate-600 dark:text-obsidian-400 truncate max-w-xl font-sans">
-                        {issue.description}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-xs font-mono text-slate-500 dark:text-obsidian-400">
-                      line {issue.line}
-                    </span>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-400 dark:text-obsidian-500 group-hover:text-blue-600 dark:group-hover:text-brand-400 transition-transform group-hover:translate-x-0.5" />
-                  </div>
+        <section aria-label="Review score breakdown" className="grid md:grid-cols-4 gap-3">
+          {CATEGORIES.map(([key, label]) => {
+            const value = Math.max(0, Math.min(100, breakdown[key] ?? 100));
+            return (
+              <div key={key} className="bg-white dark:bg-[#151716] border border-slate-200 dark:border-[#2a2c2b] rounded-lg p-5">
+                <div className="flex justify-between items-start gap-3">
+                  <h2 className="text-sm font-medium">{label}</h2>
+                  <span className="font-mono tabular-nums text-sm text-slate-600 dark:text-[#b9bab4]">{value}</span>
                 </div>
-              ))}
+                <div className="h-1.5 bg-slate-100 dark:bg-[#303330] rounded-full mt-8 overflow-hidden" role="meter" aria-label={`${label} score`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={value}>
+                  <div className={`h-full rounded-full ${value < 60 ? 'bg-red-500' : value < 85 ? 'bg-orange-500' : 'bg-emerald-500'}`} style={{ width: `${value}%` }} />
+                </div>
+              </div>
+            );
+          })}
+        </section>
+
+        <section aria-labelledby="findings-title" className="grid lg:grid-cols-[minmax(0,1fr)_17rem] gap-8">
+          <div>
+            <div className="flex items-end justify-between gap-4 mb-4">
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-orange-600 dark:text-orange-400 mb-2">Next steps</p>
+                <h2 id="findings-title" className="text-2xl sm:text-3xl font-semibold tracking-[-0.04em]">Findings to inspect</h2>
+              </div>
+              <span className="font-mono text-xs text-slate-500 dark:text-[#9c9d97]">{issues.length} total</span>
             </div>
+            {topIssues.length ? (
+              <div className="border-t border-slate-200 dark:border-[#2a2c2b]">
+                {topIssues.map((issue, index) => (
+                  <button key={issue.id} type="button" onClick={() => openIssue(issue)}
+                    className="w-full group text-left flex items-start gap-4 py-4 border-b border-slate-200 dark:border-[#2a2c2b] hover:bg-slate-100/70 dark:hover:bg-[#171918] focus-visible:outline-2 focus-visible:outline-orange-500 transition-colors">
+                    <span className="font-mono text-xs text-slate-400 dark:text-[#858780] pt-1 w-7 shrink-0">{String(index + 1).padStart(2, '0')}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm sm:text-base font-semibold">{issue.title}</span>
+                        <span className={`text-[10px] font-mono uppercase tracking-wide ${issue.severity === 'CRITICAL' ? 'text-red-600 dark:text-red-400' : issue.severity === 'HIGH' ? 'text-orange-600 dark:text-orange-400' : 'text-slate-500 dark:text-[#a4a6a0]'}`}>{issue.severity}</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-[#a8a9a3] mt-1 line-clamp-2">{issue.description}</p>
+                      <span className="text-xs font-mono text-slate-500 dark:text-[#8e908a] mt-2 inline-block">Line {issue.line} · {issue.source === 'AI' ? 'AI suggestion' : 'Static rule'}</span>
+                    </div>
+                    <ArrowUpRight className="w-4 h-4 shrink-0 text-slate-400 group-hover:text-orange-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                ))}
+                {issues.length > topIssues.length && (
+                  <button type="button" onClick={onNavigateFindings} className="mt-4 text-sm font-semibold text-orange-600 dark:text-orange-400 hover:underline focus-visible:outline-2 focus-visible:outline-orange-500">
+                    View all {issues.length} findings →
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="border border-slate-200 dark:border-[#2a2c2b] rounded-lg bg-white dark:bg-[#151716] p-6 flex items-start gap-4">
+                <Check className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div><h3 className="font-semibold">No findings detected</h3><p className="text-sm text-slate-600 dark:text-[#a8a9a3] mt-1">This result reflects the enabled checks and the single file reviewed.</p></div>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="p-8 rounded-[8px] border border-slate-200 dark:border-obsidian-800 bg-white dark:bg-obsidian-900 text-center shadow-xs">
-            <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-slate-900 dark:text-obsidian-100 mb-1">
-              Code is ready to ship
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-obsidian-400 max-w-sm mx-auto leading-relaxed">
-              No security vulnerabilities, credential leaks, or performance bottlenecks were detected.
+          <aside className="bg-[#edeae3] dark:bg-[#1a1c1a] rounded-lg p-5 h-fit border border-slate-200 dark:border-[#30332f]">
+            <ShieldAlert className="w-5 h-5 text-orange-600 dark:text-orange-400 mb-4" />
+            <h3 className="font-semibold text-sm">How to use this report</h3>
+            <p className="text-sm leading-relaxed text-slate-600 dark:text-[#aaa9a2] mt-2">
+              Findings are leads, not proof. Check each one in context. Preview edits, then run your tests after applying a fix.
             </p>
-          </div>
-        )}
-
-        {/* 3. Review Signals (Quality Breakdown) */}
-        <div>
-          <h3 className="text-xs font-mono font-bold text-slate-700 dark:text-obsidian-300 mb-3">
-            Score breakdown
-          </h3>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
-            <div className="p-3.5 rounded-[6px] bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-800 shadow-xs">
-              <div className="text-slate-500 dark:text-obsidian-400 text-[11px] font-medium mb-1">
-                Security
-              </div>
-              <div
-                className={`text-lg font-bold ${
-                  (breakdown.security ?? 100) >= 80
-                    ? 'text-emerald-600 dark:text-emerald-400'
-                    : (breakdown.security ?? 100) >= 50
-                    ? 'text-amber-600 dark:text-amber-400'
-                    : 'text-red-600 dark:text-red-400'
-                }`}
-              >
-                {breakdown.security ?? 100}
-                <span className="text-xs text-slate-400 dark:text-obsidian-500 font-normal"> / 100</span>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-[6px] bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-800 shadow-xs">
-              <div className="text-slate-500 dark:text-obsidian-400 text-[11px] font-medium mb-1">
-                Quality
-              </div>
-              <div className="text-lg font-bold text-slate-900 dark:text-obsidian-100">
-                {breakdown.quality ?? 100}
-                <span className="text-xs text-slate-400 dark:text-obsidian-500 font-normal"> / 100</span>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-[6px] bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-800 shadow-xs">
-              <div className="text-slate-500 dark:text-obsidian-400 text-[11px] font-medium mb-1">
-                Performance
-              </div>
-              <div className="text-lg font-bold text-slate-900 dark:text-obsidian-100">
-                {breakdown.performance ?? 100}
-                <span className="text-xs text-slate-400 dark:text-obsidian-500 font-normal"> / 100</span>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-[6px] bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-800 shadow-xs">
-              <div className="text-slate-500 dark:text-obsidian-400 text-[11px] font-medium mb-1">
-                Complexity
-              </div>
-              <div className="text-lg font-bold text-slate-900 dark:text-obsidian-100">
-                {breakdown.complexity ?? 100}
-                <span className="text-xs text-slate-400 dark:text-obsidian-500 font-normal"> / 100</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 4. Obvious Primary Action */}
-        {totalFindings > 0 && (
-          <div className="pt-4 flex items-center justify-between gap-4 flex-wrap border-t border-slate-200 dark:border-obsidian-800">
-            <div className="text-xs text-slate-500 dark:text-obsidian-400 font-sans">
-              Proceed to inspect findings and apply verified fixes:
-            </div>
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => {
-                if (topBlocker && onSelectIssue) onSelectIssue(topBlocker.id);
-                if (onNavigateFindings) onNavigateFindings();
-              }}
-              rightIcon={<ArrowRight className="w-4 h-4" />}
-            >
-              View Findings ({totalFindings})
-            </Button>
-          </div>
-        )}
+          </aside>
+        </section>
       </div>
     </div>
   );

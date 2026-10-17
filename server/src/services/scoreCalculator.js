@@ -8,7 +8,9 @@
  *    - HIGH: -15 points
  *    - MEDIUM: -8 points
  *    - LOW: -3 points
- * 3. Confidence Multipliers:
+ * 3. Impact weights from the rule catalog prevent style-only findings from
+ *    counting as much as correctness or security defects.
+ * 4. Confidence Multipliers:
  *    - STATIC findings (trusted baseline): multiplier = 1.00
  *    - AI findings (calibrated by validated confidence):
  *      * confidence < 0.60   => 0.50
@@ -52,7 +54,10 @@ export function getConfidenceMultiplier(issue) {
 export function calculateIssueDeduction(issue) {
   const base = SEVERITY_DEDUCTIONS[issue.severity] || 3;
   const multiplier = getConfidenceMultiplier(issue);
-  return Math.round(base * multiplier);
+  const impact = Number.isFinite(issue.impactWeight)
+    ? Math.max(0.1, Math.min(1, issue.impactWeight))
+    : 1;
+  return Math.max(1, Math.round(base * multiplier * impact));
 }
 
 /**

@@ -17,11 +17,11 @@ CodeLens solves this by combining both paradigms: **deterministic static analysi
 ## 2. Features
 
 - **Dual-Engine Review Pipeline**: Deterministic Babel AST analysis runs first and fast; optional Google Gemini semantic analysis runs concurrently.
-- **13 Registered Deterministic Rules**: Built-in rules for hardcoded secrets, SQL injection, `eval()`, prototype pollution, `useEffect` dependencies, memory leaks, and function complexity.
+- **Deterministic Rule Catalog**: Built-in checks for hardcoded secrets, SQL injection, `eval()`, `useEffect` dependencies, event-listener cleanup, and function complexity.
 - **Babel AST Metrics**: Measures lines of code, function counts, branch counts, cyclomatic complexity, and maximum control-flow nesting depth.
 - **Defensive AI Guardrails**: Gemini outputs are constrained to strict JSON schemas, validated against physical source line counts, and checked for verbatim fix snippets.
 - **Deterministic Deduplication & Scoring**: Static rules always supersede AI findings on duplicate lines. Scores (0–100) and category breakdowns are calculated mathematically from merged issues.
-- **Verified Safe Patch Engine**: One-click patch application with SHA-256 stale-source protection, verbatim snippet matching, single-occurrence enforcement, and visual diff previews.
+- **Verified Patch Preview**: Suggested edits pass SHA-256 stale-source checks and exact snippet verification before a visual preview and explicit application.
 - **Automated Post-Patch Re-Analysis**: Applying a patch immediately triggers a server-side re-audit to verify that the target issue was resolved and no new regressions were introduced.
 - **Immutable Review History**: Every audit is persisted as an independent record in MongoDB (with automatic in-memory fallback), allowing side-by-side pre-patch vs. post-patch inspection.
 - **Production Deployment Ready**: Configured for Vercel (frontend SPA) and Render (backend REST API) with strict CORS allowlists, security headers, and health probes.
@@ -146,19 +146,19 @@ Deterministic static analysis runs entirely in-memory using Babel AST parsing.
   $$\text{Complexity} = 1 + \sum (\text{decision points})$$
 - **Maximum Nesting Depth**: Deepest block nesting level inside any single function.
 
-### Centralized Static Rule Catalog (13 Rules)
-All rules are cataloged in `server/src/analyzers/ruleRegistry.js` and queryable via `GET /api/rules`:
+### Centralized Static Rule Catalog
+Rules are cataloged in `server/src/analyzers/ruleRegistry.js` and queryable via `GET /api/rules`. Selected rules:
 
 | Rule ID | Category | Severity | What It Detects | Auto Fix Supported? |
 | :--- | :--- | :--- | :--- | :--- |
-| `SEC-SECRET` | SECURITY | **CRITICAL** | Hardcoded credentials (AWS keys, JWT secrets, private tokens) | **Yes** (replaces with `process.env`) |
+| `SEC-SECRET` | SECURITY | **CRITICAL** | Hardcoded credentials (AWS keys, JWT secrets, private tokens) | No; rotation and server-side migration require review |
 | `SEC-SQLI` | SECURITY | **CRITICAL** | Raw SQL queries with untrusted string concatenation/templates | No (Advisory only) |
 | `SEC-EVAL` | SECURITY | **CRITICAL** | Direct execution of arbitrary code via `eval()` | No (Advisory only) |
 | `SEC-FN-CTOR` | SECURITY | **HIGH** | Dynamic code compilation via the `Function` constructor | No (Advisory only) |
 | `SEC-DANGEROUS-HTML` | SECURITY | **HIGH** | Potential Cross-Site Scripting (XSS) via `dangerouslySetInnerHTML` | No (Advisory only) |
 | `COMP-HIGH` | COMPLEXITY | **HIGH** | Function cyclomatic complexity exceeding threshold (> 10) | No (Advisory only) |
 | `COMP-NESTING` | COMPLEXITY | **HIGH** | Control-flow block nesting exceeding depth threshold (> 4) | No (Advisory only) |
-| `REACT-HOOK-DEPS` | QUALITY | **HIGH** | Missing variables in React `useEffect` dependency array | **Yes** (appends missing dependencies) |
+| `REACT-HOOK-DEPS` | QUALITY | **HIGH** | Missing reactive bindings in React `useEffect` dependency arrays | No; changing effect dependencies can alter behavior |
 | `PERF-EFFECT-CLEANUP` | PERFORMANCE | **HIGH** | Missing event listener / timer cleanup inside `useEffect` | No (Advisory only) |
 | `QUAL-EMPTY-CATCH` | QUALITY | **MEDIUM** | Empty `catch` blocks that silently swallow exceptions | No (Advisory only) |
 | `QUAL-LENGTH` | QUALITY | **LOW** | Function length exceeding maintainability limit (> 50 lines) | No (Advisory only) |
@@ -199,7 +199,7 @@ CodeLens enforces a multi-tiered validation pipeline:
 
 ## 9. Scoring
 
-CodeLens uses an **objective, deterministic scoring algorithm**. Gemini **never** calculates or overrides the final score.
+CodeLens uses a deterministic score to summarize detected findings. It is not a proof of correctness; Gemini never calculates or overrides it.
 
 ### Score Formula
 ```text
@@ -211,6 +211,8 @@ Overall Score = max(0, min(100, 100 - sum(Issue Penalties)))
 - **HIGH**: -15 points
 - **MEDIUM**: -8 points
 - **LOW**: -3 points
+
+Each base deduction is multiplied by the rule's impact weight (clamped to 0.1–1.0), then rounded with a minimum one-point deduction. Static and hybrid reviews use the same calculation.
 
 ### AI Confidence Multipliers
 AI findings are probabilistic; their penalties are scaled by the model's reported confidence score:
@@ -333,7 +335,7 @@ npm run dev
 
 ## 15. Testing
 
-CodeLens is thoroughly verified by **671 automated tests across 13 test suites**, covering unit, integration, contract, failure mode, and deployment smoke scenarios:
+CodeLens includes automated analyzer, patch, integration, and frontend contract tests. Run the maintained suite with `npm test`:
 
 ```bash
 # Run ALL 13 automated test suites
@@ -424,7 +426,7 @@ Potential future extensions outside the current college project scope:
 
 ```text
 Core functionality:      Complete
-Testing:                 Complete (671 passing tests across 13 suites)
+Testing:                 Run `npm test` and the client production build
 Deployment preparation:  Complete (Render, Vercel, Atlas configurations verified)
 Documentation:           Complete (README, VIVA, DEMO, Walkthrough)
 Authentication:          Out of scope (Single-user educational project)

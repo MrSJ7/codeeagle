@@ -153,15 +153,15 @@ export function CodeEditor({
       {/* Editor Header Bar */}
       <div className="h-10 px-4 bg-slate-50 dark:bg-obsidian-950 border-b border-slate-200 dark:border-obsidian-800 flex items-center justify-between text-xs shrink-0 select-none">
         {/* Left: File metadata */}
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 font-mono text-slate-900 dark:text-obsidian-100 font-semibold">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-1.5 font-mono text-slate-900 dark:text-obsidian-100 font-semibold min-w-0">
             <FileCode className="w-3.5 h-3.5 text-blue-600 dark:text-brand-500" />
-            <span>{filename}</span>
+            <span className="truncate">{filename}</span>
           </div>
-          <span className="text-slate-300 dark:text-obsidian-600">•</span>
-          <span className="text-[11px] font-mono text-slate-500 dark:text-obsidian-400">{language}</span>
-          <span className="text-slate-300 dark:text-obsidian-600">•</span>
-          <span className="text-[11px] font-mono text-slate-500 dark:text-obsidian-400">{lineCount} lines</span>
+          <span className="hidden sm:inline text-slate-300 dark:text-obsidian-600">•</span>
+          <span className="hidden sm:inline text-[11px] font-mono text-slate-500 dark:text-obsidian-400">{language}</span>
+          <span className="hidden sm:inline text-slate-300 dark:text-obsidian-600">•</span>
+          <span className="hidden sm:inline text-[11px] font-mono text-slate-500 dark:text-obsidian-400">{lineCount} lines</span>
 
           {/* Active Highlight Badge & Jump */}
           {activeStartLine && (
@@ -173,7 +173,7 @@ export function CodeEditor({
                   textareaRef.current.scrollTo({ top: targetScroll, behavior: 'smooth' });
                 }
               }}
-              className={`flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-0.5 rounded-[4px] border ml-2 cursor-pointer transition-colors shadow-xs ${highlightStyles.badge}`}
+              className={`hidden md:flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-0.5 rounded-[4px] border ml-2 cursor-pointer transition-colors shadow-xs ${highlightStyles.badge}`}
               title="Click to jump directly to this issue"
             >
               <Hash className="w-3 h-3" />
@@ -188,9 +188,9 @@ export function CodeEditor({
         </div>
 
         {/* Right: Review status badge + Example preset selector */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Review Status Pill */}
-          <div className="text-[11px] font-medium flex items-center gap-1.5 font-mono">
+          <div className="hidden sm:flex text-[11px] font-medium items-center gap-1.5 font-mono">
             {isStale ? (
               <span className="flex items-center gap-1 text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded-[4px] border border-amber-800/40">
                 <AlertTriangle className="w-3 h-3 text-amber-400" />
@@ -273,12 +273,12 @@ export function CodeEditor({
               {hasCopied ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-emerald-500" />
-                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">Copied</span>
+                  <span className="hidden sm:inline text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">Copied</span>
                 </>
               ) : (
                 <>
                   <Copy className="w-3.5 h-3.5 opacity-60" />
-                  <span className="text-[11px]">Copy</span>
+                  <span className="hidden sm:inline text-[11px]">Copy</span>
                 </>
               )}
             </button>

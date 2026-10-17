@@ -54,7 +54,7 @@ export function PatchPreview({
             </div>
             <div>
               <h3 id="patch-preview-title" className="text-base font-bold text-slate-900 dark:text-obsidian-100 flex items-center gap-2">
-                <span>Preview AI Patch</span>
+                <span>Review suggested edit</span>
                 {issue.rule && (
                   <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[3px] bg-blue-50 dark:bg-obsidian-800 text-blue-600 dark:text-brand-400 border border-blue-200 dark:border-obsidian-700">
                     {issue.rule}
@@ -84,7 +84,7 @@ export function PatchPreview({
           <div className="flex items-center gap-2 px-3 py-2 rounded-[6px] bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-mono">
             <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>
-              Lines {startLine}{endLine !== startLine ? `–${endLine}` : ''} · AI patch verified against current source.
+              Lines {startLine}{endLine !== startLine ? `–${endLine}` : ''} · Source match verified. Check the behavior before applying.
             </span>
           </div>
 

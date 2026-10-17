@@ -140,18 +140,15 @@ async function runIntegration() {
       body: { reviewId }
     });
     await projectController.applyPatch(patchCtx.req, patchCtx.res, (err) => { throw err; });
-    assert(patchCtx.getStatus() === 200, "Apply patch returned HTTP 200");
-    const patchData = patchCtx.getData();
-    assert(patchData.success === true, "Patch success is true");
-    assert(patchData.diff.resolvedCount === 1, "Diff records 1 resolved issue");
-    assert(patchData.scoreAfter > patchData.scoreBefore, "Score improved after patch");
+    assert(patchCtx.getStatus() === 422, "Unverified secret patch is rejected");
+    assert(patchCtx.getData().error.code === 'INVALID_FIX', "Controller reports why the patch was rejected");
   }
 
   // 7. Get Project Review History
   const histCtx = mockReqRes({ params: { projectId } });
   await projectController.getProjectReviews(histCtx.req, histCtx.res, (err) => { throw err; });
   assert(histCtx.getStatus() === 200, "GET reviews history returned HTTP 200");
-  assert(histCtx.getData().reviews.length >= 2, "History holds multiple review snapshots");
+  assert(histCtx.getData().reviews.length >= 1, "History keeps the initial review after a rejected patch");
 
   // 8. Generate Automated Refactor for Finding
   const dbFile = reviewData.review.files.find(f => f.path.includes("db.js"));
@@ -164,9 +161,8 @@ async function runIntegration() {
     await projectController.refactorFinding(refactorCtx.req, refactorCtx.res, (err) => { throw err; });
     assert(refactorCtx.getStatus() === 200, "Refactor finding returned HTTP 200");
     const refactorData = refactorCtx.getData();
-    assert(refactorData.success === true, "Refactor generation succeeded");
-    assert(typeof refactorData.replacement === "string", "Refactor returned replacement string");
-    assert(typeof refactorData.explanation === "string", "Refactor returned explanation");
+    assert(refactorData.success === false, "No fabricated fallback edit is returned without AI");
+    assert(typeof refactorData.error?.message === "string", "Refactor explains why no edit is available");
   }
 
   console.log("\n=== Integration Test Results: " + passed + " passed, " + failed + " failed ===\n");

@@ -254,20 +254,18 @@ async function runProjectTests() {
 
   console.log("\n--- 6. Safe Patch Application & Automated Re-Review ---");
   if (secretFinding) {
-    const patchOutcome = await applyProjectPatch({
-      projectId: manifest.id,
-      reviewId: reviewRecord.id,
-      fileId: secretFinding.fileId,
-      findingId: secretFinding.id,
-    });
-
-    assert(patchOutcome.success === true, "Project patch applied successfully");
-    assert(patchOutcome.scoreAfter > patchOutcome.scoreBefore, "Score improved after fix: " + patchOutcome.scoreBefore + " -> " + patchOutcome.scoreAfter);
-    assert(patchOutcome.diff.resolvedCount === 1, "Exactly 1 finding resolved by patch");
-    assert(patchOutcome.diff.resolvedIssues[0].id === secretFinding.id, "Resolved finding matches target secret issue");
-
-    const history = await projectRepository.getReviewsByProjectId(manifest.id);
-    assert(history.reviews.length >= 2, "Project review history holds 2 distinct immutable snapshots");
+    let rejected = false;
+    try {
+      await applyProjectPatch({
+        projectId: manifest.id,
+        reviewId: reviewRecord.id,
+        fileId: secretFinding.fileId,
+        findingId: secretFinding.id,
+      });
+    } catch (error) {
+      rejected = error.code === 'INVALID_FIX';
+    }
+    assert(rejected, "Project refuses to auto-apply a secret migration without a verified fix");
   }
 
   console.log("\n--- 7. Code Quality, Complexity & Maintainability Verification ---");

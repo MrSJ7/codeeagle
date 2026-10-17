@@ -294,8 +294,15 @@ async function runPatchTests() {
   const multiPatch = applyPatch({
     code: multiIssueCode,
     codeHash: computeCodeHash(multiIssueCode),
-    issue: secretIssueMulti,
+    issue: {
+      ...secretIssueMulti,
+      fix: {
+        original: 'const apiKey = "AKIAIOSFODNN7EXAMPLE";',
+        replacement: 'const apiKey = process.env.API_KEY;',
+      },
+    },
   });
+  assert(multiPatch.success === true, 'Explicit test patch applied');
   const multiAfter = await reviewCode({ code: multiPatch.patchedCode, language: 'javascript', filename: 'multi.js' });
   const multiDiff = computeReviewDiff({ beforeReview: multiBefore, afterReview: multiAfter, appliedIssueId: secretIssueMulti.id });
 

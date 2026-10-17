@@ -11,6 +11,7 @@ import { PRESETS } from './data/mockReviews.js';
 import {
   runReview,
   applyPatchApi,
+  verifyPatchApi,
   getHealthApi,
   getReviewByIdApi,
   verifyAiPatchApi,
@@ -141,7 +142,7 @@ export default function App() {
       const result = await runReview(sourceCode, 'javascript', filenameToUse);
       setReviewData(result);
       setReviewStatus('SUCCESS');
-      setActiveLens('findings');
+      setActiveLens('overview');
       setSelectedIssueId(result.issues[0]?.id || null);
       setCurrentReviewId(result.reviewId || null);
       setIsHistoricalView(false);
@@ -149,7 +150,7 @@ export default function App() {
       setHistoryRefreshTrigger((prev) => prev + 1);
 
       if (result.issues.length === 0) {
-        showToast('Review complete. No issues found in code!');
+        showToast('Review complete. Enabled checks found no issues.');
       } else {
         showToast(`Review complete. ${result.issues.length} ${result.issues.length === 1 ? 'issue' : 'issues'} found.`);
       }
@@ -415,20 +416,25 @@ export default function App() {
       if (data.success) {
         const previewIssue = {
           ...issue,
+          source: 'AI',
+          confidence: 0.85,
           fix: {
             original: data.original,
             replacement: data.replacement,
           },
           explanation: data.explanation,
         };
-        setPreviewAiIssue(previewIssue);
-        setAiPreviewData({
-          applicable: true,
-          original: data.original,
-          replacement: data.replacement,
-          startLine: issue.line,
-          endLine: issue.endLine || issue.line,
+        const verified = await verifyAiPatchApi({
+          code,
+          codeHash: reviewData?.metadata?.codeHash,
+          issue: previewIssue,
         });
+        if (!verified.applicable) {
+          showToast(`Suggested edit could not be verified: ${verified.reason || 'unknown reason'}.`, 'error');
+          return;
+        }
+        setPreviewAiIssue(previewIssue);
+        setAiPreviewData(verified);
       } else {
         showToast(data.error?.message || 'Failed to generate refactor candidate.', 'error');
       }
@@ -443,22 +449,10 @@ export default function App() {
   const handlePreviewAiPatch = async (issue) => {
     if (!issue) return;
 
-    if (issue.source !== 'AI') {
-      // Direct preview for static issues
-      setPreviewAiIssue(issue);
-      setAiPreviewData({
-        applicable: true,
-        original: issue.fix?.original,
-        replacement: issue.fix?.replacement,
-        startLine: issue.line,
-        endLine: issue.endLine || issue.line,
-      });
-      return;
-    }
-
     setIsVerifyingAiPatch(true);
     try {
-      const verified = await verifyAiPatchApi({
+      const verifyApi = issue.source === 'AI' ? verifyAiPatchApi : verifyPatchApi;
+      const verified = await verifyApi({
         code,
         codeHash: reviewData?.metadata?.codeHash,
         issue,
@@ -670,8 +664,28 @@ export default function App() {
             onSelectLens={setActiveLens}
           />
 
+          {reviewData && (
+            <nav aria-label="Review views" className="md:hidden flex items-center gap-1 px-3 py-2 border-b border-slate-200 dark:border-obsidian-800 bg-white dark:bg-obsidian-900">
+              {[
+                ['overview', 'Overview'],
+                ['findings', `Findings (${reviewData.issues?.length || 0})`],
+                ['architecture', 'Architecture'],
+              ].map(([view, label]) => (
+                <button
+                  key={view}
+                  type="button"
+                  onClick={() => setActiveLens(view)}
+                  aria-current={activeLens === view ? 'page' : undefined}
+                  className={`flex-1 px-2 py-2 text-xs font-semibold rounded-md transition-colors focus-visible:outline-2 focus-visible:outline-orange-500 ${activeLens === view ? 'bg-orange-100 text-orange-900 dark:bg-orange-500/15 dark:text-orange-300' : 'text-slate-600 dark:text-obsidian-300 hover:bg-slate-100 dark:hover:bg-obsidian-800'}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+          )}
+
           {/* Review Summary Bar - visible in findings mode or when diff is present */}
-          {(activeLens === 'findings' || reviewStatus !== 'SUCCESS' || patchDiff) && (
+          {reviewData && (activeLens === 'findings' || patchDiff || isStale) && (
             <ReviewSummary
               reviewData={reviewData}
               reviewStatus={reviewStatus}
@@ -749,9 +763,9 @@ export default function App() {
             </main>
           ) : (
             /* Findings Lens / Code Workspace (Three-Column Layout) */
-            <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-obsidian-950">
+            <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden bg-white dark:bg-obsidian-950">
               {/* Left Column: Review findings / Findings Queue */}
-              <IssuePanel
+              {reviewData && <IssuePanel
                 issues={reviewData?.issues || []}
                 selectedIssueId={selectedIssueId}
                 onSelectIssue={setSelectedIssueId}
@@ -761,11 +775,11 @@ export default function App() {
                 filename={currentFilename}
                 externalCategoryFilter={activeCategoryFilter}
                 onClearCategoryFilter={() => setActiveCategoryFilter(null)}
-                className="w-full lg:w-72 xl:w-80 shrink-0 h-48 lg:h-full border-b lg:border-b-0 border-r border-slate-200 dark:border-obsidian-800"
-              />
+                className="order-1 w-full lg:w-72 xl:w-80 shrink-0 !h-52 lg:!h-full border-b lg:border-b-0 border-r border-slate-200 dark:border-obsidian-800"
+              />}
 
               {/* Center Column: Code Editor */}
-              <section className="flex-1 h-full flex flex-col overflow-hidden min-w-0">
+              <section className={`order-3 lg:order-2 ${reviewData ? 'flex-none h-[62vh] min-h-[390px]' : 'flex-1 h-full min-h-0'} lg:flex-1 lg:h-full lg:min-h-0 flex flex-col overflow-hidden min-w-0`}>
                 <CodeEditor
                   code={code}
                   onChange={handleCodeChange}
@@ -783,21 +797,22 @@ export default function App() {
               </section>
 
               {/* Right Column: Selected Finding Details / Remediation */}
-              <IssueDetails
+              {currentSelectedIssue && <IssueDetails
                 issue={currentSelectedIssue}
                 onApplyPatch={handleApplyPatch}
                 onApplyFix={handleApplyPatch}
                 onPreviewAiPatch={handlePreviewAiPatch}
                 onPreviewPatch={handlePreviewAiPatch}
                 onGenerateRefactor={handleGenerateRefactor}
+                isAiConfigured={isAiConfigured}
                 isGeneratingRefactor={isGeneratingRefactor}
                 reviewStatus={reviewStatus}
                 isStale={isStale}
                 isApplyingPatch={isApplyingPatch || isApplyingAiPatch}
                 isVerifyingAiPatch={isVerifyingAiPatch}
                 filename={currentFilename}
-                className="w-full lg:w-80 xl:w-96 shrink-0 h-64 lg:h-full border-t lg:border-t-0 border-l border-slate-200 dark:border-obsidian-800"
-              />
+                className="order-2 lg:order-3 w-full lg:w-80 xl:w-96 shrink-0 !h-auto lg:!h-full border-t lg:border-t-0 border-l border-slate-200 dark:border-obsidian-800"
+              />}
             </main>
           )}
         </>

@@ -126,20 +126,15 @@ let count = 0;`,
 
   if (rule === 'SEC-SECRET') {
     return {
-      title: 'Environment Variable & Secrets Vault Extraction',
-      summary: 'Never commit plaintext credentials, API keys, or tokens to source code. Load them from environment variables via process.env.',
-      snippet: `// Before:
-// const API_KEY = "AIzaSyD...";
-
-// Recommended Solution:
-const API_KEY = process.env.API_KEY;
-if (!API_KEY) {
-  throw new Error('API_KEY environment variable is required');
-}`,
+      title: 'Rotate and move the credential',
+      summary: 'Treat a committed credential as exposed. Replace it, then load the new value at server runtime. A client bundle cannot keep a secret.',
+      snippet: `// Server-side example after rotating the key:
+const apiKey = process.env.API_KEY;
+if (!apiKey) throw new Error('API_KEY is required');`,
       steps: [
-        'Add the secret variable to your .env file or deployment secret store.',
-        'Ensure .env is listed in .gitignore to prevent accidental commits.',
-        'Reference the secret at runtime using process.env.<NAME>.',
+        'Rotate the exposed credential with its provider.',
+        'Store the replacement in a server-side secret store or deployment setting.',
+        'Remove the literal from source and check version history for exposure.',
       ],
     };
   }
@@ -215,13 +210,10 @@ useEffect(() => {
   }
 
   return {
-    title: 'Architectural Remediation',
-    summary: issue?.recommendation || 'Refactor target code according to architectural best practices.',
+    title: 'Suggested next step',
+    summary: issue?.recommendation || 'Inspect the highlighted code and confirm the reported behavior.',
     snippet: null,
-    steps: [
-      'Isolate the flagged logic into a dedicated utility function.',
-      'Ensure test coverage covers both standard and edge cases.',
-    ],
+    steps: ['Review the flagged source and its surrounding context.', 'Add a regression test for the behavior you change.'],
   };
 }
 
@@ -233,6 +225,7 @@ export function IssueDetails({
   onPreviewPatch,
   onGenerateRefactor,
   isGeneratingRefactor = false,
+  isAiConfigured = false,
   reviewStatus = 'IDLE',
   isStale = false,
   isApplyingPatch = false,
@@ -244,7 +237,6 @@ export function IssueDetails({
   const [copyStatus, setCopyStatus] = useState(null);
   const [patternCopyStatus, setPatternCopyStatus] = useState(false);
 
-  const applyHandler = onApplyPatch || onApplyFix;
   const previewHandler = onPreviewAiPatch || onPreviewPatch;
   const isBusy = isApplyingPatch || isApplying || isVerifyingAiPatch || isGeneratingRefactor;
 
@@ -482,34 +474,20 @@ export function IssueDetails({
       </div>
 
       {/* 3. Sticky Action Footer */}
-      <div className="p-4 border-t border-slate-200 dark:border-obsidian-800 bg-white/95 dark:bg-obsidian-900/90 backdrop-blur-xs space-y-2 shrink-0">
+      <div className="p-4 border-t border-slate-200 dark:border-obsidian-800 bg-white dark:!bg-obsidian-900 space-y-2 shrink-0">
         {/* Integrity Note */}
         <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-500 dark:text-obsidian-400">
           <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-brand-500 shrink-0" />
           <span>
             {hasFix
-              ? 'Source verified · Fix verified against current code'
-              : 'Architectural refactor engine · Verifies diff before applying'}
+              ? 'Preview verifies the edit against the current source'
+              : 'Suggested edits require review and verification'}
           </span>
         </div>
 
-        {hasFix && isStatic && applyHandler && (
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={() => applyHandler(issue)}
-            disabled={isStale || isBusy}
-            isLoading={isBusy}
-            rightIcon={<ArrowRight className="w-4 h-4" />}
-            className="w-full"
-          >
-            Apply Fix & Re-Analyze
-          </Button>
-        )}
-
         {hasFix && previewHandler && (
           <Button
-            variant={isStatic ? "secondary" : "primary"}
+            variant="primary"
             size="lg"
             onClick={() => previewHandler(issue)}
             disabled={isStale || isBusy}
@@ -518,11 +496,11 @@ export function IssueDetails({
             rightIcon={<ArrowRight className="w-4 h-4" />}
             className="w-full"
           >
-            Preview & Apply Fix
+            Preview suggested fix
           </Button>
         )}
 
-        {!hasFix && (
+        {!hasFix && isAiConfigured && (
           <Button
             variant="primary"
             size="lg"
@@ -539,8 +517,13 @@ export function IssueDetails({
             rightIcon={<ArrowRight className="w-4 h-4" />}
             className="w-full"
           >
-            {isGeneratingRefactor ? 'Generating Refactor...' : 'Generate AI Refactor & Fix'}
+            {isGeneratingRefactor ? 'Generating suggestion...' : 'Suggest fix with AI'}
           </Button>
+        )}
+        {!hasFix && !isAiConfigured && (
+          <p className="text-xs text-slate-600 dark:text-obsidian-300 leading-relaxed">
+            Follow the recommendation above. AI fix suggestions require a configured server API key.
+          </p>
         )}
 
         {isStale && (

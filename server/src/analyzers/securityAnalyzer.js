@@ -1,5 +1,5 @@
 import _traverse from '@babel/traverse';
-import { getLine, getNodeSource, verifyFixSnippet } from '../utils/sourceUtils.js';
+import { getNodeSource } from '../utils/sourceUtils.js';
 import { RULE_REGISTRY } from './ruleRegistry.js';
 
 const traverse = _traverse.default || _traverse;
@@ -67,14 +67,6 @@ export function analyzeSecurity(ast, code = '') {
         ) {
           const line = path.node.loc?.start.line || 1;
           const endLine = path.node.loc?.end.line || line;
-          const originalLine = getLine(code, line);
-
-          const rawFix = originalLine.includes(`'${val}'`)
-            ? { original: originalLine, replacement: originalLine.replace(`'${val}'`, `process.env.${idName}`) }
-            : originalLine.includes(`"${val}"`)
-            ? { original: originalLine, replacement: originalLine.replace(`"${val}"`, `process.env.${idName}`) }
-            : null;
-
           const meta = RULE_REGISTRY['SEC-SECRET'];
           addIssue({
             id: `SEC-SECRET-${line}`,
@@ -87,10 +79,10 @@ export function analyzeSecurity(ast, code = '') {
             line,
             endLine,
             description: `The variable '${idName}' is assigned a plaintext secret literal. Hardcoded credentials can be leaked through source control history or build artifacts.`,
-            recommendation: `Extract '${idName}' into an environment variable loaded via process.env.${idName}.`,
+            recommendation: `Remove '${idName}' from source and rotate the exposed credential. Load the replacement from a server-side secret store; do not bundle it into client code.`,
             confidence: meta.confidence ?? 0.98,
             impactWeight: meta.impactWeight ?? 1.0,
-            fix: verifyFixSnippet(code, rawFix),
+            fix: null,
           });
         }
       }

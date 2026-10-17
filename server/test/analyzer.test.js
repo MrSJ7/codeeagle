@@ -102,7 +102,7 @@ console.log('\n--- 2. Security Rules & False-Positive Mitigation Tests ---');
   const issue = res.issues.find(i => i.rule === 'SEC-SECRET');
   assert(issue !== undefined, 'Detects actual hardcoded secret');
   assert(issue?.severity === 'CRITICAL', 'Secret severity is CRITICAL');
-  assert(issue?.fix?.replacement === 'const JWT_SECRET = process.env.JWT_SECRET;', 'Generates verified replacement fix');
+  assert(issue?.fix === null, 'Does not suggest an unsafe credential migration');
 }
 
 // 2.2 Negative: Benign labels / config strings must NOT trigger secret rule
@@ -218,7 +218,7 @@ function Profile({ userId }) {
   const res = analyzeCode(code);
   const issue = res.issues.find(i => i.rule === 'REACT-HOOK-DEPS');
   assert(issue !== undefined, "Detects missing 'userId' in useEffect dependency array");
-  assert(issue?.fix?.replacement === '}, [userId]);', 'Generates verified replacement with dependency');
+  assert(issue?.fix === null, 'Does not auto-edit an effect without checking its behavior');
 }
 
 // 3.4 Negative: Locally declared variable inside useEffect must NOT trigger missing dep

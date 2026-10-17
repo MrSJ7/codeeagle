@@ -1,31 +1,79 @@
 import _traverse from '@babel/traverse';
-import { getLine, getNodeSource, verifyFixSnippet } from '../utils/sourceUtils.js';
+import { getNodeSource, verifyFixSnippet } from '../utils/sourceUtils.js';
 import { RULE_REGISTRY } from './ruleRegistry.js';
 
 const traverse = _traverse.default || _traverse;
 
-const SAFE_BUILTIN_IDENTIFIERS = new Set([
-  'console',
-  'Math',
-  'Date',
-  'JSON',
-  'window',
-  'document',
-  'fetch',
-  'setTimeout',
-  'clearTimeout',
-  'setInterval',
-  'clearInterval',
-  'Array',
-  'Object',
-  'String',
-  'Number',
-  'Boolean',
-  'Promise',
-  'Error',
-  'undefined',
-  'null',
-]);
+function isEffectCall(callee) {
+  return (callee.type === 'Identifier' && callee.name === 'useEffect') ||
+    (callee.type === 'MemberExpression' && !callee.computed &&
+      callee.object.name === 'React' && callee.property.name === 'useEffect');
+}
+
+function isInsidePath(path, ancestor) {
+  return path === ancestor || Boolean(path.findParent((parent) => parent === ancestor));
+}
+
+function isStableHookValue(binding) {
+  const declarator = binding?.path;
+  if (!declarator?.isVariableDeclarator()) return false;
+  const init = declarator.node.init;
+  if (!init || !['useState', 'useReducer', 'useRef'].includes(init.callee?.name)) return false;
+  if (init.callee.name === 'useRef') return true;
+  return declarator.node.id.type === 'ArrayPattern' &&
+    declarator.node.id.elements[1] === binding.identifier;
+}
+
+function getMissingEffectDependencies(callbackPath, depsArray) {
+  const existing = new Set(depsArray.elements
+    .filter((element) => element?.type === 'Identifier')
+    .map((element) => element.name));
+  const missing = new Set();
+
+  callbackPath.traverse({
+    Identifier(refPath) {
+      if (!refPath.isReferencedIdentifier()) return;
+      const name = refPath.node.name;
+      const binding = refPath.scope.getBinding(name);
+      // Globals, imports and module constants do not change on component renders.
+      if (!binding || binding.scope.path.isProgram() || isStableHookValue(binding)) return;
+      if (isInsidePath(binding.path, callbackPath)) return;
+      if (!existing.has(name)) missing.add(name);
+    },
+  });
+  return [...missing].sort();
+}
+
+function isMethodCall(node, method) {
+  return node?.type === 'CallExpression' && node.callee?.type === 'MemberExpression' &&
+    !node.callee.computed && node.callee.property.name === method;
+}
+
+function hasMissingListenerCleanup(callbackPath) {
+  let subscribes = false;
+  callbackPath.traverse({
+    CallExpression(callPath) {
+      if (isMethodCall(callPath.node, 'addEventListener')) subscribes = true;
+    },
+  });
+  if (!subscribes) return false;
+
+  const body = callbackPath.get('body');
+  if (!body.isBlockStatement()) return true;
+  for (const statement of body.get('body')) {
+    if (!statement.isReturnStatement()) continue;
+    const cleanup = statement.get('argument');
+    if (!cleanup?.isFunction()) continue;
+    let removes = false;
+    cleanup.traverse({
+      CallExpression(callPath) {
+        if (isMethodCall(callPath.node, 'removeEventListener')) removes = true;
+      },
+    });
+    if (removes) return false;
+  }
+  return true;
+}
 
 /**
  * Deterministic Code Quality, Complexity, and React Rules
@@ -113,9 +161,6 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
     }
   });
 
-  // Track map callbacks: Map<indexParamName, MapCallExpressionNode>
-  const activeMapIndexParams = new Map();
-
   traverse(ast, {
     // Quality Rule: Empty Catch Block
     CatchClause(path) {
@@ -169,23 +214,8 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
     CallExpression(path) {
       const callee = path.node.callee;
 
-      // Track .map index parameter strictly within the scope of the callback
-      if (
-        callee.type === 'MemberExpression' &&
-        callee.property.type === 'Identifier' &&
-        callee.property.name === 'map'
-      ) {
-        const arg = path.node.arguments[0];
-        if (arg && (arg.type === 'ArrowFunctionExpression' || arg.type === 'FunctionExpression')) {
-          const indexParam = arg.params[1];
-          if (indexParam && indexParam.type === 'Identifier') {
-            activeMapIndexParams.set(indexParam.name, path.node);
-          }
-        }
-      }
-
       // React Rules: useEffect
-      if (callee.type === 'Identifier' && callee.name === 'useEffect') {
+      if (isEffectCall(callee)) {
         const effectCallback = path.node.arguments[0];
         const depsArray = path.node.arguments[1];
         const line = path.node.loc?.start.line || 1;
@@ -195,14 +225,8 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
           (effectCallback.type === 'ArrowFunctionExpression' || effectCallback.type === 'FunctionExpression')
         ) {
           const callbackBody = effectCallback.body;
-          const callbackSource = getNodeSource(code, effectCallback);
-
           // React Rule: Missing event listener cleanup
-          if (callbackSource.includes('addEventListener')) {
-            // Check if removeEventListener is called anywhere in the effect callback or returned cleanup function
-            const hasRemove = callbackSource.includes('removeEventListener');
-
-            if (!hasRemove) {
+          if (hasMissingListenerCleanup(path.get('arguments.0'))) {
               const meta = RULE_REGISTRY['PERF-EFFECT-CLEANUP'];
               addIssue({
                 id: `PERF-EFFECT-CLEANUP-${line}`,
@@ -220,47 +244,13 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
                 impactWeight: meta.impactWeight ?? 0.85,
                 fix: null, // Manual refactor required to ensure identical callback references
               });
-            }
           }
 
-          // React Rule: Missing dependency in useEffect (empty [] array)
-          if (depsArray && depsArray.type === 'ArrayExpression' && depsArray.elements.length === 0) {
-            const externalRefs = new Set();
-
-            path.get('arguments.0').traverse({
-              Identifier(idPath) {
-                const name = idPath.node.name;
-                if (SAFE_BUILTIN_IDENTIFIERS.has(name)) return;
-
-                // Ignore property accesses (e.g. obj.name -> ignore 'name')
-                if (idPath.parentPath.isMemberExpression() && idPath.parentPath.node.property === idPath.node && !idPath.parentPath.node.computed) {
-                  return;
-                }
-
-                // Ignore keys in object literals
-                if (idPath.parentPath.isObjectProperty() && idPath.parentPath.node.key === idPath.node) {
-                  return;
-                }
-
-                // If identifier is bound inside the effect callback itself, ignore it
-                const callbackScope = path.get('arguments.0').scope;
-                if (callbackScope.hasOwnBinding(name)) {
-                  return;
-                }
-
-                // Only check realistic prop-like external identifiers
-                if (['userId', 'productId', 'id', 'user', 'query', 'filter', 'token', 'activeId'].includes(name)) {
-                  externalRefs.add(name);
-                }
-              },
-            });
-
-            if (externalRefs.size > 0) {
-              const depName = Array.from(externalRefs)[0];
+          // Analyze any explicit dependency array using lexical bindings, not a name whitelist.
+          if (depsArray?.type === 'ArrayExpression') {
+            const missing = getMissingEffectDependencies(path.get('arguments.0'), depsArray);
+            if (missing.length > 0) {
               const meta = RULE_REGISTRY['REACT-HOOK-DEPS'];
-              const rawFix = code.includes('}, []);')
-                ? { original: '}, []);', replacement: `}, [${depName}]);` }
-                : null;
 
               addIssue({
                 id: `REACT-HOOK-DEPS-${line}`,
@@ -269,14 +259,14 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
                 severity: meta.defaultSeverity,
                 category: meta.category,
                 ruleClass: meta.ruleClass,
-                title: `Potential missing dependency '${depName}' in useEffect hook`,
+                title: `Missing useEffect ${missing.length === 1 ? 'dependency' : 'dependencies'}: ${missing.join(', ')}`,
                 line,
                 endLine: depsArray.loc?.end.line || line,
-                description: `The effect callback references '${depName}', but the dependency array is empty []. When '${depName}' changes, the effect will not re-run.`,
-                recommendation: `Include '${depName}' in the dependency array [${depName}].`,
+                description: `The effect reads ${missing.map((name) => `'${name}'`).join(', ')} from the enclosing component, but the dependency array omits ${missing.length === 1 ? 'it' : 'them'}. The callback can retain stale values.`,
+                recommendation: `Add ${missing.join(', ')} to this effect's dependency array, or restructure the effect if that creates a loop.`,
                 confidence: meta.confidence ?? 0.85,
                 impactWeight: meta.impactWeight ?? 0.85,
-                fix: verifyFixSnippet(code, rawFix),
+                fix: null,
               });
             }
           }
@@ -291,8 +281,17 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         if (val && val.type === 'JSXExpressionContainer') {
           const expr = val.expression;
           if (expr && expr.type === 'Identifier') {
-            // Must be the actual index parameter from an active enclosing map callback
-            if (activeMapIndexParams.has(expr.name)) {
+            const mapCall = path.findParent((parent) => {
+              if (!parent.isCallExpression()) return false;
+              const mapCallee = parent.node.callee;
+              const callback = parent.get('arguments.0');
+              return mapCallee.type === 'MemberExpression' && !mapCallee.computed &&
+                mapCallee.property.name === 'map' && callback?.isFunction() &&
+                callback.node.params[1]?.name === expr.name && isInsidePath(path, callback);
+            });
+            const indexBinding = path.scope.getBinding(expr.name);
+            const callback = mapCall?.get('arguments.0');
+            if (callback && indexBinding?.path.node === callback.node.params[1]) {
               const line = path.node.loc?.start.line || 1;
               const meta = RULE_REGISTRY['REACT-INDEX-KEY'];
 
@@ -322,6 +321,11 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
     DebuggerStatement(path) {
       const line = path.node.loc?.start.line || 1;
       const meta = RULE_REGISTRY['QUAL-DEBUGGER'];
+      const original = getNodeSource(code, path.node);
+      const fix = (path.parentPath.isBlockStatement() || path.parentPath.isProgram()) &&
+        original && code.indexOf(original) === code.lastIndexOf(original)
+        ? verifyFixSnippet(code, { original, replacement: '' })
+        : null;
       addIssue({
         id: `QUAL-DEBUGGER-${line}`,
         rule: meta.rule,
@@ -336,14 +340,15 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         recommendation: meta.recommendation,
         confidence: meta.confidence ?? 1.0,
         impactWeight: meta.impactWeight ?? 0.40,
-        fix: null,
+        fix,
       });
     },
 
     // Quality Rule: Loose equality check (== or !=)
     BinaryExpression(path) {
       if (path.node.operator === '==' || path.node.operator === '!=') {
-        // Exclude idiomatic null checks if desired, or flag loose comparison
+        // x == null intentionally checks both null and undefined.
+        if (path.node.left.type === 'NullLiteral' || path.node.right.type === 'NullLiteral') return;
         const line = path.node.loc?.start.line || 1;
         const meta = RULE_REGISTRY['QUAL-EQEQ'];
         const op = path.node.operator;

@@ -44,25 +44,6 @@ export function ReviewSummary({
             <span>Ready for review</span>
           </div>
 
-          {/* Quick Action Button */}
-          {onRunReview && (
-            <Button
-              variant="primary"
-              size="xs"
-              onClick={onRunReview}
-              leftIcon={<Play className="w-3 h-3 fill-current" />}
-            >
-              <span>Run Review</span>
-              <kbd
-                className={cn(
-                  "hidden sm:inline-block ml-1 px-1 py-0.2 text-[9px] font-mono rounded font-bold",
-                  isLight ? "bg-blue-700/40 text-white" : "bg-obsidian-950/30 text-obsidian-950"
-                )}
-              >
-                ⌘↵
-              </kbd>
-            </Button>
-          )}
         </div>
       </div>
     );
@@ -98,7 +79,7 @@ export function ReviewSummary({
   const lowCount = issues.filter((i) => i.severity === 'LOW').length;
 
   const getVerdict = (s) => {
-    if (s === 100) return 'Ready to ship';
+    if (s === 100) return 'No findings detected';
     if (s >= 90) return 'Minor issues';
     if (s >= 70) return 'Needs attention';
     if (s >= 50) return 'Significant issues';
@@ -140,7 +121,7 @@ export function ReviewSummary({
           {totalFindings === 0 ? (
             <div className="flex items-center gap-1.5 text-emerald-400 font-semibold font-sans">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Review complete — All checks passed</span>
+              <span>Review complete — no findings detected</span>
             </div>
           ) : (
             <div className="flex items-center gap-2 font-sans flex-wrap">

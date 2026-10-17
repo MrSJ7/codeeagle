@@ -146,11 +146,11 @@ export function IssuePanel({
           <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 dark:text-obsidian-400">
             <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mb-2" />
             <p className="text-xs font-semibold text-slate-900 dark:text-obsidian-200">
-              {issues.length === 0 ? 'All checks passed' : 'No matching issues'}
+              {issues.length === 0 ? 'No findings detected' : 'No matching issues'}
             </p>
             <p className="text-xs text-slate-500 dark:text-obsidian-500 mt-1 max-w-[200px] leading-relaxed">
               {issues.length === 0
-                ? 'No issues found.'
+                ? 'The enabled checks found no issues.'
                 : 'Try choosing another filter.'}
             </p>
           </div>

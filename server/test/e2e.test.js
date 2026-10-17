@@ -1,7 +1,7 @@
 import { computeCodeHash } from '../src/utils/codeHasher.js';
 import { validateReviewContract } from '../src/utils/contractValidator.js';
 
-const API_BASE = 'http://localhost:5001';
+const API_BASE = process.env.CODEEAGLE_API_BASE || 'http://localhost:5001';
 
 let passed = 0;
 let failed = 0;
@@ -22,14 +22,14 @@ async function runE2ETests() {
   let reviewId1 = null;
   let reviewId2 = null;
   let initialHash = null;
-  let secretIssue = null;
+  let debuggerIssue = null;
   let initialReviewData = null;
   let originalCode = `function authenticateUser(req, res) {
-  const JWT_SECRET = "super_secret_jwt_key_998822_do_not_share";
-  return JWT_SECRET;
+  debugger;
+  return true;
 }`;
 
-  // Step 1: Submit code with security issue to POST /api/review
+  // Step 1: Submit code with a safe deterministic fix to POST /api/review
   console.log('--- Step 1: Submit code to POST /api/review ---');
   try {
     const res = await fetch(`${API_BASE}/api/review`, {
@@ -48,12 +48,12 @@ async function runE2ETests() {
     console.log('--- Step 2: Validate review contract, score, hash, and reviewId ---');
     const contract = validateReviewContract(data);
     assert(contract.valid, `Step 2: Canonical review contract valid (errors: ${contract.errors.join(', ')})`);
-    assert(data.score === 75, `Step 2: Score is 75 (got ${data.score})`);
+    assert(data.score === 97, `Step 2: Score is 97 (got ${data.score})`);
     assert(Array.isArray(data.issues) && data.issues.length === 1, 'Step 2: Exactly 1 issue identified');
-    secretIssue = data.issues[0];
-    assert(secretIssue.rule === 'SEC-SECRET', 'Step 2: Issue rule is SEC-SECRET');
-    assert(secretIssue.source === 'STATIC', 'Step 2: Issue source is STATIC');
-    assert(Boolean(secretIssue.fix), 'Step 2: Fix is provided for SEC-SECRET');
+    debuggerIssue = data.issues[0];
+    assert(debuggerIssue.rule === 'QUAL-DEBUGGER', 'Step 2: Issue rule is QUAL-DEBUGGER');
+    assert(debuggerIssue.source === 'STATIC', 'Step 2: Issue source is STATIC');
+    assert(Boolean(debuggerIssue.fix), 'Step 2: Safe debugger fix is provided');
 
     // Save initial review data for Step 6 diffing
     initialReviewData = data;
@@ -74,7 +74,7 @@ async function runE2ETests() {
     assert(Array.isArray(data.reviews), 'Step 3: Reviews array returned');
     const found = data.reviews.find((r) => r.reviewId === reviewId1);
     assert(Boolean(found), `Step 3: Review ${reviewId1} found in history list`);
-    assert(found.score === 75, 'Step 3: History summary score matches 75');
+    assert(found.score === 97, 'Step 3: History summary score matches 97');
     assert(found.filename === 'auth.js', 'Step 3: Filename matches auth.js');
     assert(found.issueCount === 1, 'Step 3: Issue count matches 1');
   } catch (err) {
@@ -88,7 +88,7 @@ async function runE2ETests() {
     assert(res.status === 200, 'Step 4: GET /api/reviews/:reviewId returned 200 OK');
     const fullReview = await res.json();
     assert(fullReview.reviewId === reviewId1, 'Step 4: reviewId matches');
-    assert(fullReview.score === 75, 'Step 4: Restored score matches 75');
+    assert(fullReview.score === 97, 'Step 4: Restored score matches 97');
     assert(fullReview.code === originalCode, 'Step 4: Restored code matches original verbatim');
     assert(fullReview.issues.length === 1, 'Step 4: Restored issues count matches 1');
     assert(fullReview.metadata.codeHash === initialHash, 'Step 4: codeHash matches initial hash');
@@ -106,7 +106,7 @@ async function runE2ETests() {
       body: JSON.stringify({
         code: originalCode,
         codeHash: initialHash,
-        issue: secretIssue,
+        issue: debuggerIssue,
       }),
     });
     assert(res.status === 200, 'Step 5: POST /api/patch/verify returned 200 OK');
@@ -129,7 +129,7 @@ async function runE2ETests() {
       body: JSON.stringify({
         code: originalCode,
         codeHash: initialHash,
-        issue: secretIssue,
+        issue: debuggerIssue,
         beforeReview: initialReviewData,
       }),
     });
@@ -138,10 +138,10 @@ async function runE2ETests() {
     assert(applyData.success === true, 'Step 6: applyData.success is true');
     postPatchCode = applyData.patchedCode;
     assert(typeof postPatchCode === 'string', 'Step 6: patchedCode is returned');
-    assert(!postPatchCode.includes('super_secret_jwt_key_998822_do_not_share'), 'Step 6: Secret removed from patched code');
-    assert(postPatchCode.includes('process.env.JWT_SECRET'), 'Step 6: Replacement code present');
+    assert(!postPatchCode.includes('debugger;'), 'Step 6: Debugger statement removed');
+    assert(postPatchCode.includes('return true;'), 'Step 6: Surrounding code preserved');
 
-    assert(applyData.diff.scoreBefore === 75, 'Step 6: diff.scoreBefore is 75');
+    assert(applyData.diff.scoreBefore === 97, 'Step 6: diff.scoreBefore is 97');
     assert(applyData.diff.scoreAfter === 100, 'Step 6: diff.scoreAfter improved to 100');
     assert(applyData.diff.resolvedIssues.length === 1, 'Step 6: Exactly 1 resolved issue');
     assert(applyData.diff.appliedIssueResolved === true, 'Step 6: appliedIssueResolved is true');
@@ -166,7 +166,7 @@ async function runE2ETests() {
     const r2 = historyData.reviews.find((r) => r.reviewId === reviewId2);
     assert(Boolean(r1), 'Step 8: Initial audit remains present in history');
     assert(Boolean(r2), 'Step 8: Post-patch audit is present in history');
-    assert(r1.score === 75, 'Step 8: Initial audit preserves score 75');
+    assert(r1.score === 97, 'Step 8: Initial audit preserves score 97');
     assert(r2.score === 100, 'Step 8: Post-patch audit preserves score 100');
   } catch (err) {
     assert(false, `Step 8 failed: ${err.message}`);
@@ -181,7 +181,7 @@ async function runE2ETests() {
       body: JSON.stringify({
         code: postPatchCode, // Modified code with old initialHash
         codeHash: initialHash,
-        issue: secretIssue,
+        issue: debuggerIssue,
       }),
     });
     assert(res.status === 409, 'Step 9: Stale patch application rejected with 409 Conflict');
@@ -201,15 +201,15 @@ async function runE2ETests() {
       source: 'AI',
       severity: 'MEDIUM',
       category: 'QUALITY',
-      title: 'Use standard environment variable lookup',
+      title: 'Replace debugger with a harmless statement',
       line: 2,
       endLine: 2,
-      description: 'Replace literal with env variable',
-      recommendation: 'Use process.env.JWT_SECRET',
+      description: 'Replace debugger with a harmless statement',
+      recommendation: 'Remove debugger statements before release',
       confidence: 0.95,
       fix: {
-        original: '  const JWT_SECRET = "super_secret_jwt_key_998822_do_not_share";',
-        replacement: '  const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";',
+        original: '  debugger;',
+        replacement: '  void 0;',
       },
     };
 
@@ -226,7 +226,7 @@ async function runE2ETests() {
     const aiVerifyData = await res.json();
     assert(aiVerifyData.applicable === true, 'Step 10: AI patch verified as applicable');
     const preview = aiVerifyData.previewCode || aiVerifyData.patchedCode;
-    assert(preview && preview.includes('process.env.JWT_SECRET || "dev-secret"'), 'Step 10: AI preview includes replacement');
+    assert(preview && preview.includes('void 0;'), 'Step 10: AI preview includes replacement');
     assert(aiVerifyData.beforeHash === initialHash, 'Step 10: AI beforeHash matches initial codeHash');
   } catch (err) {
     assert(false, `Step 10 failed: ${err.message}`);

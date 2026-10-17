@@ -58,11 +58,18 @@ async function runHashingTests() {
   const secretIssue = staticReview.issues.find(i => i.rule === 'SEC-SECRET');
 
   assert(Boolean(secretIssue), 'Found static SEC-SECRET issue for patch hashing test');
+  const testPatchIssue = {
+    ...secretIssue,
+    fix: {
+      original: '  const JWT_SECRET = "super_secret_jwt_key_998822_do_not_share";',
+      replacement: '  const JWT_SECRET = process.env.JWT_SECRET;',
+    },
+  };
 
   const staticVerify = verifyPatch({
     code: sampleVulnerable,
     codeHash: sampleHash,
-    issue: secretIssue
+    issue: testPatchIssue
   });
 
   assert(staticVerify.applicable, 'Static patch is applicable');
@@ -72,7 +79,7 @@ async function runHashingTests() {
   const staticApply = applyPatch({
     code: sampleVulnerable,
     codeHash: sampleHash,
-    issue: secretIssue
+    issue: testPatchIssue
   });
 
   assert(staticApply.success, 'applyPatch succeeds');
@@ -125,7 +132,7 @@ async function runHashingTests() {
   const staleStaticVerify = verifyPatch({
     code: sampleVulnerable,
     codeHash: staleHash,
-    issue: secretIssue
+    issue: testPatchIssue
   });
   assert(!staleStaticVerify.applicable && staleStaticVerify.reason === 'STALE_SOURCE', 'Static patch rejected when client hash differs from computeCodeHash');
 

@@ -1,10 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { RULE_REGISTRY } from '../src/analyzers/ruleRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const API_BASE = 'http://localhost:5001';
+const API_BASE = process.env.CODEEAGLE_API_BASE || 'http://localhost:5001';
 
 let passed = 0;
 let failed = 0;
@@ -48,7 +49,7 @@ async function runSmokeTests() {
     const res = await fetch(`${API_BASE}/api/rules`);
     assert(res.status === 200, 'GET /api/rules returns HTTP 200 OK');
     const data = await res.json();
-    assert(Array.isArray(data.rules) && data.rules.length === 13, `Rules catalog returned all 13 rules (found ${data.rules?.length})`);
+    assert(Array.isArray(data.rules) && data.rules.length === Object.keys(RULE_REGISTRY).length, `Rules catalog returned all registered rules (found ${data.rules?.length})`);
   } catch (err) {
     assert(false, `Rules test failed: ${err.message}`);
   }
@@ -137,8 +138,8 @@ async function runSmokeTests() {
       });
       assert(res.status === 200, 'POST /api/patch/verify returns HTTP 200 OK');
       const verifyData = await res.json();
-      assert(verifyData.applicable === true, 'Static patch verified as applicable');
-      assert(verifyData.reason === null, 'Patch verification reason is null on success');
+      assert(verifyData.applicable === false, 'Hardcoded secret has no unsafe automatic patch');
+      assert(verifyData.reason === 'INVALID_FIX', 'Secret requires manual rotation and remediation');
     }
   } catch (err) {
     assert(false, `Patch test failed: ${err.message}`);
