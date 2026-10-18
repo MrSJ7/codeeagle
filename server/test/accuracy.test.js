@@ -77,6 +77,9 @@ assert.ok(!analyzeCode(`function Flip({ words, duration }) {
 assert.ok(!analyzeCode(`async function copy(text) {
   try { await navigator.clipboard.writeText(text); } catch {}
 }`).issues.some((issue) => issue.rule === 'QUAL-EMPTY-CATCH'), 'Optional clipboard denial is not reported as a bug');
+assert.ok(!analyzeCode(`function savePreference(theme) {
+  try { localStorage.setItem('theme', theme); } catch {}
+}`).issues.some((issue) => issue.rule === 'QUAL-EMPTY-CATCH'), 'Optional browser storage denial is not reported as a bug');
 assert.ok(analyzeCode(`async function load() {
   try { await save(); } catch {}
 }`).issues.some((issue) => issue.rule === 'QUAL-EMPTY-CATCH'), 'Unrelated swallowed failures are still reported');

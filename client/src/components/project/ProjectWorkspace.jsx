@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FileCode,
   Layers,
@@ -73,27 +73,8 @@ export function ProjectWorkspace({
     } catch {}
   };
 
-  // Initialize selected file
-  useEffect(() => {
-    const files = review?.files || [];
-    if (files.length === 0) return;
-
-    let target = null;
-    if (initialFileId) {
-      target = files.find((f) => f.id === initialFileId || f.path === initialFileId);
-    }
-    if (!target) {
-      // Pick first file with issues, or first eligible file
-      target = files.find((f) => (f.findingCount || 0) > 0) || files.find((f) => f.status === "SUCCESS") || files[0];
-    }
-
-    if (target) {
-      handleSelectFile(target);
-    }
-  }, [review?.id, initialFileId]);
-
   // Load file content when file is selected
-  async function handleSelectFile(file) {
+  const handleSelectFile = useCallback(async (file) => {
     if (!file || file.status === "SKIPPED") return;
 
     setSelectedFile(file);
@@ -119,7 +100,17 @@ export function ProjectWorkspace({
     } finally {
       setIsLoadingFile(false);
     }
-  }
+  }, [project, initialFindingId]);
+
+  // Keep the selected file aligned with the latest review snapshot.
+  useEffect(() => {
+    const files = review?.files || [];
+    if (files.length === 0) return;
+    const target = files.find((file) => file.id === initialFileId || file.path === initialFileId) ||
+      files.find((file) => (file.findingCount || 0) > 0) ||
+      files.find((file) => file.status === "SUCCESS") || files[0];
+    if (target) handleSelectFile(target);
+  }, [review, initialFileId, handleSelectFile]);
 
   const [isGeneratingRefactor, setIsGeneratingRefactor] = useState(false);
   const [refactorCandidate, setRefactorCandidate] = useState(null);

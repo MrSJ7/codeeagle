@@ -163,9 +163,9 @@ export default function App() {
     }
   }, []);
 
-  const handleRunReview = () => {
+  const handleRunReview = useCallback(() => {
     executeReview(code, currentFilename);
-  };
+  }, [executeReview, code, currentFilename]);
 
   const navigateTo = (route, presetIdToLoad = null, autoRun = false) => {
     let newCodeToRun = null;
@@ -292,7 +292,9 @@ export default function App() {
     reviewData,
     selectedIssueId,
     isHistoryOpen,
+    isHowItWorksOpen,
     previewAiIssue,
+    handleRunReview,
   ]);
 
   // 1. Preset change from dropdown

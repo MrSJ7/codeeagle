@@ -225,7 +225,7 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
     CatchClause(path) {
       if (path.node.body && path.node.body.body.length === 0) {
         const tryBody = path.parentPath?.node?.block?.body || [];
-        const isOptionalClipboardWrite = tryBody.some((statement) => {
+        const isOptionalBrowserWrite = tryBody.some((statement) => {
           let found = false;
           const visit = (node) => {
             if (!node || typeof node !== 'object' || found) return;
@@ -234,6 +234,8 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
                 node.callee.object?.type === 'MemberExpression' &&
                 node.callee.object.object?.name === 'navigator' &&
                 node.callee.object.property?.name === 'clipboard') found = true;
+            if (node.type === 'CallExpression' && node.callee?.type === 'MemberExpression' &&
+                node.callee.object?.name === 'localStorage' && node.callee.property?.name === 'setItem') found = true;
             for (const value of Object.values(node)) {
               if (Array.isArray(value)) value.forEach(visit);
               else if (value && typeof value === 'object') visit(value);
@@ -242,7 +244,7 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
           visit(statement);
           return found;
         });
-        if (isOptionalClipboardWrite) return;
+        if (isOptionalBrowserWrite) return;
         const line = path.node.loc?.start.line || 1;
         const meta = RULE_REGISTRY['QUAL-EMPTY-CATCH'];
         addIssue({
