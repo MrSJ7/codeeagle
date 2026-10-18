@@ -27,6 +27,7 @@ import {
   getProjectFileApi,
   applyProjectPatchApi,
   generateProjectFindingRefactorApi,
+  projectSnapshotForReview,
 } from "../../services/projectApi.js";
 import { useTheme } from "../../context/ThemeContext.jsx";
 import { cn } from "@/lib/utils";
@@ -100,8 +101,9 @@ export function ProjectWorkspace({
     setPatchDiff(null);
 
     try {
-      const data = await getProjectFileApi(project.id, file.id);
-      setFileContent(data.file?.content || "");
+      const localContent = file.content ?? project.files?.find((entry) => entry.id === file.id)?.content;
+      const data = localContent === undefined ? await getProjectFileApi(project.id, file.id) : null;
+      setFileContent(localContent ?? data?.file?.content ?? "");
 
       // If initial finding provided for this file, select it
       const fileIssues = file.issues || [];
@@ -137,6 +139,7 @@ export function ProjectWorkspace({
         fileId: selectedFile.id,
         findingId: targetFinding.id,
         issue: targetFinding,
+        code: fileContent,
       });
 
       if (outcome.success) {
@@ -177,6 +180,8 @@ export function ProjectWorkspace({
         reviewId: review.id,
         expectedHash: selectedFile.contentHash,
         patch: issueToApply.fix,
+        projectSnapshot: projectSnapshotForReview(project, review),
+        reviewSnapshot: review,
       });
 
       if (outcome.success) {

@@ -5,6 +5,30 @@ import { buildProjectManifest } from "../services/projectManifestBuilder.js";
 import { executeProjectReview } from "../services/projectReviewService.js";
 import { applyProjectPatch } from "../services/projectPatchService.js";
 import { projectRepository } from "../repositories/projectRepository.js";
+import { computeCodeHash } from "../utils/codeHasher.js";
+import { computeProjectSourceHash, normalizeSafeRelativePath } from "../utils/paths.js";
+import { PROJECT_LIMITS } from "../config/limits.js";
+
+function validateProjectSnapshot(snapshot, projectId) {
+  if (!snapshot || snapshot.id !== projectId || !Array.isArray(snapshot.files) ||
+      snapshot.files.length > PROJECT_LIMITS.MAX_PROJECT_FILES) return null;
+  let totalBytes = 0;
+  const paths = new Set();
+  const files = snapshot.files.map((file) => {
+    const safePath = normalizeSafeRelativePath(file.path);
+    if (paths.has(safePath) || safePath !== file.path) throw new Error("Invalid project file path.");
+    paths.add(safePath);
+    const content = typeof file.content === "string" ? file.content : null;
+    const size = content ? Buffer.byteLength(content, "utf8") : 0;
+    if (size > PROJECT_LIMITS.MAX_SOURCE_FILE_BYTES) throw new Error("Project file exceeds source limit.");
+    totalBytes += size;
+    if (content !== null && computeCodeHash(content) !== file.contentHash) throw new Error("Project file hash mismatch.");
+    return { ...file, content };
+  });
+  if (totalBytes > PROJECT_LIMITS.MAX_TOTAL_SOURCE_BYTES ||
+      computeProjectSourceHash(files) !== snapshot.projectSourceHash) throw new Error("Project source hash mismatch.");
+  return { ...snapshot, files };
+}
 
 /**
  * Controller for Project-Level Code Review Endpoints.
@@ -101,6 +125,8 @@ export const projectController = {
             language: f.language,
             size: f.size,
             lineCount: f.lineCount,
+            content: f.status === "ELIGIBLE" ? f.content : null,
+            contentHash: f.contentHash,
             status: f.status,
             skipReason: f.skipReason,
             skipMessage: f.skipMessage,
@@ -125,7 +151,16 @@ export const projectController = {
   async createReview(req, res, next) {
     try {
       const { projectId } = req.params;
-      const project = await projectRepository.getProjectById(projectId);
+      let project = await projectRepository.getProjectById(projectId);
+
+      if (req.body?.projectSnapshot) {
+        try {
+          project = validateProjectSnapshot(req.body.projectSnapshot, projectId);
+        } catch (err) {
+          return res.status(400).json({ error: { code: "INVALID_SNAPSHOT", message: err.message } });
+        }
+        if (project) await projectRepository.saveProject(project);
+      }
 
       if (!project) {
         return res.status(404).json({
@@ -292,12 +327,27 @@ export const projectController = {
   async applyPatch(req, res, next) {
     try {
       const { projectId, fileId, findingId } = req.params;
-      const { reviewId, expectedHash, patch } = req.body || {};
+      const { reviewId, expectedHash, patch, projectSnapshot, reviewSnapshot } = req.body || {};
 
       if (!reviewId) {
         return res.status(400).json({
           error: { code: "INVALID_PAYLOAD", message: "reviewId is required in request body." },
         });
+      }
+
+      if (projectSnapshot && reviewSnapshot) {
+        let validated;
+        try {
+          validated = validateProjectSnapshot(projectSnapshot, projectId);
+        } catch (err) {
+          return res.status(400).json({ error: { code: "INVALID_SNAPSHOT", message: err.message } });
+        }
+        if (!validated || reviewSnapshot.id !== reviewId || reviewSnapshot.projectId !== projectId ||
+            reviewSnapshot.sourceSnapshotHash !== validated.projectSourceHash) {
+          return res.status(400).json({ error: { code: "INVALID_SNAPSHOT", message: "Review snapshot does not match project source." } });
+        }
+        await projectRepository.saveProject(validated);
+        await projectRepository.saveReview(reviewSnapshot);
       }
 
       const outcome = await applyProjectPatch({
@@ -328,22 +378,24 @@ export const projectController = {
     try {
       const { projectId, fileId, findingId } = req.params;
       const project = await projectRepository.getProjectById(projectId);
-      if (!project) {
+      if (!project && typeof req.body?.code !== "string") {
         return res.status(404).json({
           error: { code: "PROJECT_NOT_FOUND", message: "Project not found." },
         });
       }
 
-      const file = (project.files || []).find((f) => f.id === fileId || f.path === fileId);
+      const file = project
+        ? (project.files || []).find((f) => f.id === fileId || f.path === fileId)
+        : { id: fileId, path: fileId, filename: fileId, content: req.body.code };
       if (!file || !file.content) {
         return res.status(404).json({
           error: { code: "FILE_NOT_FOUND", message: "File source not found." },
         });
       }
 
-      const review = (typeof projectRepository.getLatestReview === "function"
+      const review = project && ((typeof projectRepository.getLatestReview === "function"
         ? await projectRepository.getLatestReview(projectId)
-        : null) || (project.latestReviewId ? await projectRepository.getReviewById(project.latestReviewId) : null);
+        : null) || (project.latestReviewId ? await projectRepository.getReviewById(project.latestReviewId) : null));
 
       const reviewFile = (review?.files || []).find((f) => f.id === fileId || f.path === fileId);
       const finding = (reviewFile?.issues || []).find((i) => i.id === findingId) ||

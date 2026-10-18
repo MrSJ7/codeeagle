@@ -156,6 +156,7 @@ export async function applyProjectPatch({
       return {
         ...f,
         contentHash: newFileHash,
+        content: patchedSource,
         lineCount: patchedSource.split(/\r?\n/).length,
         size: Buffer.byteLength(patchedSource, "utf8"),
         score: reAnalysis.score,

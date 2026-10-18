@@ -184,7 +184,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
     setError(null);
 
     try {
-      const reviewOutcome = await startProjectReviewApi(discoveredProject.id);
+      const reviewOutcome = await startProjectReviewApi(discoveredProject.id, discoveredProject);
       if (onProjectReady) {
         onProjectReady({
           project: discoveredProject,

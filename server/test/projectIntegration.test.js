@@ -98,7 +98,7 @@ async function runIntegration() {
       sourceType: "folder",
       name: "Local Web App",
       files: [
-        { path: "src/index.js", content: "console.log(\"ready\");" },
+        { path: "src/index.js", content: "function run() { debugger; return 1; }" },
         { path: "src/config.js", content: "const secret = \"test_secret\";" },
         { path: ".env", content: "SECRET=123" }
       ]
@@ -108,6 +108,32 @@ async function runIntegration() {
   assert(folderCtx.getStatus() === 201, "Folder import returned HTTP 201 Created");
   assert(folderCtx.getData().project.eligibleFileCount === 2, "Folder import identified 2 eligible JS files");
   assert(folderCtx.getData().project.skippedFileCount === 1, "Folder import excluded .env file");
+
+  // Serverless requests may land on a different instance with an empty memory repository.
+  const statelessProject = folderCtx.getData().project;
+  assert(statelessProject.files.some(f => typeof f.content === 'string'), 'Import returns source for stateless review');
+  await projectRepository.deleteProjectById(statelessProject.id);
+  const statelessCtx = mockReqRes({ params: { projectId: statelessProject.id }, body: { projectSnapshot: statelessProject } });
+  await projectController.createReview(statelessCtx.req, statelessCtx.res, (err) => { throw err; });
+  assert(statelessCtx.getStatus() === 200, 'Review works after memory repository is cleared');
+  assert(statelessCtx.getData().review.files.some(f => typeof f.content === 'string'), 'Review returns source for stateless file inspection');
+  const statelessReview = statelessCtx.getData().review;
+  const debuggerFile = statelessReview.files.find(f => f.path === 'src/index.js');
+  const debuggerIssue = debuggerFile.issues.find(i => i.rule === 'QUAL-DEBUGGER');
+  assert(!!debuggerIssue?.fix, 'Stateless review offers a verified debugger edit');
+  await projectRepository.deleteProjectById(statelessProject.id);
+  const statelessPatchCtx = mockReqRes({
+    params: { projectId: statelessProject.id, fileId: debuggerFile.id, findingId: debuggerIssue.id },
+    body: {
+      reviewId: statelessReview.id,
+      expectedHash: debuggerFile.contentHash,
+      projectSnapshot: statelessProject,
+      reviewSnapshot: statelessReview,
+    },
+  });
+  await projectController.applyPatch(statelessPatchCtx.req, statelessPatchCtx.res, (err) => { throw err; });
+  assert(statelessPatchCtx.getStatus() === 200, 'Verified patch works after memory repository is cleared');
+  assert(!statelessPatchCtx.getData().patchedCode.includes('debugger'), 'Stateless patch removes the flagged statement');
 
   // 3. Get Project details
   const getProjCtx = mockReqRes({ params: { projectId } });

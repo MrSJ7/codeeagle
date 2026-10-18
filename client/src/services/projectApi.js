@@ -34,10 +34,23 @@ export async function importProjectApi({ sourceType, name, zipBase64, files, url
 /**
  * Initiates full project code review.
  */
-export async function startProjectReviewApi(projectId) {
+export function projectSnapshotForReview(project, review = null) {
+  if (!review) return project;
+  return {
+    ...project,
+    projectSourceHash: review.sourceSnapshotHash,
+    files: review.files.map((file) => ({
+      ...file,
+      status: file.status === "SKIPPED" ? "SKIPPED" : "ELIGIBLE",
+    })),
+  };
+}
+
+export async function startProjectReviewApi(projectId, projectSnapshot) {
   const response = await fetch(buildApiUrl(`/api/projects/${projectId}/reviews`), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ projectSnapshot }),
   });
 
   if (!response.ok) {
@@ -106,13 +119,13 @@ export async function getProjectFileApi(projectId, fileId) {
 /**
  * Applies a verified fix or refactored patch to a project file and receives the re-analyzed review snapshot.
  */
-export async function applyProjectPatchApi({ projectId, fileId, findingId, reviewId, expectedHash, patch }) {
+export async function applyProjectPatchApi({ projectId, fileId, findingId, reviewId, expectedHash, patch, projectSnapshot, reviewSnapshot }) {
   const response = await fetch(
     buildApiUrl(`/api/projects/${projectId}/files/${fileId}/findings/${findingId}/apply`),
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reviewId, expectedHash, patch }),
+      body: JSON.stringify({ reviewId, expectedHash, patch, projectSnapshot, reviewSnapshot }),
     }
   );
 
@@ -129,13 +142,13 @@ export async function applyProjectPatchApi({ projectId, fileId, findingId, revie
 /**
  * Generates an automated refactoring candidate for an issue in a project file.
  */
-export async function generateProjectFindingRefactorApi({ projectId, fileId, findingId, issue }) {
+export async function generateProjectFindingRefactorApi({ projectId, fileId, findingId, issue, code }) {
   const response = await fetch(
     buildApiUrl(`/api/projects/${projectId}/files/${fileId}/findings/${findingId}/refactor`),
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ issue }),
+      body: JSON.stringify({ issue, code }),
     }
   );
 

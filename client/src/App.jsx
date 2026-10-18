@@ -25,7 +25,7 @@ import { HowItWorksModal } from './components/HowItWorksModal.jsx';
 import { ProjectImportModal } from './components/project/ProjectImportModal.jsx';
 import { ProjectOverview } from './components/project/ProjectOverview.jsx';
 import { ProjectWorkspace } from './components/project/ProjectWorkspace.jsx';
-import { startProjectReviewApi } from './services/projectApi.js';
+import { projectSnapshotForReview, startProjectReviewApi } from './services/projectApi.js';
 
 export default function App() {
   const getInitialRoute = () => {
@@ -536,7 +536,7 @@ export default function App() {
     if (!activeProject) return;
     setIsProjectAnalyzing(true);
     try {
-      const outcome = await startProjectReviewApi(activeProject.id);
+      const outcome = await startProjectReviewApi(activeProject.id, projectSnapshotForReview(activeProject, activeProjectReview));
       setActiveProjectReview(outcome.review);
       showToast('Project re-analyzed successfully.');
     } catch (err) {
