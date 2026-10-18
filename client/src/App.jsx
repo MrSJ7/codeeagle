@@ -20,7 +20,6 @@ import {
 import { AlertTriangle, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { LandingPage } from './components/LandingPage.jsx';
 import { ReviewOverview } from './components/ReviewOverview.jsx';
-import { ArchitectureFlow } from './components/ArchitectureFlow.jsx';
 import { HowItWorksModal } from './components/HowItWorksModal.jsx';
 import { ProjectImportModal } from './components/project/ProjectImportModal.jsx';
 import { ProjectOverview } from './components/project/ProjectOverview.jsx';
@@ -56,7 +55,7 @@ export default function App() {
   const [reviewData, setReviewData] = useState(null);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState(null);
-  const [activeLens, setActiveLens] = useState('findings'); // 'overview' | 'findings' | 'architecture'
+  const [activeLens, setActiveLens] = useState('findings'); // 'overview' | 'findings'
   const [mobileReviewPane, setMobileReviewPane] = useState('findings');
   const [currentReviewId, setCurrentReviewId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -253,16 +252,13 @@ export default function App() {
       }
 
       if (currentRoute === 'review') {
-        // Lens navigation: 1 (Overview), 2 (Findings), 3 (Architecture)
+        // Lens navigation: 1 (Overview), 2 (Findings)
         if (e.key === '1' && reviewStatus !== 'IDLE') {
           e.preventDefault();
           setActiveLens('overview');
         } else if (e.key === '2') {
           e.preventDefault();
           setActiveLens('findings');
-        } else if (e.key === '3' && reviewStatus !== 'IDLE') {
-          e.preventDefault();
-          setActiveLens('architecture');
         }
 
         // Issue navigation: J (next), K (prev)
@@ -556,10 +552,11 @@ export default function App() {
     <div
       className={`min-h-screen ${
         currentRoute === 'review' ? 'h-screen flex flex-col overflow-hidden' : 'flex flex-col'
-      } bg-slate-50 dark:bg-[#080808] text-slate-900 dark:text-[#F5F3EF] font-sans transition-opacity duration-200 ${
+      } ce-page font-sans transition-opacity duration-200 ${
         isTransitioning ? 'opacity-40' : 'opacity-100'
       }`}
     >
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] ce-button ce-action ce-focus">Skip to content</a>
       {currentRoute === 'landing' ? (
         <LandingPage
           onStartReviewing={() => {
@@ -602,7 +599,7 @@ export default function App() {
           />
 
           {projectNavView === 'overview' ? (
-            <main className="flex-1 min-h-0 overflow-y-auto bg-slate-50 dark:bg-[#080808]">
+            <main id="main-content" className="flex-1 min-h-0 overflow-y-auto ce-page">
               <ProjectOverview
                 project={activeProject}
                 review={activeProjectReview}
@@ -669,33 +666,13 @@ export default function App() {
             onSelectLens={setActiveLens}
           />
 
-          {reviewData && (
-            <nav aria-label="Review views" className="md:hidden flex items-center gap-1 px-3 py-2 border-b border-slate-200 dark:border-obsidian-800 bg-white dark:bg-obsidian-900">
-              {[
-                ['overview', 'Overview'],
-                ['findings', `Findings (${reviewData.issues?.length || 0})`],
-                ['architecture', 'Architecture'],
-              ].map(([view, label]) => (
-                <button
-                  key={view}
-                  type="button"
-                  onClick={() => setActiveLens(view)}
-                  aria-current={activeLens === view ? 'page' : undefined}
-                  className={`flex-1 px-2 py-2 text-xs font-semibold rounded-md transition-colors focus-visible:outline-2 focus-visible:outline-orange-500 ${activeLens === view ? 'bg-orange-100 text-orange-900 dark:bg-orange-500/15 dark:text-orange-300' : 'text-slate-600 dark:text-obsidian-300 hover:bg-slate-100 dark:hover:bg-obsidian-800'}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </nav>
-          )}
-
-          {reviewData && activeLens === 'findings' && <div className="shrink-0 px-4 md:px-6 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 bg-[#191916] border-b border-[#38362f] text-xs text-[#c5beb2]">
-            <span className="font-semibold text-[#f7f1e7]">{reviewData.issues?.filter((issue) => !(issue.severity === 'LOW' && issue.impactWeight <= 0.25)).length || 0} to inspect</span>
+          {reviewData && activeLens === 'findings' && <div className="shrink-0 px-4 md:px-6 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 ce-surface border-b ce-line text-xs ce-muted">
+            <span className="font-semibold text-[color:var(--ce-ink)]">{reviewData.issues?.filter((issue) => !(issue.severity === 'LOW' && issue.impactWeight <= 0.25)).length || 0} to inspect</span>
             <span>{reviewData.issues?.filter((issue) => issue.severity === 'CRITICAL' || issue.severity === 'HIGH').length || 0} high priority</span>
             <span>{reviewData.issues?.filter((issue) => issue.severity === 'LOW' && issue.impactWeight <= 0.25).length || 0} advisory</span>
             <span className="md:ml-auto">{isAiConfigured ? 'Static + AI review' : 'Static checks only'} · {currentFilename}</span>
-            {isStale && <button type="button" onClick={handleRunReview} className="text-orange-400 font-semibold underline">Changes need a new review</button>}
-            {patchDiff && <button type="button" onClick={() => setPatchDiff(null)} className="text-orange-400 underline">Dismiss applied patch notice</button>}
+            {isStale && <button type="button" onClick={handleRunReview} className="ce-accent font-semibold underline">Changes need a new review</button>}
+            {patchDiff && <button type="button" onClick={() => setPatchDiff(null)} className="ce-accent underline">Dismiss applied patch notice</button>}
           </div>}
 
           {/* Review in Progress Banner */}
@@ -728,7 +705,7 @@ export default function App() {
 
           {/* Main Content Area based on Active Lens */}
           {reviewStatus === 'SUCCESS' && activeLens === 'overview' ? (
-            <main className="flex-1 min-h-0 overflow-hidden bg-slate-50 dark:bg-obsidian-950">
+            <main id="main-content" className="flex-1 min-h-0 overflow-hidden ce-page">
               <ReviewOverview
                 reviewData={reviewData}
                 filename={currentFilename}
@@ -741,24 +718,11 @@ export default function App() {
                 }}
               />
             </main>
-          ) : reviewStatus === 'SUCCESS' && activeLens === 'architecture' ? (
-            <main className="flex-1 min-h-0 overflow-hidden bg-slate-50 dark:bg-obsidian-950">
-              <ArchitectureFlow
-                code={code}
-                issues={reviewData?.issues || []}
-                filename={currentFilename}
-                onSelectIssue={(issueId) => {
-                  setSelectedIssueId(issueId);
-                  setActiveLens('findings');
-                }}
-                onNavigateFindings={() => setActiveLens('findings')}
-              />
-            </main>
           ) : (
             /* Findings Lens / Code Workspace (Three-Column Layout) */
-            <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-obsidian-950">
-              {reviewData && <nav aria-label="Review workspace panels" className="lg:hidden flex shrink-0 p-1 gap-1 bg-[#161613] border-b border-[#33312b]">
-                {['findings', 'code', 'details'].map((pane) => <button key={pane} type="button" onClick={() => setMobileReviewPane(pane)} aria-pressed={mobileReviewPane === pane} className={`flex-1 py-2.5 rounded-md capitalize text-sm font-semibold focus-visible:outline-2 focus-visible:outline-orange-500 ${mobileReviewPane === pane ? 'bg-orange-500 text-[#18130c]' : 'text-[#aaa49a]'}`}>{pane}</button>)}
+            <main id="main-content" className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden ce-surface">
+              {reviewData && <nav aria-label="Review workspace panels" className="lg:hidden flex shrink-0 p-1 gap-1 ce-surface border-b ce-line">
+                {['findings', 'code', 'details'].map((pane) => <button key={pane} type="button" onClick={() => setMobileReviewPane(pane)} aria-pressed={mobileReviewPane === pane} className={`flex-1 py-2.5 rounded-md capitalize text-sm font-semibold focus-visible:outline-2 ce-focus ${mobileReviewPane === pane ? 'ce-action' : 'ce-muted'}`}>{pane}</button>)}
               </nav>}
               {/* Left Column: Review findings / Findings Queue */}
               {reviewData && <IssuePanel
@@ -793,7 +757,7 @@ export default function App() {
               </section>
 
               {/* Right Column: Selected Finding Details / Remediation */}
-              {currentSelectedIssue && <IssueDetails
+              {reviewData && <IssueDetails
                 issue={currentSelectedIssue}
                 onApplyPatch={handleApplyPatch}
                 onApplyFix={handleApplyPatch}

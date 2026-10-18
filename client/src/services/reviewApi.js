@@ -2,8 +2,8 @@ import { normalizeReviewData } from '../utils/reviewHelpers.js';
 
 /**
  * Resolves the backend API base URL with environment checks.
- * - In Vite production builds (import.meta.env.PROD), requires VITE_API_BASE_URL and throws if omitted.
- * - In development or Node test runners, falls back cleanly to http://localhost:5001.
+ * - A configured VITE_API_BASE_URL overrides same-origin API routes.
+ * - In the browser, uses same-origin API routes so Vite's proxy handles local development.
  * - Automatically trims trailing slashes to prevent double slashes.
  */
 export function getApiBaseUrl() {
@@ -25,7 +25,7 @@ export function getApiBaseUrl() {
     return '';
   }
 
-  return 'http://localhost:5001';
+  return typeof window !== 'undefined' ? '' : 'http://localhost:5001';
 }
 
 /**

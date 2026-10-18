@@ -202,6 +202,9 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-import-title"
         className={cn(
           "w-full max-w-xl rounded-xl border shadow-2xl flex flex-col overflow-hidden max-h-[90vh]",
           isLight ? "bg-white border-slate-200 text-slate-900" : "bg-[#0E0E0E] border-[#262626] text-obsidian-50"
@@ -215,12 +218,12 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
           <div className="flex items-center gap-2.5">
             <div className={cn(
               "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-              isLight ? "bg-blue-50 text-blue-600 border border-blue-200" : "bg-brand-500/10 text-brand-500 border border-brand-500/20"
+              isLight ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-brand-500/10 text-brand-500 border border-brand-500/20"
             )}>
               <Layers className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold tracking-tight">Review a project</h3>
+              <h3 id="project-import-title" className="text-base font-bold tracking-tight">Review a project</h3>
               <p className={cn("text-xs", isLight ? "text-slate-500" : "text-obsidian-400")}>
                 Upload source or import from GitHub to analyze multi-file codebases.
               </p>
@@ -230,6 +233,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close project import"
             className={cn(
               "p-1.5 rounded-lg transition-colors cursor-pointer",
               isLight ? "text-slate-400 hover:text-slate-700 hover:bg-slate-100" : "text-obsidian-400 hover:text-obsidian-100 hover:bg-[#1C1C1C]"
@@ -266,7 +270,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
                   className={cn(
                     "flex items-center justify-center gap-2 py-2 rounded-[5px] transition-all cursor-pointer",
                     activeTab === "zip"
-                      ? isLight ? "bg-white text-blue-600 shadow-xs" : "bg-[#1F1F1F] text-[#F5F3EF] shadow-xs"
+                      ? isLight ? "bg-white text-emerald-600 shadow-xs" : "bg-[#1F1F1F] text-[#F5F3EF] shadow-xs"
                       : isLight ? "text-slate-600 hover:text-slate-900" : "text-obsidian-400 hover:text-obsidian-200"
                   )}
                 >
@@ -280,7 +284,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
                   className={cn(
                     "flex items-center justify-center gap-2 py-2 rounded-[5px] transition-all cursor-pointer",
                     activeTab === "folder"
-                      ? isLight ? "bg-white text-blue-600 shadow-xs" : "bg-[#1F1F1F] text-[#F5F3EF] shadow-xs"
+                      ? isLight ? "bg-white text-emerald-600 shadow-xs" : "bg-[#1F1F1F] text-[#F5F3EF] shadow-xs"
                       : isLight ? "text-slate-600 hover:text-slate-900" : "text-obsidian-400 hover:text-obsidian-200"
                   )}
                 >
@@ -294,7 +298,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
                   className={cn(
                     "flex items-center justify-center gap-2 py-2 rounded-[5px] transition-all cursor-pointer",
                     activeTab === "github"
-                      ? isLight ? "bg-white text-blue-600 shadow-xs" : "bg-[#1F1F1F] text-[#F5F3EF] shadow-xs"
+                      ? isLight ? "bg-white text-emerald-600 shadow-xs" : "bg-[#1F1F1F] text-[#F5F3EF] shadow-xs"
                       : isLight ? "text-slate-600 hover:text-slate-900" : "text-obsidian-400 hover:text-obsidian-200"
                   )}
                 >
@@ -318,7 +322,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
                     className={cn(
                       "border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group",
                       isLight
-                        ? "border-slate-300 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/30"
+                        ? "border-slate-300 hover:border-emerald-500 bg-slate-50/50 hover:bg-emerald-50/30"
                         : "border-[#2A2A2A] hover:border-brand-500/60 bg-[#121212] hover:bg-[#161616]"
                     )}
                   >
@@ -336,7 +340,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
 
                     <div className={cn(
                       "w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105",
-                      isLight ? "bg-blue-100 text-blue-600" : "bg-brand-500/10 text-brand-500"
+                      isLight ? "bg-emerald-100 text-emerald-600" : "bg-brand-500/10 text-brand-500"
                     )}>
                       {isProcessing ? (
                         <Loader2 className="w-6 h-6 animate-spin" />
@@ -363,7 +367,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
                     className={cn(
                       "border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group",
                       isLight
-                        ? "border-slate-300 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/30"
+                        ? "border-slate-300 hover:border-emerald-500 bg-slate-50/50 hover:bg-emerald-50/30"
                         : "border-[#2A2A2A] hover:border-brand-500/60 bg-[#121212] hover:bg-[#161616]"
                     )}
                   >
@@ -379,7 +383,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
 
                     <div className={cn(
                       "w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105",
-                      isLight ? "bg-blue-100 text-blue-600" : "bg-brand-500/10 text-brand-500"
+                      isLight ? "bg-emerald-100 text-emerald-600" : "bg-brand-500/10 text-brand-500"
                     )}>
                       {isProcessing ? (
                         <Loader2 className="w-6 h-6 animate-spin" />
@@ -419,7 +423,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
                           className={cn(
                             "w-full pl-9 pr-3 py-2 text-xs rounded-lg border focus:outline-none focus:ring-2",
                             isLight
-                              ? "bg-white border-slate-200 text-slate-900 focus:ring-blue-500"
+                              ? "bg-white border-slate-200 text-slate-900 focus:ring-emerald-500"
                               : "bg-[#141414] border-[#2A2A2A] text-obsidian-50 focus:ring-brand-500"
                           )}
                         />
@@ -448,7 +452,7 @@ export function ProjectImportModal({ isOpen, onClose, onProjectReady, isAiConfig
                 "p-3 rounded-lg border text-xs flex items-center gap-2.5",
                 isLight ? "bg-slate-50 border-slate-200 text-slate-600" : "bg-[#121212] border-[#222222] text-obsidian-400"
               )}>
-                <ShieldCheck className={cn("w-4 h-4 shrink-0", isLight ? "text-blue-600" : "text-brand-500")} />
+                <ShieldCheck className={cn("w-4 h-4 shrink-0", isLight ? "text-emerald-600" : "text-brand-500")} />
                 <span>
                   <strong>Zero Code Execution:</strong> Your project files are parsed as static text. CodeEagle never runs build scripts, install commands, or untrusted code.
                 </span>

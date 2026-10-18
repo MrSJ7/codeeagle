@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext({
-  theme: 'dark',
-  isLight: false,
-  isDark: true,
+  theme: 'light',
+  isLight: true,
+  isDark: false,
   toggleTheme: () => {},
   setTheme: () => {},
 });
@@ -14,7 +14,7 @@ export function ThemeProvider({ children }) {
       const saved = localStorage.getItem('codeeagle_theme');
       if (saved === 'light' || saved === 'dark') return saved;
     }
-    return 'dark';
+    return 'light';
   });
 
   useEffect(() => {

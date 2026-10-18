@@ -209,27 +209,27 @@ export function ProjectWorkspace({
   }
 
   return (
-    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden bg-white dark:bg-[#10100f]">
-      <div className="shrink-0 px-4 py-3 flex items-center gap-3 border-b border-slate-200 dark:border-[#33312b] bg-slate-50 dark:bg-[#191916]">
-        <button type="button" onClick={onNavigateOverview} className="text-sm font-medium text-slate-600 dark:text-[#bcb5aa] hover:text-orange-600 dark:hover:text-orange-400 focus-visible:outline-2 focus-visible:outline-orange-500">← Project overview</button>
+    <div id="main-content" className="relative flex flex-col flex-1 min-h-0 overflow-hidden ce-workspace">
+      <div className="shrink-0 px-4 py-3 flex items-center gap-3 border-b ce-line ce-surface">
+        <button type="button" onClick={onNavigateOverview} className="text-sm font-medium text-slate-600 dark:text-[#bcb5aa] hover:ce-accent focus-visible:outline-2 ce-focus">← Project overview</button>
         <span className="text-slate-300 dark:text-[#514d45]">/</span>
-        <button type="button" onClick={() => setSidebarOpen((open) => !open)} aria-expanded={sidebarOpen} className="min-w-0 flex-1 text-left text-sm font-semibold text-slate-950 dark:text-[#f7f1e7] truncate hover:text-orange-600 dark:hover:text-orange-400 focus-visible:outline-2 focus-visible:outline-orange-500">{selectedFile?.path || 'Choose a file'} ▾</button>
+        <button type="button" onClick={() => setSidebarOpen((open) => !open)} aria-expanded={sidebarOpen} className="min-w-0 flex-1 text-left text-sm font-semibold text-slate-950 dark:text-[#f7f1e7] truncate hover:ce-accent focus-visible:outline-2 ce-focus">{selectedFile?.path || 'Choose a file'} ▾</button>
         <span className="hidden sm:inline text-xs text-slate-500 dark:text-[#aaa49a]">{currentIssues.length} findings · {review?.filesAnalyzed || 0} files reviewed</span>
       </div>
       {patchDiff && <PatchDiffBanner diff={patchDiff} onDismiss={() => setPatchDiff(null)} />}
-      {sidebarOpen && <div className="absolute z-30 top-[52px] left-0 bottom-0 w-[min(20rem,85vw)] bg-white dark:bg-[#141411] border-r border-slate-200 dark:border-[#33312b] shadow-2xl flex flex-col">
-        <div className="px-4 py-3 flex items-center justify-between border-b border-slate-200 dark:border-[#33312b]"><span className="text-sm font-semibold">Project files</span><button type="button" onClick={() => setSidebarOpen(false)} className="text-sm text-orange-600 dark:text-orange-400">Close</button></div>
+      {sidebarOpen && <div className="absolute z-30 top-[52px] left-0 bottom-0 w-[min(20rem,85vw)] bg-white dark:bg-[#141411] border-r ce-line shadow-2xl flex flex-col">
+        <div className="px-4 py-3 flex items-center justify-between border-b ce-line"><span className="text-sm font-semibold">Project files</span><button type="button" onClick={() => setSidebarOpen(false)} className="text-sm ce-accent">Close</button></div>
         <ProjectFileTree files={review?.files || []} activeFileId={selectedFile?.id} onSelectFile={(file) => { handleSelectFile(file); setSidebarOpen(false); setMobilePane('findings'); }} />
       </div>}
-      <nav aria-label="Project review panels" className="lg:hidden shrink-0 flex p-1 gap-1 bg-[#171714]">
-        {['findings', 'code', 'details'].map((pane) => <button key={pane} type="button" onClick={() => setMobilePane(pane)} aria-pressed={mobilePane === pane} className={`flex-1 min-h-10 rounded-md capitalize text-sm font-semibold ${mobilePane === pane ? 'bg-orange-500 text-[#1c150d]' : 'text-[#b8b1a5]'}`}>{pane}</button>)}
+      <nav aria-label="Project review panels" className="lg:hidden shrink-0 flex p-1 gap-1 ce-surface border-b ce-line">
+        {['findings', 'code', 'details'].map((pane) => <button key={pane} type="button" onClick={() => setMobilePane(pane)} aria-pressed={mobilePane === pane} className={`flex-1 min-h-10 rounded-md capitalize text-sm font-semibold ${mobilePane === pane ? 'ce-action' : 'ce-muted'}`}>{pane}</button>)}
       </nav>
       <div className="flex-1 min-h-0 flex overflow-hidden">
-        <IssuePanel issues={currentIssues} selectedIssueId={selectedIssueId} onSelectIssue={(id) => { setSelectedIssueId(id); setMobilePane('details'); }} reviewStatus="SUCCESS" filename={selectedFile?.path || 'source.js'} className={`w-full lg:w-80 xl:w-[350px] shrink-0 border-r border-slate-200 dark:border-[#33312b] ${mobilePane === 'findings' ? '' : 'hidden lg:flex'}`} />
+        <IssuePanel issues={currentIssues} selectedIssueId={selectedIssueId} onSelectIssue={(id) => { setSelectedIssueId(id); setMobilePane('details'); }} reviewStatus="SUCCESS" filename={selectedFile?.path || 'source.js'} className={`w-full lg:w-80 xl:w-[350px] shrink-0 border-r ce-line ${mobilePane === 'findings' ? '' : 'hidden lg:flex'}`} />
         <section className={`flex-1 min-w-0 min-h-0 ${mobilePane === 'code' ? '' : 'hidden lg:flex'}`}>
           {isLoadingFile ? <div className="flex-1 flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-[#aaa49a]"><Loader2 className="animate-spin" size={18}/>Loading source…</div> : selectedFile ? <CodeEditor code={fileContent} onChange={() => {}} readOnly={true} language={selectedFile.language || 'javascript'} filename={selectedFile.path} issues={currentIssues} highlightedIssue={selectedIssue} onSelectIssue={(id) => { setSelectedIssueId(typeof id === 'string' ? id : id?.id); setMobilePane('details'); }} /> : <div className="flex-1 flex items-center justify-center text-sm text-slate-500">Choose a file to review.</div>}
         </section>
-        <IssueDetails issue={selectedIssue} code={fileContent} filename={selectedFile?.path || 'source.js'} onGenerateRefactor={handleGenerateRefactor} isAiConfigured={isAiConfigured} isGeneratingRefactor={isGeneratingRefactor} onPreviewAiPatch={() => { setRefactorCandidate(null); setIsPatchModalOpen(true); }} isApplyingPatch={isPatching} className={`w-full lg:w-80 xl:w-[380px] shrink-0 border-l border-slate-200 dark:border-[#33312b] ${mobilePane === 'details' ? '' : 'hidden lg:flex'}`} />
+        <IssueDetails issue={selectedIssue} code={fileContent} filename={selectedFile?.path || 'source.js'} onGenerateRefactor={handleGenerateRefactor} isAiConfigured={isAiConfigured} isGeneratingRefactor={isGeneratingRefactor} onPreviewAiPatch={() => { setRefactorCandidate(null); setIsPatchModalOpen(true); }} isApplyingPatch={isPatching} className={`w-full lg:w-80 xl:w-[380px] shrink-0 border-l ce-line ${mobilePane === 'details' ? '' : 'hidden lg:flex'}`} />
       </div>
       {isPatchModalOpen && (refactorCandidate || selectedIssue) && <PatchPreview isOpen={isPatchModalOpen} onClose={() => { setIsPatchModalOpen(false); setRefactorCandidate(null); }} onConfirmApply={() => handleApplyPatch(refactorCandidate || selectedIssue)} issue={refactorCandidate || selectedIssue} previewData={refactorCandidate?.fix} isApplying={isPatching} />}
     </div>
