@@ -1,31 +1,549 @@
-import React, { useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle2, FileCode2, RefreshCw, Search, ShieldAlert, X } from 'lucide-react';
-import { Button } from '../ui/Button.jsx';
+import React, { useState, useMemo } from "react";
+import {
+  ShieldAlert,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  CheckCircle2,
+  FileCode,
+  ArrowRight,
+  Layers,
+  Sparkles,
+  GitBranch,
+  RefreshCw,
+  Clock,
+  ExternalLink,
+  Lightbulb,
+  Search,
+  X
+} from "lucide-react";
+import { Button } from "../ui/Button.jsx";
+import { useTheme } from "../../context/ThemeContext.jsx";
+import { cn } from "@/lib/utils";
 
-const isAdvisory = (item) => item.severity === 'LOW' && item.impactWeight <= 0.25;
+function getFileBadge(filename = "") {
+  const ext = filename.split(".").pop()?.toLowerCase();
+  switch (ext) {
+    case "ts":
+      return { label: "TS", color: "text-blue-500 bg-blue-500/10 border-blue-500/20" };
+    case "tsx":
+      return { label: "TSX", color: "text-cyan-500 bg-cyan-500/10 border-cyan-500/20" };
+    case "js":
+    case "mjs":
+    case "cjs":
+      return { label: "JS", color: "text-amber-500 bg-amber-500/10 border-amber-500/20" };
+    case "jsx":
+      return { label: "JSX", color: "text-orange-500 bg-orange-500/10 border-orange-500/20" };
+    case "json":
+      return { label: "JSON", color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" };
+    case "css":
+    case "scss":
+      return { label: "CSS", color: "text-pink-500 bg-pink-500/10 border-pink-500/20" };
+    default:
+      return { label: ext?.toUpperCase() || "FILE", color: "text-slate-400 bg-slate-400/10 border-slate-400/20" };
+  }
+}
 
-export function ProjectOverview({ project, review, onSelectFile, onSelectFinding, onOpenWorkspace, onReAnalyze, isAnalyzing = false }) {
-  const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState('all');
+/**
+ * High-Density Project Overview Screen
+ * Provides immediate executive visibility into project health, top priority defects, and files.
+ */
+export function ProjectOverview({
+  project,
+  review,
+  onSelectFile,
+  onSelectFinding,
+  onOpenWorkspace,
+  onReAnalyze,
+  isAnalyzing = false,
+}) {
+  const { isLight } = useTheme();
+
   if (!review) return null;
+
+  const score = review.score ?? 100;
+  const severityCounts = review.severityCounts || { critical: 0, high: 0, medium: 0, low: 0, total: 0 };
+  const topPriorities = review.topPriorities || [];
   const files = review.files || [];
-  const findings = review.findings || [];
-  const actionable = findings.filter((item) => !isAdvisory(item));
-  const advisories = findings.length - actionable.length;
-  const priorities = (review.topPriorities?.length ? review.topPriorities : actionable).filter((item) => !isAdvisory(item)).slice(0, 5);
-  const counts = review.severityCounts || {};
-  const filesWithIssues = files.filter((file) => (file.findingCount || 0) > 0);
-  const filteredFiles = useMemo(() => files.filter((file) => {
-    if (filter === 'findings' && !(file.findingCount > 0)) return false;
-    if (filter === 'clean' && (file.status !== 'SUCCESS' || file.findingCount > 0)) return false;
-    if (filter === 'skipped' && file.status !== 'SKIPPED') return false;
-    return (file.path || file.filename || '').toLowerCase().includes(query.toLowerCase().trim());
-  }), [files, filter, query]);
-  return <div className="ce-page px-4 py-6 sm:px-8 sm:py-9"><div className="mx-auto max-w-7xl space-y-6">
-    <header className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5"><div><p className="ce-label uppercase tracking-[.12em]">Project review / {review.sourceType || project?.sourceType || 'codebase'}</p><h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight break-words">{review.projectName || project?.name || 'Code project'}</h1><p className="ce-muted mt-2 text-sm">{review.filesAnalyzed || 0} analyzed · {review.filesSkipped || 0} skipped · {new Date(review.createdAt || Date.now()).toLocaleString()}</p></div><div className="flex flex-wrap gap-2">{onReAnalyze && <Button variant="secondary" onClick={onReAnalyze} disabled={isAnalyzing} isLoading={isAnalyzing} leftIcon={<RefreshCw size={16}/>}>Review again</Button>}<Button onClick={onOpenWorkspace} rightIcon={<ArrowRight size={16}/>}>Open workspace</Button></div></header>
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-[minmax(240px,1.4fr)_repeat(3,minmax(0,1fr))]"><div className="ce-panel col-span-2 md:col-span-1 p-5 sm:p-6"><p className="ce-label">Review score</p><div className="flex items-end gap-2 mt-4"><strong className="ce-stat">{review.score ?? '—'}</strong><span className="ce-muted pb-1">/ 100</span></div><p className="ce-muted mt-3 text-sm leading-6">A summary of enabled checks for reviewed files. Open findings to verify each result.</p></div><div className="ce-panel p-5"><p className="ce-label">Needs attention</p><strong className="block mt-6 text-4xl font-semibold tracking-tight">{actionable.length}</strong><p className="ce-muted mt-3 text-xs">{counts.critical || 0} critical · {counts.high || 0} high</p></div><div className="ce-panel p-5"><p className="ce-label">Files with findings</p><strong className="block mt-6 text-4xl font-semibold tracking-tight">{filesWithIssues.length}</strong><p className="ce-muted mt-3 text-xs">of {files.length} discovered files</p></div><div className="ce-panel col-span-2 md:col-span-1 p-5"><p className="ce-label">Advisories</p><strong className="block mt-6 text-4xl font-semibold tracking-tight">{advisories}</strong><p className="ce-muted mt-3 text-xs">Lower confidence or lower impact</p></div></div>
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,.75fr)]"><section className="ce-panel overflow-hidden"><div className="px-5 py-4 border-b ce-line flex items-center justify-between"><div><h2 className="text-lg font-semibold">Start here</h2><p className="ce-muted text-xs mt-1">Highest priority findings in this review</p></div><ShieldAlert size={18} className="ce-muted"/></div>{priorities.length ? <div>{priorities.map((finding, index) => <button key={finding.id || index} type="button" onClick={() => onSelectFinding?.(finding)} className="ce-issue-row ce-focus w-full text-left px-5 py-4 flex items-start gap-4"><span className={`ce-mono text-xs font-bold pt-1 ce-severity-${(finding.severity || 'low').toLowerCase()}`}>{finding.severity}</span><span className="min-w-0 flex-1"><strong className="block text-sm font-semibold">{finding.title}</strong><span className="ce-muted block text-xs leading-5 mt-1 line-clamp-2">{finding.description}</span><span className="ce-muted ce-mono block text-[11px] mt-2 truncate">{finding.path}:{finding.line}</span></span><ArrowRight size={16} className="ce-muted shrink-0 mt-1"/></button>)}</div> : <div className="px-5 py-10 text-center"><CheckCircle2 className="ce-accent mx-auto" size={28}/><h3 className="mt-3 font-semibold">No priority findings</h3><p className="ce-muted mt-1 text-sm">Enabled checks did not identify a high impact issue in these files.</p></div>}</section>
-    <section className="ce-panel overflow-hidden"><div className="px-5 py-4 border-b ce-line"><h2 className="text-lg font-semibold">Review scope</h2><p className="ce-muted text-xs mt-1">Know what was checked before acting on the score</p></div><dl className="divide-y" style={{borderColor:'var(--ce-line)'}}>{[['Analyzed files', review.filesAnalyzed || 0], ['Skipped files', review.filesSkipped || 0], ['Critical', counts.critical || 0], ['High', counts.high || 0], ['Medium', counts.medium || 0], ['Low', counts.low || 0]].map(([label, value]) => <div key={label} className="px-5 py-3 flex items-center justify-between border-b ce-line last:border-b-0"><dt className="ce-muted text-sm">{label}</dt><dd className="ce-mono text-sm font-semibold">{value}</dd></div>)}</dl></section></div>
-    <section className="ce-panel overflow-hidden"><div className="p-5 border-b ce-line flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"><div><h2 className="text-lg font-semibold">Files</h2><p className="ce-muted mt-1 text-xs">{filteredFiles.length} of {files.length} files</p></div><label className="flex items-center gap-2 border ce-line rounded-lg px-3 h-11 ce-surface min-w-0 sm:w-64"><Search size={16} className="ce-muted shrink-0"/><input aria-label="Search project files" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search file paths" className="bg-transparent min-w-0 w-full outline-none text-sm"/>{query && <button type="button" onClick={() => setQuery('')} aria-label="Clear search" className="ce-focus"><X size={15}/></button>}</label></div><div className="flex gap-1 overflow-x-auto px-4 border-b ce-line" role="group" aria-label="Filter files">{[['all','All'],['findings','Findings'],['clean','Clean'],['skipped','Skipped']].map(([id,label]) => <button type="button" key={id} aria-pressed={filter === id} onClick={() => setFilter(id)} className="ce-tab ce-focus whitespace-nowrap">{label}</button>)}</div><div>{filteredFiles.length ? filteredFiles.map((file) => <button key={file.id || file.path} type="button" onClick={() => onSelectFile?.(file)} disabled={file.status === 'SKIPPED'} className="ce-issue-row ce-focus w-full flex items-center gap-3 px-5 py-3.5 text-left disabled:opacity-60"><FileCode2 size={17} className="ce-muted shrink-0"/><span className="ce-mono text-xs sm:text-sm min-w-0 truncate flex-1">{file.path || file.filename}</span><span className={`ce-mono text-[11px] shrink-0 ${file.findingCount ? 'ce-severity-high' : 'ce-muted'}`}>{file.status === 'SKIPPED' ? 'Skipped' : file.findingCount ? `${file.findingCount} finding${file.findingCount === 1 ? '' : 's'}` : 'Clear'}</span><ArrowRight size={15} className="ce-muted shrink-0"/></button>) : <div className="p-8 text-center ce-muted text-sm">No files match this filter.</div>}</div></section>
-  </div></div>;
+
+  const filesWithIssues = files.filter((f) => (f.findingCount || 0) > 0);
+  const cleanFiles = files.filter((f) => f.status === "SUCCESS" && (f.findingCount || 0) === 0);
+  const skippedFiles = files.filter((f) => f.status === "SKIPPED");
+
+  const [fileSearch, setFileSearch] = useState("");
+  const [fileFilterTab, setFileFilterTab] = useState("all");
+
+  const filteredFiles = useMemo(() => {
+    return files.filter((file) => {
+      if (fileFilterTab === "issues" && (file.findingCount || 0) === 0) return false;
+      if (fileFilterTab === "clean" && (file.status !== "SUCCESS" || (file.findingCount || 0) > 0)) return false;
+      if (fileFilterTab === "skipped" && file.status !== "SKIPPED") return false;
+
+      if (!fileSearch.trim()) return true;
+      const q = fileSearch.toLowerCase().trim();
+      return (file.path || "").toLowerCase().includes(q) || (file.filename || "").toLowerCase().includes(q);
+    });
+  }, [files, fileSearch, fileFilterTab]);
+
+  return (
+    <div className="max-w-6xl mx-auto p-4 sm:p-8 space-y-8 animate-in fade-in duration-300">
+      {/* 1. Project Identity & Action Bar */}
+      <div className={cn(
+        "p-6 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm",
+        isLight ? "bg-white border-slate-200" : "bg-[#0E0E0E] border-[#222222]"
+      )}>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2.5">
+            <span className={cn(
+              "px-2.5 py-0.5 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider border",
+              isLight ? "bg-slate-100 border-slate-200 text-slate-700" : "bg-[#181818] border-[#2E2E2E] text-obsidian-300"
+            )}>
+              {review.sourceType || "Project"}
+            </span>
+            <h1 className="text-2xl font-bold tracking-tight">{review.projectName || project?.name || "Code Project"}</h1>
+          </div>
+          <div className={cn("flex flex-wrap items-center gap-4 text-xs font-sans", isLight ? "text-slate-500" : "text-obsidian-400")}>
+            <span>{review.filesAnalyzed} code files analyzed</span>
+            <span>·</span>
+            <span>{review.filesSkipped} files skipped</span>
+            <span>·</span>
+            <span className="flex items-center gap-1 font-mono">
+              <Clock className="w-3.5 h-3.5" />
+              {new Date(review.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          {onReAnalyze && (
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={onReAnalyze}
+              disabled={isAnalyzing}
+              isLoading={isAnalyzing}
+              leftIcon={<RefreshCw className="w-4 h-4" />}
+            >
+              Re-analyze
+            </Button>
+          )}
+
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={onOpenWorkspace}
+            rightIcon={<ArrowRight className="w-4 h-4" />}
+          >
+            Inspect findings by file ({review.findings?.length || 0})
+          </Button>
+        </div>
+      </div>
+
+      {/* 2. Health Score & Severity Breakdown Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        {/* Overall Project Health Score */}
+        <div className={cn(
+          "md:col-span-4 p-6 rounded-2xl border flex flex-col justify-between shadow-sm",
+          isLight ? "bg-white border-slate-200" : "bg-[#0E0E0E] border-[#222222]"
+        )}>
+          <span className={cn("text-xs font-semibold uppercase tracking-wider", isLight ? "text-slate-500" : "text-obsidian-400")}>
+            Project Health Score
+          </span>
+
+          <div className="my-4 flex items-baseline gap-3">
+            <span className="text-6xl font-black font-mono tracking-tight">{score}</span>
+            <span className={cn("text-xl font-medium", isLight ? "text-slate-400" : "text-obsidian-500")}>/ 100</span>
+          </div>
+
+          <div>
+            <div className={cn(
+              "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border",
+              score >= 85
+                ? isLight ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-emerald-950/30 text-emerald-400 border-emerald-900/40"
+                : score >= 60
+                ? isLight ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-amber-950/30 text-amber-400 border-amber-900/40"
+                : isLight ? "bg-red-50 text-red-700 border-red-200" : "bg-red-950/30 text-red-400 border-red-900/40"
+            )}>
+              {score >= 85 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+              <span>{review.healthStatusLabel || (score >= 85 ? "Healthy Codebase" : score >= 60 ? "Needs Attention" : "Critical Risk")}</span>
+            </div>
+            <p className={cn("text-xs mt-2 leading-relaxed", isLight ? "text-slate-600" : "text-obsidian-400")}>
+              {severityCounts.critical > 0
+                ? `${severityCounts.critical} critical security or reliability defects require immediate resolution.`
+                : severityCounts.total > 0
+                ? `${(severityCounts.critical || 0) + (severityCounts.high || 0) + (severityCounts.medium || 0)} issues to investigate; ${severityCounts.low || 0} advisories across ${filesWithIssues.length} files.`
+                : "Zero defects detected across all reviewed files."}
+            </p>
+          </div>
+        </div>
+
+        {/* Severity Counters & Scope Summary */}
+        <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className={cn(
+            "p-5 rounded-xl border flex flex-col justify-between shadow-xs",
+            isLight ? "bg-white border-slate-200" : "bg-[#0E0E0E] border-[#222222]"
+          )}>
+            <div className="flex items-center justify-between text-red-500">
+              <span className="text-xs font-bold uppercase">Critical</span>
+              <ShieldAlert className="w-4 h-4" />
+            </div>
+            <div className="text-3xl font-black font-mono my-2">{severityCounts.critical || 0}</div>
+            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Urgent findings</p>
+          </div>
+
+          <div className={cn(
+            "p-5 rounded-xl border flex flex-col justify-between shadow-xs",
+            isLight ? "bg-white border-slate-200" : "bg-[#0E0E0E] border-[#222222]"
+          )}>
+            <div className="flex items-center justify-between text-brand-500">
+              <span className="text-xs font-bold uppercase">High</span>
+              <AlertTriangle className="w-4 h-4" />
+            </div>
+            <div className="text-3xl font-black font-mono my-2">{severityCounts.high || 0}</div>
+            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>High impact findings</p>
+          </div>
+
+          <div className={cn(
+            "p-5 rounded-xl border flex flex-col justify-between shadow-xs",
+            isLight ? "bg-white border-slate-200" : "bg-[#0E0E0E] border-[#222222]"
+          )}>
+            <div className="flex items-center justify-between text-amber-500">
+              <span className="text-xs font-bold uppercase">Medium</span>
+              <AlertCircle className="w-4 h-4" />
+            </div>
+            <div className="text-3xl font-black font-mono my-2">{severityCounts.medium || 0}</div>
+            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Review soon</p>
+          </div>
+
+          <div className={cn(
+            "p-5 rounded-xl border flex flex-col justify-between shadow-xs",
+            isLight ? "bg-white border-slate-200" : "bg-[#0E0E0E] border-[#222222]"
+          )}>
+            <div className="flex items-center justify-between text-slate-400">
+              <span className="text-xs font-bold uppercase">Low</span>
+              <Info className="w-4 h-4" />
+            </div>
+            <div className="text-3xl font-black font-mono my-2">{severityCounts.low || 0}</div>
+            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Advisory findings</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Top Priority Findings */}
+      {topPriorities.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold tracking-tight">Issues to investigate first</h2>
+            <span className={cn("text-xs font-medium", isLight ? "text-slate-500" : "text-obsidian-400")}>
+              Ranked by severity, confidence and impact
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {topPriorities.map((finding, idx) => {
+              const lineDisplay = finding.endLine && finding.endLine !== finding.line
+                ? `Lines ${finding.line}–${finding.endLine}`
+                : `Line ${finding.line}`;
+
+              return (
+                <div
+                  key={finding.id || idx}
+                  onClick={() => onSelectFinding(finding)}
+                  className={cn(
+                    "p-4 rounded-xl border flex flex-col sm:flex-row sm:items-start justify-between gap-4 cursor-pointer transition-all hover:scale-[1.003] group",
+                    isLight
+                      ? "bg-white border-slate-200 hover:border-blue-500/50 hover:shadow-md"
+                      : "bg-[#0E0E0E] border-[#222222] hover:border-brand-500/40 hover:bg-[#121212]"
+                  )}
+                >
+                  <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                    <div className={cn(
+                      "w-6 h-6 rounded-md flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5",
+                      finding.severity === "CRITICAL"
+                        ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                        : finding.severity === "HIGH"
+                        ? "bg-brand-500/10 text-brand-500 border border-brand-500/20"
+                        : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                    )}>
+                      {idx + 1}
+                    </div>
+
+                    <div className="min-w-0 space-y-2 flex-1">
+                      {/* Header: Title, Severity, Rule, Category */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="text-sm font-bold group-hover:text-brand-400 transition-colors">
+                          {finding.title}
+                        </h4>
+                        <span className={cn(
+                          "px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase",
+                          finding.severity === "CRITICAL"
+                            ? "bg-red-500/15 text-red-500"
+                            : finding.severity === "HIGH"
+                            ? "bg-brand-500/15 text-brand-500"
+                            : "bg-amber-500/15 text-amber-500"
+                        )}>
+                          {finding.severity}
+                        </span>
+                        {finding.rule && (
+                          <span className={cn(
+                            "px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold border",
+                            isLight
+                              ? "bg-slate-100 border-slate-200 text-slate-700"
+                              : "bg-[#181818] border-[#2E2E2E] text-obsidian-300"
+                          )}>
+                            {finding.rule}
+                          </span>
+                        )}
+                        {finding.category && (
+                          <span className={cn(
+                            "text-[10px] font-mono uppercase tracking-wider font-semibold",
+                            isLight ? "text-slate-500" : "text-obsidian-400"
+                          )}>
+                            {finding.category}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Exact Defect Description (Unclamped) */}
+                      <p className={cn("text-xs leading-relaxed font-sans", isLight ? "text-slate-600" : "text-obsidian-300")}>
+                        {finding.description}
+                      </p>
+
+                      {/* Actionable Recommendation Callout */}
+                      {finding.recommendation && (
+                        <div className={cn(
+                          "p-2.5 rounded-lg border text-xs flex items-start gap-2.5",
+                          isLight
+                            ? "bg-amber-50/70 border-amber-200/80 text-amber-900"
+                            : "bg-amber-500/10 border-amber-500/20 text-amber-300"
+                        )}>
+                          <Lightbulb className="w-4 h-4 shrink-0 mt-0.5 text-amber-500" />
+                          <div className="space-y-0.5 min-w-0">
+                            <span className="font-semibold block text-[10px] uppercase tracking-wider">
+                              Recommended Fix
+                            </span>
+                            <span className={cn("leading-relaxed block", isLight ? "text-amber-800" : "text-amber-200/90")}>
+                              {finding.recommendation}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* File Path & Line Location */}
+                      <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground pt-0.5 flex-wrap">
+                        <span className="font-semibold text-slate-800 dark:text-obsidian-200">{finding.path}</span>
+                        <span>:</span>
+                        <span className="text-slate-600 dark:text-obsidian-400">{lineDisplay}</span>
+                        {typeof finding.confidence === 'number' && (
+                          <>
+                            <span>•</span>
+                            <span className="text-slate-500 dark:text-obsidian-500">{Math.round(finding.confidence * 100)}% confidence</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                    className="shrink-0 self-start sm:self-center"
+                  >
+                    Jump to Line
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 4. Files Breakdown Section */}
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-bold tracking-tight">Project File Breakdown</h2>
+            <p className={cn("text-xs", isLight ? "text-slate-500" : "text-obsidian-400")}>
+              Showing {filteredFiles.length} of {files.length} files
+            </p>
+          </div>
+
+          {/* Search Bar & Filter Tabs */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search files..."
+                value={fileSearch}
+                onChange={(e) => setFileSearch(e.target.value)}
+                className={cn(
+                  "w-44 sm:w-52 pl-8 pr-7 py-1 rounded-md text-xs font-mono outline-none border transition-all",
+                  isLight
+                    ? "bg-white border-slate-200 focus:border-blue-500 text-slate-900 placeholder:text-slate-400"
+                    : "bg-[#141414] border-[#262626] focus:border-brand-500 text-obsidian-100 placeholder:text-obsidian-500"
+                )}
+              />
+              {fileSearch && (
+                <button
+                  type="button"
+                  onClick={() => setFileSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1 p-0.5 rounded-lg border bg-slate-100/60 dark:bg-[#141414] dark:border-[#262626]">
+              <button
+                type="button"
+                onClick={() => setFileFilterTab("all")}
+                className={cn(
+                  "px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer",
+                  fileFilterTab === "all"
+                    ? isLight ? "bg-white text-slate-900 shadow-xs font-bold" : "bg-[#202020] text-white shadow-xs font-bold"
+                    : isLight ? "text-slate-600 hover:text-slate-900" : "text-obsidian-400 hover:text-obsidian-200"
+                )}
+              >
+                All ({files.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setFileFilterTab("issues")}
+                className={cn(
+                  "px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer",
+                  fileFilterTab === "issues"
+                    ? isLight ? "bg-white text-brand-600 shadow-xs font-bold" : "bg-[#202020] text-brand-400 shadow-xs font-bold"
+                    : isLight ? "text-slate-600 hover:text-slate-900" : "text-obsidian-400 hover:text-obsidian-200"
+                )}
+              >
+                Issues ({filesWithIssues.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setFileFilterTab("clean")}
+                className={cn(
+                  "px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer",
+                  fileFilterTab === "clean"
+                    ? isLight ? "bg-white text-emerald-600 shadow-xs font-bold" : "bg-[#202020] text-emerald-400 shadow-xs font-bold"
+                    : isLight ? "text-slate-600 hover:text-slate-900" : "text-obsidian-400 hover:text-obsidian-200"
+                )}
+              >
+                Clean ({cleanFiles.length})
+              </button>
+              {skippedFiles.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setFileFilterTab("skipped")}
+                  className={cn(
+                    "px-2.5 py-1 rounded text-xs font-medium transition-colors cursor-pointer",
+                    fileFilterTab === "skipped"
+                      ? isLight ? "bg-white text-slate-900 shadow-xs font-bold" : "bg-[#202020] text-white shadow-xs font-bold"
+                      : isLight ? "text-slate-600 hover:text-slate-900" : "text-obsidian-400 hover:text-obsidian-200"
+                  )}
+                >
+                  Filtered ({skippedFiles.length})
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {filteredFiles.length === 0 ? (
+          <div className={cn(
+            "p-12 text-center rounded-2xl border flex flex-col items-center justify-center gap-2",
+            isLight ? "bg-slate-50 border-slate-200" : "bg-[#0E0E0E] border-[#222222]"
+          )}>
+            <Search className="w-6 h-6 text-muted-foreground opacity-40" />
+            <p className="text-sm font-semibold">No matching files found</p>
+            <p className="text-xs text-muted-foreground">Try adjusting your search query or filter tab.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredFiles.map((file) => {
+              const hasIssues = (file.findingCount || 0) > 0;
+              const isSkipped = file.status === "SKIPPED";
+              const badge = getFileBadge(file.filename || file.path);
+              const dirPath = file.path?.includes("/") ? file.path.substring(0, file.path.lastIndexOf("/")) : "";
+
+              return (
+                <div
+                  key={file.id}
+                  onClick={() => !isSkipped && onSelectFile(file)}
+                  className={cn(
+                    "p-4 rounded-xl border flex flex-col justify-between gap-3 transition-all",
+                    isSkipped
+                      ? isLight ? "bg-slate-50 border-slate-200 opacity-60" : "bg-[#111111] border-[#222222] opacity-50"
+                      : isLight
+                      ? "bg-white border-slate-200 hover:border-blue-500/50 hover:shadow-md cursor-pointer group"
+                      : "bg-[#0E0E0E] border-[#222222] hover:border-brand-500/50 hover:bg-[#121212] cursor-pointer group"
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start gap-2 min-w-0">
+                      <span className={cn(
+                        "px-1 py-0.2 rounded text-[9px] font-mono font-bold border shrink-0 mt-0.5",
+                        badge.color
+                      )}>
+                        {badge.label}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-mono font-semibold truncate group-hover:text-blue-600 dark:group-hover:text-brand-400 transition-colors" title={file.path}>
+                          {file.filename || file.path.split("/").pop()}
+                        </div>
+                        {dirPath && (
+                          <div className="text-[10px] font-mono text-muted-foreground truncate" title={dirPath}>
+                            {dirPath}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {hasIssues ? (
+                      <span className={cn(
+                        "px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 font-mono",
+                        file.severityCounts?.critical > 0
+                          ? "bg-red-500/15 text-red-500"
+                          : file.severityCounts?.high > 0
+                          ? "bg-brand-500/15 text-brand-500"
+                          : "bg-amber-500/15 text-amber-500"
+                      )}>
+                        {file.findingCount} {file.findingCount === 1 ? "issue" : "issues"}
+                      </span>
+                    ) : isSkipped ? (
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[10px] font-mono text-muted-foreground border shrink-0"
+                        title={file.skipMessage || "Skipped from review"}
+                      >
+                        {file.skipReason === "CONFIG_FILE"
+                          ? "Config"
+                          : file.skipReason === "DECLARATION_FILE"
+                          ? "Types"
+                          : file.skipReason === "MINIFIED_FILE"
+                          ? "Bundle"
+                          : file.skipReason === "TEST_FILE"
+                          ? "Test"
+                          : "Skipped"}
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-500 shrink-0 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Clean
+                      </span>
+                    )}
+                  </div>
+
+                  <div className={cn("flex items-center justify-between text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>
+                    <span className="font-mono text-[10px]">{file.language}</span>
+                    <span>{file.lineCount ? `${file.lineCount} lines` : `${Math.round((file.size || 0) / 1024)} KB`}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

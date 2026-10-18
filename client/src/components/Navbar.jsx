@@ -1,50 +1,394 @@
 import React from 'react';
-import { ArrowRight, Check, CircleHelp, Code2, FolderGit2, History, Loader2, Moon, Play, Sun } from 'lucide-react';
+import {
+  Play,
+  Loader2,
+  History,
+  ArrowRight,
+  FileCode,
+  CheckCircle2,
+  AlertCircle,
+  Layers,
+  ListTree,
+  GitBranch,
+  HelpCircle,
+  Sun,
+  Moon,
+} from 'lucide-react';
+import { CodeEagleLogo } from './CodeEagleLogo.jsx';
+import { Button } from './ui/Button.jsx';
+import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext.jsx';
 
+/**
+ * CodeEagle Navbar: Context-Aware Navigation
+ * - variant="marketing" (Landing): Floating, refined marketing navigation with single clear CTA
+ * - variant="app" (Review Workspace): Precision IDE application shell with file context, 3 lenses, score & Run Review
+ */
 export function Navbar({
-  mode = 'workspace', variant = null, onRunAudit, onRunReview, isAuditing = false, isReviewing = false,
-  isStale = false, onToggleHistory, isHistoryOpen = false, historyCount = null,
-  onNavigateHome, onNavigateReview, onOpenProjectImport, onOpenHowItWorks,
-  filename = 'auth.js', language = 'JavaScript', lineCount = null, filesCount = null,
-  issueCount = null, reviewStatus = 'IDLE', score = null, activeLens = 'overview', onSelectLens,
+  mode = 'workspace', // 'landing' | 'workspace'
+  variant = null,     // 'marketing' | 'app' (takes precedence over mode)
+  onRunAudit,
+  onRunReview,
+  isAuditing = false,
+  isReviewing = false,
+  isStale = false,
+  onToggleHistory,
+  isHistoryOpen = false,
+  historyCount = null,
+  onNavigateHome,
+  onNavigateReview,
+  onOpenProjectImport = null,
+  onOpenHowItWorks,
+  filename = 'auth.js',
+  language = 'JavaScript',
+  lineCount = null,
+  filesCount = null,
+  issueCount = null,
+  reviewStatus = 'IDLE',
+  score = null,
+  activeLens = 'overview', // 'overview' | 'findings' | 'architecture'
+  onSelectLens = null,
 }) {
-  const { isLight, toggleTheme } = useTheme();
-  const marketing = variant === 'marketing' || mode === 'landing';
-  const running = isAuditing || isReviewing;
-  const run = onRunReview || onRunAudit;
-  const project = filesCount !== null;
-  const tabs = [['overview', 'Overview'], ['findings', 'Findings']];
+  const { isLight, isDark, toggleTheme } = useTheme();
+  const isMarketing = variant === 'marketing' || mode === 'landing';
+  const handleRun = onRunReview || onRunAudit;
+  const isRunning = isReviewing || isAuditing;
 
-  return <header className="relative z-30 shrink-0 ce-surface border-b ce-line">
-    <div className="mx-auto flex min-h-[64px] max-w-[1600px] items-center gap-3 px-4 sm:px-6">
-      <button type="button" onClick={onNavigateHome} className="ce-focus flex shrink-0 items-center gap-2.5 rounded-lg text-left" aria-label="CodeEagle home">
-        <span className="ce-mark" aria-hidden="true">C<span>E</span></span>
-        <span className="hidden min-[380px]:block text-[15px] font-bold tracking-[-.04em]">CodeEagle</span>
-      </button>
-      {!marketing && <div className="mx-1 hidden h-6 w-px bg-[var(--ce-line)] sm:block" />}
-      {!marketing && <div className="hidden min-w-0 items-center gap-2 sm:flex">
-        <Code2 size={15} className="ce-muted shrink-0" aria-hidden="true" />
-        <span className="max-w-[15rem] truncate ce-mono text-xs font-medium" title={filename}>{filename}</span>
-        <span className="hidden text-xs ce-muted xl:inline">{filesCount ? `${filesCount} files` : `${lineCount || 0} lines`}</span>
-      </div>}
-      <div className="min-w-0 flex-1" />
-      {marketing && <nav aria-label="Product" className="hidden items-center gap-1 md:flex">
-        <a href="#how-it-works" className="ce-ghost ce-focus rounded-md px-3 py-2 text-sm font-medium">How it works</a>
-        <a href="#architecture" className="ce-ghost ce-focus rounded-md px-3 py-2 text-sm font-medium">The workflow</a>
-      </nav>}
-      {typeof score === 'number' && !marketing && <span className="ce-chip hidden rounded-md px-2.5 py-1.5 ce-mono text-xs lg:inline-flex">Score {score}/100</span>}
-      {!marketing && reviewStatus === 'SUCCESS' && <span className="ce-accent hidden items-center gap-1 text-xs font-semibold lg:inline-flex"><Check size={14} /> Reviewed</span>}
-      {onOpenProjectImport && <button type="button" onClick={onOpenProjectImport} className="ce-outline ce-focus inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-2.5 text-sm font-semibold sm:px-3.5" aria-label="Import a project"><FolderGit2 size={17} /><span className="hidden sm:inline">Projects</span></button>}
-      {marketing && <button type="button" onClick={onNavigateReview} className="ce-action ce-focus ce-button hidden sm:inline-flex">Review code <ArrowRight size={16}/></button>}
-      {!marketing && <button type="button" onClick={run} disabled={running} className="ce-action ce-focus ce-button shrink-0 px-3 sm:px-4" aria-label={isStale ? 'Re-run code review' : 'Run code review'}>{running ? <Loader2 size={16} className="animate-spin" /> : <Play size={15} fill="currentColor" />}<span className="hidden min-[430px]:inline">{running ? 'Reviewing' : isStale ? 'Re-run review' : 'Run review'}</span></button>}
-      <button type="button" onClick={onToggleHistory} className="ce-ghost ce-focus relative grid min-h-11 min-w-11 place-items-center rounded-lg" aria-label={isHistoryOpen ? 'Close review history' : 'Open review history'}><History size={18}/>{historyCount > 0 && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-[var(--ce-action)]" />}</button>
-      <button type="button" onClick={toggleTheme} className="ce-ghost ce-focus grid min-h-11 min-w-11 place-items-center rounded-lg" aria-label={isLight ? 'Switch to dark mode' : 'Switch to light mode'}>{isLight ? <Moon size={18}/> : <Sun size={18}/>}</button>
-      {onOpenHowItWorks && !marketing && <button type="button" onClick={onOpenHowItWorks} className="ce-ghost ce-focus hidden min-h-11 min-w-11 place-items-center rounded-lg lg:grid" aria-label="How CodeEagle works"><CircleHelp size={18}/></button>}
-    </div>
-    {!marketing && onSelectLens && <nav aria-label="Review views" className="mx-auto flex max-w-[1600px] items-center gap-1 overflow-x-auto border-t ce-line px-3 sm:px-5">
-      {tabs.map(([id,label]) => <button key={id} type="button" onClick={() => onSelectLens(id)} aria-current={activeLens === id ? 'page' : undefined} className="ce-tab ce-focus shrink-0">{label}{id === 'findings' && issueCount > 0 ? <span className="ml-2 ce-mono text-[11px] opacity-70">{issueCount}</span> : null}</button>)}
-      {!marketing && <span className="ml-auto hidden whitespace-nowrap text-xs ce-muted sm:block">{project ? 'Project review' : language} {isStale ? '· changed since review' : ''}</span>}
-    </nav>}
-  </header>;
+  // --------------------------------------------------------------------------
+  // 1. MARKETING SHELL (Landing Page Navigation)
+  // --------------------------------------------------------------------------
+  if (isMarketing) {
+    return (
+      <header
+        className={cn(
+          'sticky top-0 z-50 w-full px-4 sm:px-8 select-none backdrop-blur-xl transition-colors',
+          isLight
+            ? 'bg-white/90 border-b border-slate-200/90 shadow-sm'
+            : 'bg-[#08090A]/92 border-b border-[#222222]/80 shadow-[0_4px_20px_rgba(0,0,0,0.6)]'
+        )}
+      >
+        <div className="max-w-7xl mx-auto h-16 flex items-center justify-between">
+          {/* Left: Brand Mark */}
+          <div className="flex items-center gap-8">
+            <button
+              type="button"
+              onClick={onNavigateHome}
+              className="flex items-center hover:opacity-90 transition-opacity cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[4px]"
+              title="CodeEagle — AI Code Review"
+            >
+              <CodeEagleLogo size={36} withText={true} withSubtitle={true} scrollCollapse={true} dark={isDark} />
+            </button>
+
+            {/* Center / Primary Marketing Navigation */}
+            <nav className={cn(
+              "hidden md:flex items-center gap-1 text-sm font-medium",
+              isLight ? "text-slate-600" : "text-[#A6A29B]"
+            )}>
+              <a
+                href="#workbench"
+                className={cn(
+                  "px-3 py-1.5 rounded-[5px] transition-colors cursor-pointer",
+                  isLight ? "hover:text-slate-900 hover:bg-slate-100" : "hover:text-[#F5F3EF] hover:bg-[#161616]"
+                )}
+              >
+                Product
+              </a>
+
+              <a
+                href="#how-it-works"
+                className={cn(
+                  "px-3 py-1.5 rounded-[5px] transition-colors cursor-pointer",
+                  isLight ? "hover:text-slate-900 hover:bg-slate-100" : "hover:text-[#F5F3EF] hover:bg-[#161616]"
+                )}
+              >
+                How It Works
+              </a>
+
+              <button
+                type="button"
+                onClick={onToggleHistory}
+                className={cn(
+                  "px-3 py-1.5 rounded-[5px] transition-colors flex items-center gap-1.5 cursor-pointer",
+                  isLight ? "hover:text-slate-900 hover:bg-slate-100" : "hover:text-[#F5F3EF] hover:bg-[#161616]"
+                )}
+              >
+                <span>History</span>
+                {typeof historyCount === 'number' && historyCount > 0 && (
+                  <span className={cn(
+                    "text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold border",
+                    isLight
+                      ? "bg-slate-100 text-slate-700 border-slate-200"
+                      : "bg-[#1A1A1A] text-[#D4D0C8] border-[#2A2A2A]"
+                  )}>
+                    {historyCount}
+                  </span>
+                )}
+              </button>
+            </nav>
+          </div>
+
+          {/* Right: Theme Toggle + Project Import + Single Primary CTA */}
+          <div className="flex items-center gap-3">
+            {onOpenProjectImport && (
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={onOpenProjectImport}
+                leftIcon={<Layers className="w-3.5 h-3.5" />}
+                className="hidden sm:flex"
+              >
+                Review a Project
+              </Button>
+            )}
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className={cn(
+                "p-2 rounded-[5px] transition-colors cursor-pointer flex items-center justify-center",
+                isLight
+                  ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 shadow-xs"
+                  : "text-[#A6A29B] hover:text-[#F5F3EF] hover:bg-[#181818] border border-transparent"
+              )}
+              title={isLight ? "Switch to Dark Mode" : "Switch to Light Mode"}
+              aria-label={isLight ? "Switch to Dark Mode" : "Switch to Light Mode"}
+            >
+              {isLight ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            </button>
+
+            <Button
+              variant="primary"
+              size="md"
+              onClick={onNavigateReview}
+              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+            >
+              Start Reviewing
+            </Button>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // --------------------------------------------------------------------------
+  // 2. APPLICATION SHELL (Precision Review IDE Cockpit)
+  // --------------------------------------------------------------------------
+  const lenses = [
+    { id: 'overview', label: 'Overview', icon: Layers },
+    { id: 'findings', label: 'Findings', icon: ListTree, count: issueCount },
+    { id: 'architecture', label: 'Architecture', icon: GitBranch },
+  ];
+
+  return (
+    <header
+      className={cn(
+        'h-12 px-4 sm:px-6 flex items-center justify-between select-none shrink-0 z-30 transition-colors shadow-xs',
+        isLight ? 'bg-white border-b border-slate-200 text-slate-900' : 'bg-[#0C0C0C] border-b border-[#222222] text-obsidian-50'
+      )}
+    >
+      {/* Left: CodeEagle Logo + Vertical Divider + Active File Context */}
+      <div className="flex items-center gap-3.5 min-w-0">
+        <button
+          type="button"
+          onClick={onNavigateHome}
+          className="flex items-center hover:opacity-85 transition-opacity cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-[4px]"
+          title="Return to Product Introduction"
+        >
+          <CodeEagleLogo size={28} withText={true} withSubtitle={true} dark={isDark} />
+        </button>
+
+        <div className={cn("h-4 w-px hidden sm:block shrink-0", isLight ? "bg-slate-200" : "bg-[#262626]")} />
+
+        {/* Active File Context & Status */}
+        <div className="hidden sm:flex items-center gap-2.5 text-xs min-w-0 font-sans">
+          <div className={cn(
+            "flex items-center gap-1.5 px-2.5 py-0.5 rounded-[4px] border font-mono text-[11px] shrink-0",
+            isLight ? "bg-slate-100 border-slate-200 text-slate-800" : "bg-[#141414] border-[#262626] text-[#D4D0C8]"
+          )}>
+            <FileCode className="w-3.5 h-3.5 text-brand-500 shrink-0" />
+            <span className="font-semibold">{filename}</span>
+          </div>
+
+          <span className={cn("text-[11px] hidden md:inline font-medium whitespace-nowrap shrink-0", isLight ? "text-slate-500" : "text-[#A6A29B]")}>
+            {language}
+            {filesCount ? ` · ${filesCount} ${filesCount === 1 ? 'file' : 'files'} analyzed` : lineCount ? ` · ${lineCount} lines` : ''}
+          </span>
+
+          {/* Status Indicator */}
+          {isRunning ? (
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-brand-500 font-semibold px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20">
+              <Loader2 className="w-3 h-3 animate-spin text-brand-500" />
+              <span>Analyzing...</span>
+            </span>
+          ) : isStale ? (
+            <span className="inline-flex items-center gap-1 text-[11px] text-amber-500 font-medium px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+              <AlertCircle className="w-3 h-3" />
+              <span>Modified</span>
+            </span>
+          ) : reviewStatus === 'SUCCESS' ? (
+            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>Reviewed</span>
+            </span>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Center: Cognitive Lens Switcher (Integrated In-Shell Tab Bar) */}
+      {onSelectLens && (
+        <div className={cn(
+          "hidden md:flex items-center gap-1 p-0.5 rounded-[6px] border",
+          isLight ? "bg-slate-100/90 border-slate-200" : "bg-[#101010] border-[#222222]"
+        )}>
+          {lenses.map((lens) => {
+            const Icon = lens.icon;
+            const isActive = activeLens === lens.id;
+            return (
+              <button
+                key={lens.id}
+                type="button"
+                onClick={() => onSelectLens(lens.id)}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1 rounded-[5px] text-xs font-semibold transition-all cursor-pointer select-none',
+                  isActive
+                    ? isLight
+                      ? 'bg-white text-blue-600 shadow-xs border border-slate-200'
+                      : 'bg-[#181818] text-[#F5F3EF] border border-[#333333] shadow-xs'
+                    : isLight
+                    ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 border border-transparent'
+                    : 'text-[#74716C] hover:text-[#A6A29B] hover:bg-[#141414] border border-transparent'
+                )}
+                aria-pressed={isActive}
+              >
+                <Icon className={cn('w-3.5 h-3.5', isActive ? (isLight ? 'text-blue-600' : 'text-brand-400') : (isLight ? 'text-slate-500' : 'text-[#74716C]'))} />
+                <span>{lens.label}</span>
+                {typeof lens.count === 'number' && lens.count > 0 && (
+                  <span
+                    className={cn(
+                      'text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold',
+                      isActive
+                        ? isLight
+                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                          : 'bg-brand-500/25 text-brand-400 border border-brand-500/35'
+                        : isLight
+                        ? 'bg-slate-200 text-slate-700 border border-slate-300'
+                        : 'bg-[#181818] text-[#A6A29B] border border-[#262626]'
+                    )}
+                  >
+                    {lens.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Right: Project Import, Score, History, Theme Toggle & RUN REVIEW */}
+      <div className="flex items-center gap-2.5 shrink-0">
+        {onOpenProjectImport && (
+          <Button
+            variant="secondary"
+            size="xs"
+            onClick={onOpenProjectImport}
+            leftIcon={<Layers className="w-3 h-3 text-brand-500" />}
+            className="h-8 px-2.5 hidden sm:flex"
+            title="Import or switch project"
+          >
+            <span>Projects</span>
+          </Button>
+        )}
+
+        {/* Normalized Score Badge */}
+        {typeof score === 'number' && (
+          <div className={cn(
+            "hidden lg:flex items-center gap-1 px-2.5 py-1 rounded-[4px] border text-xs font-mono",
+            isLight ? "bg-slate-100 border-slate-200" : "bg-[#141414] border-[#262626]"
+          )}>
+            <span className={isLight ? "text-slate-500" : "text-[#74716C]"}>Score</span>
+            <span className={cn("font-bold", isLight ? "text-slate-900" : "text-[#F5F3EF]")}>{score}</span>
+            <span className={isLight ? "text-slate-500" : "text-[#74716C]"}>/100</span>
+          </div>
+        )}
+
+        {onOpenHowItWorks && (
+          <button
+            type="button"
+            onClick={onOpenHowItWorks}
+            className={cn(
+              "p-1.5 rounded-[4px] transition-colors cursor-pointer hidden md:flex items-center gap-1 text-xs",
+              isLight
+                ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                : "text-[#A6A29B] hover:text-[#F5F3EF] hover:bg-[#181818]"
+            )}
+            title="How CodeEagle works"
+          >
+            <HelpCircle className="w-4 h-4" />
+            <span className="hidden xl:inline">Help</span>
+          </button>
+        )}
+
+        {/* Theme Toggle Button */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className={cn(
+            "p-1.5 rounded-[4px] transition-colors cursor-pointer flex items-center justify-center",
+            isLight
+              ? "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 shadow-xs"
+              : "text-[#A6A29B] hover:text-[#F5F3EF] hover:bg-[#181818] border border-transparent"
+          )}
+          title={isLight ? "Switch to Dark Mode" : "Switch to Light Mode"}
+          aria-label={isLight ? "Switch to Dark Mode" : "Switch to Light Mode"}
+        >
+          {isLight ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+        </button>
+
+        {/* History Drawer Trigger */}
+        <Button
+          variant={isHistoryOpen ? 'secondary' : 'ghost'}
+          size="xs"
+          onClick={onToggleHistory}
+          leftIcon={<History className={cn("w-3.5 h-3.5", isLight ? "text-slate-600" : "text-[#A6A29B]")} />}
+          aria-label={isHistoryOpen ? 'Close review history' : 'Open review history'}
+          className="h-8 px-2.5"
+        >
+          <span className="hidden sm:inline">History</span>
+          {typeof historyCount === 'number' && historyCount > 0 && (
+            <span className={cn(
+              "text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold border",
+              isLight
+                ? "bg-slate-100 text-slate-700 border-slate-200"
+                : "bg-[#1C1C1C] text-[#D4D0C8] border-[#262626]"
+            )}>
+              {historyCount}
+            </span>
+          )}
+        </Button>
+
+        {/* Primary Action Button: Blue in light mode / warm orange in dark mode */}
+        <Button
+          variant="primary"
+          size="xs"
+          onClick={handleRun}
+          disabled={isRunning}
+          isLoading={isRunning}
+          leftIcon={!isRunning ? <Play className="w-3 h-3 fill-current" /> : null}
+          aria-label={isStale ? 'Re-run code review' : 'Run code review'}
+          title="Run review (⌘ + Enter)"
+          className="h-8 px-3.5"
+        >
+          <span>{isStale ? 'Re-run Review' : 'Run Review'}</span>
+          <kbd className={cn(
+            "hidden lg:inline-block ml-1 px-1 py-0.2 text-[9px] font-mono rounded-[3px] font-bold",
+            isLight
+              ? "bg-blue-700/40 text-white"
+              : "bg-[#080808]/25 text-[#080808]"
+          )}>
+            ⌘↵
+          </kbd>
+        </Button>
+      </div>
+    </header>
+  );
 }

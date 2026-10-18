@@ -149,19 +149,19 @@ export function CodeEditor({
   const highlightStyles = getHighlightColor();
 
   return (
-    <div className="ce-editor flex flex-col h-full ce-code border-r border-[#334b41] overflow-hidden select-none">
+    <div className="flex flex-col h-full bg-white dark:bg-obsidian-900 border-r border-slate-200 dark:border-obsidian-800 overflow-hidden select-none">
       {/* Editor Header Bar */}
-      <div className="min-h-12 px-4 bg-[#172923] border-b border-[#334b41] flex items-center justify-between text-xs shrink-0 select-none">
+      <div className="h-10 px-4 bg-slate-50 dark:bg-obsidian-950 border-b border-slate-200 dark:border-obsidian-800 flex items-center justify-between text-xs shrink-0 select-none">
         {/* Left: File metadata */}
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex items-center gap-1.5 font-mono text-[#e8f5ec] font-semibold min-w-0">
-            <FileCode className="w-3.5 h-3.5 text-[#6ed49b]" />
+          <div className="flex items-center gap-1.5 font-mono text-slate-900 dark:text-obsidian-100 font-semibold min-w-0">
+            <FileCode className="w-3.5 h-3.5 text-blue-600 dark:text-brand-500" />
             <span className="truncate">{filename}</span>
           </div>
-          <span className="hidden sm:inline text-[#607c6a]">•</span>
-          <span className="hidden sm:inline text-[11px] font-mono text-[#a6bdad]">{language}</span>
-          <span className="hidden sm:inline text-[#607c6a]">•</span>
-          <span className="hidden sm:inline text-[11px] font-mono text-[#a6bdad]">{lineCount} lines</span>
+          <span className="hidden sm:inline text-slate-300 dark:text-obsidian-600">•</span>
+          <span className="hidden sm:inline text-[11px] font-mono text-slate-500 dark:text-obsidian-400">{language}</span>
+          <span className="hidden sm:inline text-slate-300 dark:text-obsidian-600">•</span>
+          <span className="hidden sm:inline text-[11px] font-mono text-slate-500 dark:text-obsidian-400">{lineCount} lines</span>
 
           {/* Active Highlight Badge & Jump */}
           {activeStartLine && (
@@ -192,7 +192,7 @@ export function CodeEditor({
           {/* Review Status Pill */}
           <div className="hidden sm:flex text-[11px] font-medium items-center gap-1.5 font-mono">
             {isStale ? (
-              <span className="flex items-center gap-1 text-amber-200 bg-amber-950/40 px-2 py-0.5 rounded-[4px] border border-amber-800/40">
+              <span className="flex items-center gap-1 text-amber-300 bg-amber-950/40 px-2 py-0.5 rounded-[4px] border border-amber-800/40">
                 <AlertTriangle className="w-3 h-3 text-amber-400" />
                 Modified
               </span>
@@ -202,12 +202,12 @@ export function CodeEditor({
                 Analyzing
               </span>
             ) : reviewStatus === 'SUCCESS' ? (
-              <span className="flex items-center gap-1 text-[#a3e9bf] bg-[#1b4c34] px-2 py-0.5 rounded-[4px] border border-emerald-800/40">
+              <span className="flex items-center gap-1 text-emerald-300 bg-emerald-950/40 px-2 py-0.5 rounded-[4px] border border-emerald-800/40">
                 <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                 Reviewed
               </span>
             ) : (
-              <span className="text-[#a6bdad]">Ready</span>
+              <span className="text-obsidian-400">Ready</span>
             )}
           </div>
 
@@ -217,7 +217,7 @@ export function CodeEditor({
               <button
                 type="button"
                 onClick={() => setIsPresetOpen((prev) => !prev)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-[#213b30] hover:bg-[#2f5040] text-[#e8f5ec] border border-[#3e5b49] text-xs font-mono font-medium transition-colors cursor-pointer shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-obsidian-850 hover:bg-obsidian-800 text-obsidian-200 border border-obsidian-750 text-xs font-mono font-medium transition-colors cursor-pointer shadow-sm"
                 title="Load sample code scenario"
               >
                 <span>Examples</span>
@@ -231,7 +231,7 @@ export function CodeEditor({
                     onClick={() => setIsPresetOpen(false)}
                   />
                   <div className="absolute right-0 mt-1.5 w-60 bg-white dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-700 rounded-[6px] shadow-2xl z-30 py-1 font-sans text-xs">
-                    <div className="px-3 py-1.5 text-[10px] font-mono text-[#a6bdad] uppercase tracking-wider border-b border-slate-200 dark:border-obsidian-800">
+                    <div className="px-3 py-1.5 text-[10px] font-mono text-slate-500 dark:text-obsidian-400 uppercase tracking-wider border-b border-slate-200 dark:border-obsidian-800">
                       Sample Scenarios
                     </div>
                     {presets.map((preset) => (
@@ -252,7 +252,7 @@ export function CodeEditor({
                             <span className="text-[10px] font-mono text-blue-600 dark:text-brand-400 font-bold">Active</span>
                           )}
                         </div>
-                        <div className="text-[11px] text-[#a6bdad] truncate">
+                        <div className="text-[11px] text-slate-500 dark:text-obsidian-400 truncate">
                           {preset.description}
                         </div>
                       </button>
@@ -267,7 +267,7 @@ export function CodeEditor({
             <button
               type="button"
               onClick={handleCopy}
-              className="flex items-center gap-1 px-2 py-1 rounded-[4px] bg-[#213b30] hover:bg-[#2f5040] text-[#e8f5ec] border border-[#3e5b49] text-xs font-mono transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-2 py-1 rounded-[4px] bg-slate-100 hover:bg-slate-200 dark:bg-obsidian-850 dark:hover:bg-obsidian-800 text-slate-700 dark:text-obsidian-300 border border-slate-200 dark:border-obsidian-750 text-xs font-mono transition-colors cursor-pointer"
               title="Copy code to clipboard"
             >
               {hasCopied ? (
@@ -291,7 +291,7 @@ export function CodeEditor({
         {/* Line Numbers Gutter */}
         <div
           ref={gutterRef}
-          className="w-12 py-3 bg-[#172923] border-r border-[#334b41] text-[#8ca597] text-right pr-3 select-none overflow-hidden shrink-0"
+          className="w-12 py-3 bg-slate-50 dark:bg-obsidian-950 border-r border-slate-200 dark:border-obsidian-800 text-slate-400 dark:text-obsidian-500 text-right pr-3 select-none overflow-hidden shrink-0"
           aria-hidden="true"
         >
           {lines.map((_, index) => {
@@ -343,7 +343,7 @@ export function CodeEditor({
         </div>
 
         {/* Code Canvas Container */}
-        <div className="relative flex-1 h-full overflow-hidden bg-[#101b1a]">
+        <div className="relative flex-1 h-full overflow-hidden bg-white dark:bg-obsidian-900">
           {/* Highlight Background Layer */}
           <div
             ref={overlayRef}
@@ -376,14 +376,14 @@ export function CodeEditor({
 
           {/* Empty State Overlay when buffer is cleared */}
           {!code.trim() && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none pointer-events-auto z-20 bg-[#101b1a]">
-              <div className="w-12 h-12 rounded-[8px] bg-blue-50 dark:bg-obsidian-850 border border-blue-200 dark:border-obsidian-750 flex items-center justify-center mb-4 text-[#6ed49b] shadow-xs">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center select-none pointer-events-auto z-20 bg-white dark:bg-obsidian-900">
+              <div className="w-12 h-12 rounded-[8px] bg-blue-50 dark:bg-obsidian-850 border border-blue-200 dark:border-obsidian-750 flex items-center justify-center mb-4 text-blue-600 dark:text-brand-500 shadow-xs">
                 <FileCode className="w-6 h-6" />
               </div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-obsidian-100 font-sans mb-1">
                 Paste your code
               </h3>
-              <p className="text-sm text-[#a6bdad] font-sans max-w-sm mb-5 leading-relaxed">
+              <p className="text-sm text-slate-500 dark:text-obsidian-400 font-sans max-w-sm mb-5 leading-relaxed">
                 Paste raw JavaScript or JSX source code to review, or select a pre-configured sample scenario:
               </p>
               <div className="flex items-center gap-2 flex-wrap justify-center font-mono text-xs">
@@ -415,7 +415,7 @@ export function CodeEditor({
             autoCorrect="off"
             aria-label={`Code editor for ${filename}`}
             className={cn(
-              "absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-[#e8f5ec] resize-none outline-none font-mono text-[13px] leading-6 selection:bg-blue-500/25 dark:selection:bg-brand-500/25 dark-editor-scrollbar overflow-auto z-10",
+              "absolute inset-0 w-full h-full py-3 px-4 bg-transparent text-slate-900 dark:text-[#E6EDF3] resize-none outline-none font-mono text-[13px] leading-6 selection:bg-blue-500/25 dark:selection:bg-brand-500/25 dark-editor-scrollbar overflow-auto z-10",
               readOnly && "cursor-default"
             )}
             style={{ tabSize: 2 }}
