@@ -71,6 +71,15 @@ assert.deepEqual(
   'Static and hybrid scoring use the same calculator',
 );
 assert.equal(analyzeCode('const JWT_SECRET = "super_secret_token_123456";').score, 75);
+assert.ok(!analyzeCode(`function Flip({ words, duration }) {
+  useEffect(() => { setIndex((i) => (i + 1) % words.length); }, [duration, words.length]);
+}`).issues.some((issue) => issue.rule === 'REACT-HOOK-DEPS'), 'A member read in the effect is covered by the same dependency expression');
+assert.ok(!analyzeCode(`async function copy(text) {
+  try { await navigator.clipboard.writeText(text); } catch {}
+}`).issues.some((issue) => issue.rule === 'QUAL-EMPTY-CATCH'), 'Optional clipboard denial is not reported as a bug');
+assert.ok(analyzeCode(`async function load() {
+  try { await save(); } catch {}
+}`).issues.some((issue) => issue.rule === 'QUAL-EMPTY-CATCH'), 'Unrelated swallowed failures are still reported');
 
 const pgSource = `import { Pool } from 'pg';
 const db = new Pool();

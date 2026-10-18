@@ -171,7 +171,7 @@ export function ProjectOverview({
               {severityCounts.critical > 0
                 ? `${severityCounts.critical} critical security or reliability defects require immediate resolution.`
                 : severityCounts.total > 0
-                ? `${severityCounts.total} total findings detected across ${filesWithIssues.length} files.`
+                ? `${(severityCounts.critical || 0) + (severityCounts.high || 0) + (severityCounts.medium || 0)} issues to investigate; ${severityCounts.low || 0} advisories across ${filesWithIssues.length} files.`
                 : "Zero defects detected across all reviewed files."}
             </p>
           </div>

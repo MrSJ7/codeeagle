@@ -28,6 +28,10 @@ function getMissingEffectDependencies(callbackPath, depsArray) {
   const existing = new Set(depsArray.elements
     .filter((element) => element?.type === 'Identifier')
     .map((element) => element.name));
+  const existingMemberReads = new Set(depsArray.elements
+    .filter((element) => element?.type === 'MemberExpression' && !element.computed &&
+      element.object.type === 'Identifier' && element.property.type === 'Identifier')
+    .map((element) => `${element.object.name}.${element.property.name}`));
   const missing = new Set();
 
   callbackPath.traverse({
@@ -38,6 +42,9 @@ function getMissingEffectDependencies(callbackPath, depsArray) {
       // Globals, imports and module constants do not change on component renders.
       if (!binding || binding.scope.path.isProgram() || isStableHookValue(binding)) return;
       if (isInsidePath(binding.path, callbackPath)) return;
+      const parent = refPath.parentPath?.node;
+      if (parent?.type === 'MemberExpression' && parent.object === refPath.node && !parent.computed &&
+          existingMemberReads.has(`${name}.${parent.property.name}`)) return;
       if (!existing.has(name)) missing.add(name);
     },
   });
@@ -217,6 +224,25 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
     // Quality Rule: Empty Catch Block
     CatchClause(path) {
       if (path.node.body && path.node.body.body.length === 0) {
+        const tryBody = path.parentPath?.node?.block?.body || [];
+        const isOptionalClipboardWrite = tryBody.some((statement) => {
+          let found = false;
+          const visit = (node) => {
+            if (!node || typeof node !== 'object' || found) return;
+            if (node.type === 'CallExpression' && node.callee?.type === 'MemberExpression' &&
+                node.callee.property?.name === 'writeText' &&
+                node.callee.object?.type === 'MemberExpression' &&
+                node.callee.object.object?.name === 'navigator' &&
+                node.callee.object.property?.name === 'clipboard') found = true;
+            for (const value of Object.values(node)) {
+              if (Array.isArray(value)) value.forEach(visit);
+              else if (value && typeof value === 'object') visit(value);
+            }
+          };
+          visit(statement);
+          return found;
+        });
+        if (isOptionalClipboardWrite) return;
         const line = path.node.loc?.start.line || 1;
         const meta = RULE_REGISTRY['QUAL-EMPTY-CATCH'];
         addIssue({
