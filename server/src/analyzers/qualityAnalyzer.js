@@ -156,10 +156,10 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         title: `High cyclomatic complexity (${fn.complexity}) in '${fn.name}'`,
         line: fn.startLine,
         endLine: fn.endLine,
-        description: `Function '${fn.name}' has a cyclomatic complexity of ${fn.complexity} (threshold > 10). The function contains ${fn.complexity - 1} branching decision points (if/else, loops, switch cases, or logical operators). High branch density creates exponential execution paths, making complete unit test coverage difficult and hiding edge-case defects.`,
-        recommendation: `Decompose '${fn.name}' into smaller single-responsibility helper functions. Use early returns (guard clauses) to exit early and eliminate branching conditions.`,
+        description: `Function '${fn.name}' has a measured cyclomatic complexity of ${fn.complexity} (threshold > 10). This suggests more paths to test when editing the function, but does not identify a failing path.`,
+        recommendation: `Review branches in '${fn.name}' while making related changes. Extract a decision into a named helper if it makes that decision easier to test.`,
         confidence: meta.confidence ?? 0.95,
-        impactWeight: meta.impactWeight ?? 0.70,
+        impactWeight: meta.impactWeight,
         fix: null,
       });
     }
@@ -176,10 +176,10 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
         title: `Excessive control-flow nesting (${fn.nesting} levels) in '${fn.name}'`,
         line: fn.startLine,
         endLine: fn.endLine,
-        description: `Function '${fn.name}' has ${fn.nesting} levels of nested control blocks (threshold > 4). Deep control nesting ("Pyramid of Doom") impairs readability, increases cognitive load, and obscures error handling paths.`,
-        recommendation: `Invert condition checks with early guard clauses ('if (!isValid) return;') to flatten nested if/loop/try blocks to the root indentation level.`,
+        description: `Function '${fn.name}' has ${fn.nesting} levels of nested control blocks (threshold > 4). This is a readability signal, not evidence of incorrect behavior.`,
+        recommendation: `Consider simplifying a specific nested branch in '${fn.name}' when modifying it, while preserving its behavior.`,
         confidence: meta.confidence ?? 0.95,
-        impactWeight: meta.impactWeight ?? 0.70,
+        impactWeight: meta.impactWeight,
         fix: null,
       });
     }
@@ -188,10 +188,10 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
       const meta = RULE_REGISTRY['QUAL-LENGTH'];
       const isSimple = (fn.complexity || 1) <= 6 && (fn.nesting || 0) <= 2;
       const confidence = isSimple ? 0.55 : 0.75;
-      const impactWeight = isSimple ? 0.15 : 0.30;
+      const impactWeight = meta.impactWeight;
       const description = isSimple
         ? `Function '${fn.name}' spans ${fn.lines} lines (threshold > 50). While cyclomatic complexity (${fn.complexity || 1}) and nesting (${fn.nesting || 0}) are moderate, large function length hinders readability and makes code harder to navigate.`
-        : `Function '${fn.name}' spans ${fn.lines} lines with elevated cyclomatic complexity (${fn.complexity || 1}) and nesting (${fn.nesting || 0}). Monolithic functions violate the Single Responsibility Principle and tend to mix setup, orchestration, business logic, and error handling into a single block.`;
+        : `Function '${fn.name}' spans ${fn.lines} lines with measured complexity ${fn.complexity || 1} and nesting ${fn.nesting || 0}. Consider its structure when making related changes; length alone does not indicate a defect.`;
       const recommendation = `Break down '${fn.name}' into focused, single-responsibility helper functions (e.g., separate setup, validation, execution, and error handling steps).`;
 
       addIssue({

@@ -816,6 +816,7 @@ export default function App() {
       {/* Project Import Modal */}
       <ProjectImportModal
         isOpen={isProjectImportOpen}
+        isAiConfigured={isAiConfigured}
         onClose={() => setIsProjectImportOpen(false)}
         onProjectReady={handleProjectReady}
       />

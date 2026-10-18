@@ -134,7 +134,7 @@ export function ProjectOverview({
             onClick={onOpenWorkspace}
             rightIcon={<ArrowRight className="w-4 h-4" />}
           >
-            Review All Findings ({review.findings?.length || 0})
+            Inspect findings by file ({review.findings?.length || 0})
           </Button>
         </div>
       </div>
@@ -188,7 +188,7 @@ export function ProjectOverview({
               <ShieldAlert className="w-4 h-4" />
             </div>
             <div className="text-3xl font-black font-mono my-2">{severityCounts.critical || 0}</div>
-            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Blockers / Secrets</p>
+            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Urgent findings</p>
           </div>
 
           <div className={cn(
@@ -200,7 +200,7 @@ export function ProjectOverview({
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div className="text-3xl font-black font-mono my-2">{severityCounts.high || 0}</div>
-            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Security / Memory</p>
+            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>High impact findings</p>
           </div>
 
           <div className={cn(
@@ -212,7 +212,7 @@ export function ProjectOverview({
               <AlertCircle className="w-4 h-4" />
             </div>
             <div className="text-3xl font-black font-mono my-2">{severityCounts.medium || 0}</div>
-            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Quality / Hooks</p>
+            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Review soon</p>
           </div>
 
           <div className={cn(
@@ -224,7 +224,7 @@ export function ProjectOverview({
               <Info className="w-4 h-4" />
             </div>
             <div className="text-3xl font-black font-mono my-2">{severityCounts.low || 0}</div>
-            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Style / Linters</p>
+            <p className={cn("text-[11px]", isLight ? "text-slate-500" : "text-obsidian-400")}>Advisory findings</p>
           </div>
         </div>
       </div>
@@ -233,9 +233,9 @@ export function ProjectOverview({
       {topPriorities.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold tracking-tight">Top Priority Defects</h2>
+            <h2 className="text-lg font-bold tracking-tight">Issues to investigate first</h2>
             <span className={cn("text-xs font-medium", isLight ? "text-slate-500" : "text-obsidian-400")}>
-              Ranked deterministically by severity and confidence
+              Ranked by severity, confidence and impact
             </span>
           </div>
 

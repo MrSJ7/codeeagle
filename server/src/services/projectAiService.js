@@ -30,13 +30,15 @@ export function selectAiCandidateFiles(files, fileResults, projectContext = null
     let relevance = 0;
 
     if (res) {
-      const issueCount = res.issues?.length || 0;
+      const actionableCount = (res.issues || []).filter((i) =>
+        i.severity !== 'LOW' || (Number.isFinite(i.impactWeight) && i.impactWeight > 0.25)
+      ).length;
       const criticalCount = (res.issues || []).filter((i) => i.severity === "CRITICAL").length;
       const highCount = (res.issues || []).filter((i) => i.severity === "HIGH").length;
       const complexity = res.metrics?.complexity || 0;
       const branches = res.metrics?.branches || 0;
 
-      relevance = (criticalCount * 12) + (highCount * 8) + (issueCount * 3) + (complexity * 2) + branches;
+      relevance = (criticalCount * 12) + (highCount * 8) + (actionableCount * 3) + Math.min(complexity, 12) + Math.min(branches, 10);
     }
 
     // Contextual graph metrics if available

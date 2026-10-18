@@ -50,6 +50,16 @@ assert.ok(styleReview.issues.length === 2, 'Style suggestions remain visible as 
 const projectAdvisory = calculateProjectScore(styleReview.issues.map((issue) => ({ ...issue, path: 'example.js' })), 1);
 assert.equal(projectAdvisory.score, 100, 'Project health also ignores low-impact style suggestions');
 assert.equal(projectAdvisory.topPriorities.length, 0, 'Project priorities exclude advisories');
+const branchingSource = `function choose(a,b,c,d,e,f,g,h,i,j,k) {
+  if (a) return 1; if (b) return 2; if (c) return 3; if (d) return 4;
+  if (e) return 5; if (f) return 6; if (g) return 7; if (h) return 8;
+  if (i) return 9; if (j) return 10; if (k) return 11; return 0;
+}`;
+const branchingReview = analyzeCode(branchingSource);
+const complexityAdvisory = branchingReview.issues.find((issue) => issue.rule === 'COMP-HIGH');
+assert.equal(complexityAdvisory?.severity, 'LOW', 'Complexity is labeled as a maintainability advisory');
+assert.equal(branchingReview.score, 100, 'Complexity alone does not lower defect score');
+assert.equal(calculateProjectScore([{ ...complexityAdvisory, path: 'choose.js' }], 1).topPriorities.length, 0, 'Complexity does not crowd project priorities');
 assert.ok(analyzeCode('items.forEach(async (item) => { await save(item); });').issues.some((issue) => issue.rule === 'QUAL-ASYNC-FOREACH'), 'Async forEach is flagged as a correctness risk');
 assert.ok(analyzeCode(`useEffect(() => {
   window.addEventListener('resize', onResize);

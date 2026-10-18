@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { runProjectStaticAnalysis } from "./projectAnalyzer.js";
-import { runProjectAiReview } from "./projectAiService.js";
+import { isGeminiConfigured, runProjectAiReview } from "./projectAiService.js";
 import { calculateProjectScore } from "./projectScoreCalculator.js";
 import { buildProjectContext } from "./projectContextService.js";
 import { projectRepository } from "../repositories/projectRepository.js";
@@ -50,7 +50,7 @@ export async function executeProjectReview({ manifest, onProgress = null }) {
   // Phase 1.5: Project Context & Dependency Graph Indexing
   const projectContext = buildProjectContext(manifest.files, staticResult.staticIssues);
 
-  if (onProgress) {
+  if (onProgress && isGeminiConfigured()) {
     onProgress({
       status: "ai-review",
       phase: "ai",

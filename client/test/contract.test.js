@@ -44,6 +44,10 @@ console.log('=== Starting Frontend Contract & Normalization Tests ===\n');
         source: 'STATIC',
         severity: 'CRITICAL',
         category: 'SECURITY',
+        ruleClass: 'SECURITY',
+        impactWeight: 0.2,
+        evidence: 'const KEY = "abc";',
+        path: 'src/auth.js',
         title: 'Hardcoded credential',
         line: 6,
         endLine: 6,
@@ -72,6 +76,9 @@ console.log('=== Starting Frontend Contract & Normalization Tests ===\n');
   };
 
   const normalized = normalizeReviewData(canonicalPayload);
+  assert(normalized.issues[0].impactWeight === 0.2, 'Impact weight survives API normalization for priority grouping');
+  assert(normalized.issues[0].path === 'src/auth.js', 'Source path survives API normalization');
+  assert(normalized.issues[0].evidence === 'const KEY = "abc";', 'Evidence survives API normalization');
 
   // Score
   assert(normalized.score === 82, 'Score preserved as 82');

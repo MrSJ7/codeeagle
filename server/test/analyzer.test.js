@@ -361,8 +361,8 @@ import { validateReviewContract } from '../src/utils/contractValidator.js';
     'SEC-EVAL': { severity: 'CRITICAL', category: 'SECURITY' },
     'SEC-FN-CTOR': { severity: 'HIGH', category: 'SECURITY' },
     'SEC-DANGEROUS-HTML': { severity: 'HIGH', category: 'SECURITY' },
-    'COMP-HIGH': { severity: 'HIGH', category: 'COMPLEXITY' },
-    'COMP-NESTING': { severity: 'HIGH', category: 'COMPLEXITY' },
+    'COMP-HIGH': { severity: 'LOW', category: 'COMPLEXITY' },
+    'COMP-NESTING': { severity: 'LOW', category: 'COMPLEXITY' },
     'REACT-HOOK-DEPS': { severity: 'HIGH', category: 'QUALITY' },
     'PERF-EFFECT-CLEANUP': { severity: 'HIGH', category: 'PERFORMANCE' },
     'QUAL-EMPTY-CATCH': { severity: 'MEDIUM', category: 'QUALITY' },
@@ -400,8 +400,8 @@ function complexBranchingFn(a, b, c, d, e, f, g, h, i, j, k) {
   const complexRes = analyzeCode(complexFnCode);
   const compHighIssue = complexRes.issues.find(i => i.rule === 'COMP-HIGH');
   assert(compHighIssue !== undefined, 'COMP-HIGH issue generated for complex function');
-  assert(compHighIssue.description.includes('branching decision points'), 'COMP-HIGH description explains exact branching decision points');
-  assert(compHighIssue.recommendation.includes('Decompose'), 'COMP-HIGH recommendation offers concrete decomposition advice');
+  assert(compHighIssue.description.includes('measured cyclomatic complexity'), 'COMP-HIGH description explains the measured signal');
+  assert(compHighIssue.recommendation.includes('Review branches'), 'COMP-HIGH recommendation gives a scoped review action');
 
   // Verify validateReviewContract on complex sample
   const sample = analyzeCode('const a = 1;\nfunction f() { return a; }');
