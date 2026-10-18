@@ -103,16 +103,70 @@ function isSafeHtmlValue(path, seen = new Set()) {
   return false;
 }
 
-function isRequestDerived(path, code) {
+function isRequestDerived(path, code, seen = new Set()) {
+  if (!path?.node) return false;
   const source = getNodeSource(code, path.node) || '';
   if (/\b(req|request)\.(body|query|params|headers)\b/.test(source)) return true;
+  if (path.isMemberExpression()) return isRequestDerived(path.get('object'), code, seen);
+  if (path.isTemplateLiteral()) return path.get('expressions').some((part) => isRequestDerived(part, code, seen));
+  if (path.isBinaryExpression()) return isRequestDerived(path.get('left'), code, seen) || isRequestDerived(path.get('right'), code, seen);
   if (!path.isIdentifier()) return false;
   const binding = path.scope.getBinding(path.node.name);
+  if (!binding || seen.has(binding)) return false;
+  seen.add(binding);
   const declaration = binding?.path?.isVariableDeclarator()
     ? binding.path
     : binding?.path?.findParent((parent) => parent.isVariableDeclarator());
   const bindingSource = declaration ? getNodeSource(code, declaration.node) : '';
-  return /\b(req|request)\.(body|query|params|headers)\b/.test(bindingSource || '');
+  if (/\b(req|request)\.(body|query|params|headers)\b/.test(bindingSource || '')) return true;
+  return Boolean(declaration?.get('init')?.node && isRequestDerived(declaration.get('init'), code, seen));
+}
+
+function postgresClientNames(ast) {
+  const constructors = new Set();
+  const clients = new Set();
+  for (const statement of ast.program.body) {
+    if (statement.type !== 'ImportDeclaration' || statement.source.value !== 'pg') continue;
+    for (const specifier of statement.specifiers) {
+      if (specifier.type === 'ImportSpecifier' && ['Pool', 'Client'].includes(specifier.imported.name)) {
+        constructors.add(specifier.local.name);
+      }
+    }
+  }
+  if (constructors.size === 0) return clients;
+  traverse(ast, { VariableDeclarator(path) {
+    if (path.node.id.type === 'Identifier' && path.node.init?.type === 'NewExpression' &&
+        constructors.has(path.node.init.callee.name)) clients.add(path.node.id.name);
+  } });
+  return clients;
+}
+
+function postgresTemplateFix(callPath, code, pgClients) {
+  const receiver = callPath.node.callee?.object?.name;
+  const query = callPath.get('arguments.0');
+  if (!pgClients.has(receiver) || !query.isTemplateLiteral() || callPath.node.arguments.length !== 1) return null;
+  const expressions = query.get('expressions');
+  if (expressions.length === 0) return null;
+  const quasis = query.node.quasis.map((part) => part.value.cooked);
+  if (quasis.some((part) => typeof part !== 'string')) return null;
+  const values = expressions.map((part) => getNodeSource(code, part.node));
+  if (values.some((value) => !value)) return null;
+  let sql = quasis[0];
+  for (let index = 0; index < expressions.length; index++) {
+    let next = quasis[index + 1];
+    // Only rewrite interpolation used as a SQL value, never identifiers or clauses.
+    if (!/[=(,]\s*'?$/u.test(sql)) return null;
+    if (sql.endsWith("'") && next.startsWith("'")) {
+      sql = sql.slice(0, -1);
+      next = next.slice(1);
+    } else if (sql.endsWith("'") || next.startsWith("'")) {
+      return null;
+    }
+    sql += `$${index + 1}` + next;
+  }
+  const original = getNodeSource(code, callPath.node);
+  const replacement = `${getNodeSource(code, callPath.node.callee)}(${JSON.stringify(sql)}, [${values.join(', ')}])`;
+  return { original, replacement };
 }
 
 /**
@@ -121,6 +175,7 @@ function isRequestDerived(path, code) {
 export function analyzeSecurity(ast, code = '') {
   const issues = [];
   const reportedKeys = new Set();
+  const pgClients = postgresClientNames(ast);
 
   function addIssue(issue) {
     const dedupKey = `${issue.rule}:${issue.line}`;
@@ -139,7 +194,7 @@ export function analyzeSecurity(ast, code = '') {
     if (unsafeValues.length === 0) return;
 
     const line = parts.sourcePath.node.loc?.start.line || path.node.loc?.start.line || 1;
-    const endLine = parts.sourcePath.node.loc?.end.line || line;
+    const endLine = path.node.loc?.end.line || line;
     const meta = RULE_REGISTRY['SEC-SQLI'];
     const sink = getNodeSource(code, path.node.callee) || 'query()';
     const requestInput = unsafeValues.some((value) => isRequestDerived(value, code));
@@ -158,7 +213,7 @@ export function analyzeSecurity(ast, code = '') {
       recommendation: 'Pass the SQL text and values separately using bind parameters supported by this database driver. Do not build query text with interpolation or concatenation.',
       confidence: requestInput ? 0.95 : 0.82,
       impactWeight: meta.impactWeight ?? 1.0,
-      fix: null,
+      fix: postgresTemplateFix(path, code, pgClients),
     });
   }
 

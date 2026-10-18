@@ -622,6 +622,7 @@ export default function App() {
             <ProjectWorkspace
               project={activeProject}
               review={activeProjectReview}
+              isAiConfigured={isAiConfigured}
               onUpdateReview={(newReview) => {
                 setActiveProjectReview(newReview);
                 setHistoryRefreshTrigger((prev) => prev + 1);

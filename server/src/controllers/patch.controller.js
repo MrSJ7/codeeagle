@@ -3,6 +3,7 @@ import { verifyAiPatch, applyAiPatch } from '../services/aiPatchVerifier.js';
 import { reviewCode } from '../services/reviewService.js';
 import { computeReviewDiff } from '../services/reviewDiff.js';
 import { reviewRepository } from '../repositories/reviewRepository.js';
+import { analyzeCode } from '../analyzers/analyzeCode.js';
 
 const ERROR_DETAILS = {
   [PATCH_REASONS.STALE_SOURCE]: {
@@ -145,6 +146,12 @@ export async function handleApplyPatch(req, res) {
       language,
       filename,
     });
+    const beforeStatic = analyzeCode(code, language, filename);
+    const beforeCount = beforeStatic.issues.filter((item) => item.rule === issue.rule).length;
+    const afterCount = afterReview.issues.filter((item) => item.rule === issue.rule).length;
+    if (afterReview.issues.some((item) => item.rule === 'SYNTAX') || afterCount >= beforeCount) {
+      return res.status(422).json({ error: { code: 'FIX_DID_NOT_RESOLVE', message: 'The edit did not resolve this finding without breaking the file.' } });
+    }
 
     // Persist new post-patch audit (separate from original review)
     let reviewId = null;

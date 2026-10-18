@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
-import { applyPatch, verifyPatch, applyStringPatch } from "./patchService.js";
-import { applyAiPatch, verifyAiPatch } from "./aiPatchVerifier.js";
+import { applyPatch } from "./patchService.js";
+import { applyAiPatch } from "./aiPatchVerifier.js";
 import { analyzeCode } from "../analyzers/analyzeCode.js";
 import { computeCodeHash } from "../utils/codeHasher.js";
 import { calculateProjectScore } from "./projectScoreCalculator.js";
@@ -96,34 +96,10 @@ export async function applyProjectPatch({
 
   // Apply patch according to source (STATIC vs AI vs Refactor Override)
   let patchOutcome;
-  if (patchOverride && typeof patchOverride === "object" && patchOverride.original && patchOverride.replacement) {
-    const original = patchOverride.original;
-    const replacement = patchOverride.replacement;
-    const firstIndex = originalSource.indexOf(original);
-    if (firstIndex === -1) {
-      const err = new Error("Original code snippet to be replaced was not found in source.");
-      err.code = "ORIGINAL_NOT_FOUND";
-      err.status = 422;
-      throw err;
-    }
-    const beforeHash = currentFileHash;
-    const patchedCode = applyStringPatch({ code: originalSource, original, replacement, firstIndex });
-    const afterHash = computeCodeHash(patchedCode);
-    patchOutcome = {
-      success: true,
-      patchedCode,
-      beforeHash,
-      afterHash,
-      rule: patchFinding.rule,
-    };
-  } else {
-    const isAi = patchFinding.source === "AI";
-    if (isAi) {
-      patchOutcome = applyAiPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
-    } else {
-      patchOutcome = applyPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
-    }
-  }
+  const isAi = patchFinding.source === "AI";
+  patchOutcome = isAi
+    ? applyAiPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding })
+    : applyPatch({ code: originalSource, codeHash: currentFileHash, issue: patchFinding });
 
   if (!patchOutcome.success) {
     const err = new Error(`Failed to apply patch: ${patchOutcome.reason || "Verification failed"}`);
@@ -137,6 +113,14 @@ export async function applyProjectPatch({
 
   // Run targeted re-analysis on modified file
   const reAnalysis = analyzeCode(patchedSource, reviewFile.language || "javascript", reviewFile.filename || reviewFile.path);
+  const beforeRuleCount = (reviewFile.issues || []).filter((issue) => issue.rule === finding.rule).length;
+  const afterRuleCount = (reAnalysis.issues || []).filter((issue) => issue.rule === finding.rule).length;
+  if (reAnalysis.issues.some((issue) => issue.rule === "SYNTAX") || afterRuleCount >= beforeRuleCount) {
+    const err = new Error("Suggested edit did not resolve the finding without breaking the file.");
+    err.code = "FIX_DID_NOT_RESOLVE";
+    err.status = 422;
+    throw err;
+  }
 
   const newReviewId = `prev_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
 

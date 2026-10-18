@@ -81,6 +81,52 @@ function hasMissingListenerCleanup(callbackPath, code) {
   return true;
 }
 
+function listenerCleanupFix(callbackPath, code) {
+  const body = callbackPath.get('body');
+  if (!body.isBlockStatement() || body.get('body').some((statement) => statement.isReturnStatement())) return null;
+  const calls = [];
+  callbackPath.traverse({ CallExpression(path) {
+    if (isMethodCall(path.node, 'addEventListener')) calls.push(path);
+  } });
+  if (calls.length !== 1) return null;
+  const call = calls[0];
+  if (!call.parentPath.isExpressionStatement() || call.parentPath.parentPath !== body) return null;
+  const handler = call.get('arguments.1');
+  if (!handler?.isIdentifier() || !handler.scope.getBinding(handler.node.name)) return null;
+  const target = getNodeSource(code, call.node.callee.object);
+  const event = getNodeSource(code, call.node.arguments[0]);
+  if (!target || !event) return null;
+  const original = getNodeSource(code, callbackPath.node);
+  const closeIndex = body.node.end - callbackPath.node.start - 1;
+  const lineStart = code.lastIndexOf('\n', call.node.start - 1) + 1;
+  const indent = code.slice(lineStart, call.node.start).match(/^\s*/)?.[0] || '  ';
+  const callbackLineStart = code.lastIndexOf('\n', callbackPath.node.start - 1) + 1;
+  const outerIndent = code.slice(callbackLineStart, callbackPath.node.start).match(/^\s*/)?.[0] || '';
+  const replacement = original.slice(0, closeIndex).trimEnd() +
+    `\n${indent}return () => ${target}.removeEventListener(${event}, ${handler.node.name});\n${outerIndent}` +
+    original.slice(closeIndex);
+  return verifyFixSnippet(code, { original, replacement });
+}
+
+function asyncForEachFix(callPath, code) {
+  if (!callPath.parentPath.isExpressionStatement() || callPath.node.arguments.length !== 1) return null;
+  const enclosingFunction = callPath.findParent((parent) => parent.isFunction());
+  if (!enclosingFunction?.node.async) return null;
+  const receiver = callPath.get('callee.object');
+  const isArray = receiver.isArrayExpression() || (receiver.isIdentifier() &&
+    receiver.scope.getBinding(receiver.node.name)?.path?.isVariableDeclarator() &&
+    receiver.scope.getBinding(receiver.node.name).path.get('init').isArrayExpression());
+  if (!isArray) return null;
+  const original = getNodeSource(code, callPath.node);
+  const receiverSource = getNodeSource(code, receiver.node);
+  const callbackSource = getNodeSource(code, callPath.node.arguments[0]);
+  if (!original || !receiverSource || !callbackSource) return null;
+  return verifyFixSnippet(code, {
+    original,
+    replacement: `await Promise.all(${receiverSource}.map(${callbackSource}))`,
+  });
+}
+
 /**
  * Deterministic Code Quality, Complexity, and React Rules
  */
@@ -226,7 +272,8 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
           severity: meta.defaultSeverity, category: meta.category, ruleClass: meta.ruleClass,
           title: meta.title, line, endLine: path.node.loc?.end.line || line,
           description: meta.description, recommendation: meta.recommendation,
-          confidence: meta.confidence, impactWeight: meta.impactWeight, fix: null });
+          confidence: meta.confidence, impactWeight: meta.impactWeight,
+          fix: asyncForEachFix(path, code) });
       }
 
       // React Rules: useEffect
@@ -257,7 +304,7 @@ export function analyzeQuality(ast, code = '', functionMetrics = []) {
                 recommendation: meta.recommendation,
                 confidence: meta.confidence ?? 0.85,
                 impactWeight: meta.impactWeight ?? 0.85,
-                fix: null, // Manual refactor required to ensure identical callback references
+                fix: listenerCleanupFix(path.get('arguments.0'), code),
               });
           }
 

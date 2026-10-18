@@ -84,7 +84,7 @@ export function PatchPreview({
           <div className="flex items-center gap-2 px-3 py-2 rounded-[6px] bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-mono">
             <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>
-              Lines {startLine}{endLine !== startLine ? `–${endLine}` : ''} · Source match verified. Check the behavior before applying.
+              Lines {startLine}{endLine !== startLine ? `–${endLine}` : ''} · Review the diff. The server checks the source and reanalyzes the edit before saving.
             </span>
           </div>
 

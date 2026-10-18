@@ -8,6 +8,7 @@ import { analyzeCodeWithGemini } from './geminiService.js';
 import { normalizeAiFindings } from './issueNormalizer.js';
 import { deduplicateAiAgainstStatic } from './issueDeduplicator.js';
 import { calculateScores, calculateSummary } from './scoreCalculator.js';
+import { verifyPatch } from './patchService.js';
 
 const SEVERITY_ORDER = { CRITICAL: 1, HIGH: 2, MEDIUM: 3, LOW: 4 };
 
@@ -31,6 +32,22 @@ function sortMergedIssues(issues = []) {
 
     return (a.id || '').localeCompare(b.id || '');
   });
+}
+
+function verifyStaticFixes(result, code, language) {
+  for (const issue of result.issues) {
+    if (!issue.fix) continue;
+    const patch = verifyPatch({ code, codeHash: result.metadata.codeHash, issue });
+    if (!patch.applicable) { issue.fix = null; continue; }
+    const after = analyzeCode(patch.patchedCode, language);
+    const beforeRuleCount = result.issues.filter((item) => item.rule === issue.rule).length;
+    const afterRuleCount = after.issues.filter((item) => item.rule === issue.rule).length;
+    const beforeSevere = result.issues.filter((item) => ['CRITICAL', 'HIGH'].includes(item.severity)).length;
+    const afterSevere = after.issues.filter((item) => ['CRITICAL', 'HIGH'].includes(item.severity)).length;
+    if (after.issues.some((item) => item.rule === 'SYNTAX') || afterRuleCount >= beforeRuleCount || afterSevere > beforeSevere) {
+      issue.fix = null;
+    }
+  }
 }
 
 /**
@@ -58,6 +75,7 @@ export async function reviewCode({
 
   // 1. Run deterministic static AST analysis
   const staticResult = analyzeCode(code, normalizedLang, filename);
+  verifyStaticFixes(staticResult, code, normalizedLang);
 
   // If code contains syntax errors, return static review immediately
   const hasSyntaxError = staticResult.issues.some((i) => i.rule === 'SYNTAX');

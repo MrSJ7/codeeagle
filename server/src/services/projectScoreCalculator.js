@@ -97,9 +97,11 @@ export function calculateProjectScore(allIssues = [], filesAnalyzed = 1) {
     const isCorrelated = seenLineRanges.has(lineKey);
     seenLineRanges.add(lineKey);
 
-    let effectivePenalty = basePenalty;
-    if (isCorrelated) {
-      effectivePenalty = Math.round(basePenalty * 0.5); // 50% discount on duplicate line penalties
+    let effectivePenalty = sev === "LOW" && Number.isFinite(issue.impactWeight) && issue.impactWeight <= 0.25
+      ? 0
+      : basePenalty;
+    if (isCorrelated && effectivePenalty > 0) {
+      effectivePenalty = Math.round(effectivePenalty * 0.5); // 50% discount on duplicate line penalties
     }
 
     // Maintainability heuristics cap
@@ -176,7 +178,9 @@ export function calculateProjectScore(allIssues = [], filesAnalyzed = 1) {
     return (a.line || 0) - (b.line || 0);
   });
 
-  const topPriorities = sortedIssues.slice(0, 5);
+  const topPriorities = sortedIssues
+    .filter((issue) => !(issue.severity === "LOW" && Number.isFinite(issue.impactWeight) && issue.impactWeight <= 0.25))
+    .slice(0, 5);
 
   return {
     score: normalizedScore,

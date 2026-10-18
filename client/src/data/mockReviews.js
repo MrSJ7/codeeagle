@@ -5,28 +5,28 @@ export const PRESETS = [
     description: 'Express auth endpoint with SQL injection and hardcoded secret',
     code: `import express from 'express';
 import jwt from 'jsonwebtoken';
-import db from '../database.js';
+import { Pool } from 'pg';
 
 const router = express.Router();
+const db = new Pool();
 const JWT_SECRET = 'super_secret_jwt_key_998822_do_not_share';
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   // Unsafe query vulnerable to SQL injection
-  const query = \`SELECT * FROM users WHERE email = '\${email}' AND password = '\${password}'\`;
-  const user = await db.query(query);
+  const { rows } = await db.query(\`SELECT * FROM users WHERE email = '\${email}' AND password = '\${password}'\`);
 
-  if (!user || user.length === 0) {
+  if (rows.length === 0) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
   // Generate token with hardcoded secret
-  const token = jwt.sign({ id: user[0].id, role: user[0].role }, JWT_SECRET, {
+  const token = jwt.sign({ id: rows[0].id, role: rows[0].role }, JWT_SECRET, {
     expiresIn: '7d'
   });
 
-  res.json({ token, userId: user[0].id });
+  res.json({ token, userId: rows[0].id });
 });
 
 export default router;`
@@ -43,9 +43,10 @@ export function UserActivityFeed({ userId }) {
 
   // Missing cleanup function causes memory leak
   useEffect(() => {
-    window.addEventListener('scroll', () => {
+    const handleScroll = () => {
       setScrollPos(window.scrollY);
-    });
+    };
+    window.addEventListener('scroll', handleScroll);
   }, []);
 
   // Missing dependency in effect array
