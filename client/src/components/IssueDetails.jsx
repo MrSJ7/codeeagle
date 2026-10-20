@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 import { SeverityBadge } from './SeverityBadge.jsx';
 import { Button } from './ui/Button.jsx';
+import { EagleEmblem } from './CodeEagleLogo.jsx';
+import { sendReviewChatApi } from '../services/reviewApi.js';
+import { MessageSquare, Send } from 'lucide-react';
 
 function getArchitecturePattern(issue) {
   const rule = issue?.rule || '';
@@ -243,6 +246,36 @@ export function IssueDetails({
 }) {
   const [copyStatus, setCopyStatus] = useState(null);
   const [patternCopyStatus, setPatternCopyStatus] = useState(false);
+  const [chatQuery, setChatQuery] = useState('');
+  const [chatAnswer, setChatAnswer] = useState(null);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [chatCopied, setChatCopied] = useState(false);
+
+  const handleAskInline = async (customPrompt = null) => {
+    const q = (customPrompt || chatQuery).trim();
+    if (!q || isChatLoading) return;
+
+    setIsChatLoading(true);
+    try {
+      const res = await sendReviewChatApi({
+        filename: filename || issue?.path || 'source.js',
+        issue,
+        question: q,
+      });
+      setChatAnswer({
+        question: q,
+        reply: res.reply || 'No response generated.',
+      });
+      setChatQuery('');
+    } catch (err) {
+      setChatAnswer({
+        question: q,
+        reply: `Error: ${err.message}`,
+      });
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
 
   const applyHandler = onApplyPatch || onApplyFix;
   const previewHandler = onPreviewAiPatch || onPreviewPatch;
@@ -479,6 +512,107 @@ export function IssueDetails({
             </div>
           </div>
         )}
+
+        {/* 4. CodeRabbit-Style Inline "Ask CodeEagle" Section */}
+        <div className="p-3.5 rounded-[8px] bg-slate-100/90 dark:bg-obsidian-900 border border-slate-300 dark:border-obsidian-750 space-y-3 shadow-xs">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-900 dark:text-obsidian-100 uppercase tracking-wider">
+              <EagleEmblem size={18} />
+              <span>Ask CodeEagle</span>
+            </div>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-brand-500/10 text-brand-400 border border-brand-500/30 font-semibold">
+              Finding Assistant
+            </span>
+          </div>
+
+          {/* Quick preset chips */}
+          <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
+            <button
+              type="button"
+              onClick={() => handleAskInline('Why is this a security hazard?')}
+              className="px-2 py-0.5 rounded bg-white dark:bg-obsidian-850 hover:bg-slate-200 dark:hover:bg-obsidian-800 border border-slate-200 dark:border-obsidian-700 text-slate-700 dark:text-obsidian-300 transition-colors cursor-pointer"
+            >
+              Why hazardous?
+            </button>
+            <button
+              type="button"
+              onClick={() => handleAskInline('Show me a unit test for this edge case')}
+              className="px-2 py-0.5 rounded bg-white dark:bg-obsidian-850 hover:bg-slate-200 dark:hover:bg-obsidian-800 border border-slate-200 dark:border-obsidian-700 text-slate-700 dark:text-obsidian-300 transition-colors cursor-pointer"
+            >
+              Unit test snippet
+            </button>
+            <button
+              type="button"
+              onClick={() => handleAskInline('How can I rewrite this using idiomatic modern patterns?')}
+              className="px-2 py-0.5 rounded bg-white dark:bg-obsidian-850 hover:bg-slate-200 dark:hover:bg-obsidian-800 border border-slate-200 dark:border-obsidian-700 text-slate-700 dark:text-obsidian-300 transition-colors cursor-pointer"
+            >
+              Modern pattern rewrite
+            </button>
+          </div>
+
+          {/* Chat Answer Box */}
+          {chatAnswer && (
+            <div className="p-3 rounded-[6px] bg-white dark:bg-obsidian-950 border border-slate-200 dark:border-obsidian-800 text-xs space-y-2">
+              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 dark:text-obsidian-400 border-b border-black/5 dark:border-white/5 pb-1">
+                <span className="font-semibold text-slate-800 dark:text-obsidian-200">Q: {chatAnswer.question}</span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (navigator.clipboard?.writeText) {
+                      await navigator.clipboard.writeText(chatAnswer.reply);
+                      setChatCopied(true);
+                      setTimeout(() => setChatCopied(false), 2000);
+                    }
+                  }}
+                  className="hover:text-slate-800 dark:hover:text-obsidian-200 cursor-pointer flex items-center gap-1"
+                >
+                  {chatCopied ? (
+                    <>
+                      <Check className="w-3 h-3 text-emerald-500" />
+                      <span className="text-emerald-500">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3 h-3" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="text-xs text-slate-700 dark:text-obsidian-200 leading-relaxed font-sans whitespace-pre-wrap">
+                {chatAnswer.reply}
+              </div>
+            </div>
+          )}
+
+          {/* Quick Input Bar */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAskInline();
+            }}
+            className="flex items-center gap-1.5"
+          >
+            <input
+              type="text"
+              value={chatQuery}
+              onChange={(e) => setChatQuery(e.target.value)}
+              placeholder="Ask anything about this finding..."
+              disabled={isChatLoading}
+              className="flex-1 px-2.5 py-1.5 text-xs rounded-[5px] bg-white dark:bg-obsidian-950 border border-slate-300 dark:border-obsidian-750 text-slate-900 dark:text-obsidian-100 outline-none focus:border-brand-500 font-sans"
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              size="xs"
+              disabled={!chatQuery.trim() || isChatLoading}
+              isLoading={isChatLoading}
+              rightIcon={<Send className="w-3 h-3" />}
+            >
+              Ask
+            </Button>
+          </form>
+        </div>
       </div>
 
       {/* 3. Sticky Action Footer */}

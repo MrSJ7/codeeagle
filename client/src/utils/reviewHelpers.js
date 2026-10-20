@@ -133,6 +133,7 @@ export function normalizeReviewData(data) {
     metrics,
     issues: sortIssues(issues),
     summary,
+    walkthrough: data.walkthrough || null,
     metadata: data.metadata || null,
     reviewId: data.reviewId || null,
   };

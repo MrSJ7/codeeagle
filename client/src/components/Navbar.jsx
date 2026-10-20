@@ -13,6 +13,10 @@ import {
   HelpCircle,
   Sun,
   Moon,
+  FileDiff,
+  MessageSquare,
+  Shield,
+  GitPullRequest,
 } from 'lucide-react';
 import { CodeEagleLogo } from './CodeEagleLogo.jsx';
 import { Button } from './ui/Button.jsx';
@@ -46,8 +50,10 @@ export function Navbar({
   issueCount = null,
   reviewStatus = 'IDLE',
   score = null,
-  activeLens = 'overview', // 'overview' | 'findings' | 'architecture'
+  activeLens = 'overview', // 'overview' | 'findings' | 'diff' | 'triage' | 'security' | 'architecture' | 'chat'
   onSelectLens = null,
+  reviewStyle = 'chill',
+  onChangeReviewStyle = null,
 }) {
   const { isLight, isDark, toggleTheme } = useTheme();
   const isMarketing = variant === 'marketing' || mode === 'landing';
@@ -174,9 +180,13 @@ export function Navbar({
   // 2. APPLICATION SHELL (Precision Review IDE Cockpit)
   // --------------------------------------------------------------------------
   const lenses = [
-    { id: 'overview', label: 'Overview', icon: Layers },
+    { id: 'overview', label: 'Walkthrough', icon: Layers },
     { id: 'findings', label: 'Findings', icon: ListTree, count: issueCount },
+    { id: 'diff', label: 'Diff View', icon: FileDiff },
+    { id: 'triage', label: 'Triage', icon: GitPullRequest },
+    { id: 'security', label: 'Security', icon: Shield },
     { id: 'architecture', label: 'Architecture', icon: GitBranch },
+    { id: 'chat', label: 'Ask Eagle', icon: MessageSquare },
   ];
 
   return (
@@ -365,6 +375,37 @@ export function Navbar({
             </span>
           )}
         </Button>
+
+        {/* Review Tone Selector: Quiet | Chill | Assertive */}
+        {onChangeReviewStyle && (
+          <div
+            className={cn(
+              "hidden xl:flex items-center gap-0.5 p-0.5 rounded-[5px] border text-[11px] font-mono",
+              isLight ? "bg-slate-100 border-slate-200" : "bg-[#141414] border-[#262626]"
+            )}
+            title="CodeEagle Review Tone"
+          >
+            {['quiet', 'chill', 'assertive'].map((style) => (
+              <button
+                key={style}
+                type="button"
+                onClick={() => onChangeReviewStyle(style)}
+                className={cn(
+                  'px-2 py-0.5 rounded-[4px] capitalize transition-all font-semibold cursor-pointer',
+                  reviewStyle === style
+                    ? isLight
+                      ? 'bg-white text-orange-600 shadow-xs border border-slate-200'
+                      : 'bg-[#222222] text-orange-400 border border-[#333333]'
+                    : isLight
+                    ? 'text-slate-500 hover:text-slate-800'
+                    : 'text-obsidian-400 hover:text-obsidian-200'
+                )}
+              >
+                {style}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Primary Action Button: Blue in light mode / warm orange in dark mode */}
         <Button

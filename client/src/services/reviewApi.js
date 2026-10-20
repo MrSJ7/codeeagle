@@ -53,10 +53,12 @@ export async function getHealthApi() {
 /**
  * Executes a deterministic code review by calling the backend POST /api/review endpoint.
  */
-export async function runReview(code, language = 'javascript', filename = 'source.js') {
+export async function runReview(code, language = 'javascript', filename = 'source.js', options = {}) {
   if (!code || typeof code !== 'string' || !code.trim()) {
     throw new Error('Please provide code to analyze.');
   }
+
+  const { reviewStyle = 'chill' } = typeof options === 'string' ? { reviewStyle: options } : options;
 
   try {
     const response = await fetch(buildApiUrl('/api/review'), {
@@ -64,7 +66,7 @@ export async function runReview(code, language = 'javascript', filename = 'sourc
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ code, language, filename }),
+      body: JSON.stringify({ code, language, filename, reviewStyle }),
     });
 
     if (!response.ok) {
@@ -260,6 +262,31 @@ export async function deleteReviewApi(reviewId) {
     err.code = errorData?.error?.code || 'DELETE_FAILED';
     err.status = response.status;
     throw err;
+  }
+
+  return await response.json();
+}
+
+/**
+ * Sends an interactive question to CodeEagle AI ("Ask CodeEagle").
+ */
+export async function sendReviewChatApi({
+  code = '',
+  filename = 'source.js',
+  issue = null,
+  question = '',
+  history = [],
+  tone = 'peer',
+}) {
+  const response = await fetch(buildApiUrl('/api/review/chat'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, filename, issue, question, history, tone }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.error?.message || `Chat request failed (${response.status})`);
   }
 
   return await response.json();

@@ -8,7 +8,7 @@ const MAX_CODE_LENGTH = 150000; // ~150KB safe payload limit
 
 export async function handleReviewRequest(req, res) {
   try {
-    const { code, language = 'javascript', filename = 'source.js' } = req.body;
+    const { code, language = 'javascript', filename = 'source.js', reviewStyle = 'chill' } = req.body;
 
     // Validate code presence and type
     if (typeof code !== 'string') {
@@ -54,6 +54,7 @@ export async function handleReviewRequest(req, res) {
       code,
       language: normalizedLang,
       filename,
+      reviewStyle,
     });
 
     // Persist completed review audit (non-fatal if persistence fails)
@@ -173,4 +174,40 @@ export async function handleRefactorRequest(req, res) {
     });
   }
 }
+
+export async function handleReviewChatRequest(req, res) {
+  try {
+    const { code = '', filename = 'source.js', issue = null, question, history = [], tone = 'peer' } = req.body || {};
+
+    if (!question || typeof question !== 'string' || !question.trim()) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_QUESTION',
+          message: 'A non-empty "question" string is required.',
+        },
+      });
+    }
+
+    const { askCodeEagle } = await import('../services/chatService.js');
+    const result = await askCodeEagle({
+      code,
+      filename,
+      issue,
+      question: question.trim(),
+      history,
+      tone,
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in handleReviewChatRequest:', error);
+    return res.status(500).json({
+      error: {
+        code: 'CHAT_ERROR',
+        message: 'An error occurred while generating chat response.',
+      },
+    });
+  }
+}
+
 

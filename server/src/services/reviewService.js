@@ -8,6 +8,7 @@ import { analyzeCodeWithGemini } from './geminiService.js';
 import { normalizeAiFindings } from './issueNormalizer.js';
 import { deduplicateAiAgainstStatic } from './issueDeduplicator.js';
 import { calculateScores, calculateSummary } from './scoreCalculator.js';
+import { buildReviewWalkthrough } from './walkthroughService.js';
 
 const SEVERITY_ORDER = { CRITICAL: 1, HIGH: 2, MEDIUM: 3, LOW: 4 };
 
@@ -53,6 +54,7 @@ export async function reviewCode({
   code = '',
   language = 'javascript',
   filename = 'source.js',
+  reviewStyle = 'chill',
 }) {
   const normalizedLang = normalizeLanguage(language);
 
@@ -62,11 +64,23 @@ export async function reviewCode({
   // If code contains syntax errors, return static review immediately
   const hasSyntaxError = staticResult.issues.some((i) => i.rule === 'SYNTAX');
   if (hasSyntaxError) {
+    const walkthrough = buildReviewWalkthrough({
+      code,
+      filename,
+      language: normalizedLang,
+      issues: staticResult.issues,
+      score: 0,
+      metrics: staticResult.metrics,
+      summary: staticResult.summary,
+      reviewStyle,
+    });
     return {
       ...staticResult,
+      walkthrough,
       metadata: {
         ...staticResult.metadata,
         aiStatus: 'UNAVAILABLE',
+        reviewStyle,
       },
     };
   }
@@ -89,12 +103,29 @@ export async function reviewCode({
   // 3. Handle Gemini result: Fallback to static if unavailable or failed validation
   if (!aiResult || aiResult.status !== 'SUCCESS' || !aiResult.data) {
     const aiStatus = aiResult?.status === 'VALIDATION_FAILED' ? 'VALIDATION_FAILED' : 'UNAVAILABLE';
+    const rawIssues = reviewStyle === 'quiet'
+      ? staticResult.issues.filter((i) => i.severity === 'CRITICAL' || i.severity === 'HIGH' || i.rule?.startsWith('SEC-'))
+      : staticResult.issues;
+
+    const walkthrough = buildReviewWalkthrough({
+      code,
+      filename,
+      language: normalizedLang,
+      issues: rawIssues,
+      score: staticResult.score,
+      metrics: staticResult.metrics,
+      summary: staticResult.summary,
+      reviewStyle,
+    });
     return {
       ...staticResult,
+      issues: rawIssues,
+      walkthrough,
       metadata: {
         ...staticResult.metadata,
         engine: 'static',
         aiStatus,
+        reviewStyle,
       },
     };
   }
@@ -109,14 +140,31 @@ export async function reviewCode({
   );
 
   // 6. Merge static findings with surviving unique AI findings
-  const mergedIssues = sortMergedIssues([
+  let mergedIssues = sortMergedIssues([
     ...staticResult.issues,
     ...deduplicatedAiIssues,
   ]);
 
+  if (reviewStyle === 'quiet') {
+    mergedIssues = mergedIssues.filter(
+      (i) => i.severity === 'CRITICAL' || i.severity === 'HIGH' || i.rule?.startsWith('SEC-')
+    );
+  }
+
   // 7. Calculate final score, breakdown, and summary strictly from final merged issues
   const { score, breakdown } = calculateScores(mergedIssues, false);
   const summary = calculateSummary(mergedIssues);
+
+  const walkthrough = buildReviewWalkthrough({
+    code,
+    filename,
+    language: normalizedLang,
+    issues: mergedIssues,
+    score,
+    metrics: staticResult.metrics,
+    summary,
+    reviewStyle,
+  });
 
   // 8. Return canonical hybrid review response
   return {
@@ -125,12 +173,14 @@ export async function reviewCode({
     metrics: staticResult.metrics,
     issues: mergedIssues,
     summary,
+    walkthrough,
     metadata: {
       engine: 'hybrid',
       aiStatus: 'USED',
       language: normalizedLang,
       filename,
       codeHash: staticResult.metadata.codeHash,
+      reviewStyle,
     },
   };
 }

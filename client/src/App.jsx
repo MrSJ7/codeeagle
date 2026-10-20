@@ -21,6 +21,10 @@ import { AlertTriangle, Loader2, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { LandingPage } from './components/LandingPage.jsx';
 import { ReviewOverview } from './components/ReviewOverview.jsx';
 import { ArchitectureFlow } from './components/ArchitectureFlow.jsx';
+import { DiffView } from './components/DiffView.jsx';
+import { ReviewChat } from './components/ReviewChat.jsx';
+import TriageBoard from './components/TriageBoard.jsx';
+import SecurityDashboard from './components/SecurityDashboard.jsx';
 import { HowItWorksModal } from './components/HowItWorksModal.jsx';
 import { ProjectImportModal } from './components/project/ProjectImportModal.jsx';
 import { ProjectOverview } from './components/project/ProjectOverview.jsx';
@@ -56,7 +60,8 @@ export default function App() {
   const [reviewData, setReviewData] = useState(null);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState(null);
-  const [activeLens, setActiveLens] = useState('overview'); // 'overview' | 'findings' | 'architecture'
+  const [activeLens, setActiveLens] = useState('overview'); // 'overview' | 'findings' | 'diff' | 'triage' | 'security' | 'architecture' | 'chat'
+  const [reviewStyle, setReviewStyle] = useState('chill'); // 'quiet' | 'chill' | 'assertive'
   const [currentReviewId, setCurrentReviewId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [toast, setToast] = useState(null);
@@ -138,10 +143,10 @@ export default function App() {
     setAiPreviewData(null);
 
     try {
-      const result = await runReview(sourceCode, 'javascript', filenameToUse);
+      const result = await runReview(sourceCode, 'javascript', filenameToUse, { reviewStyle });
       setReviewData(result);
       setReviewStatus('SUCCESS');
-      setActiveLens('findings');
+      setActiveLens('overview');
       setSelectedIssueId(result.issues[0]?.id || null);
       setCurrentReviewId(result.reviewId || null);
       setIsHistoricalView(false);
@@ -159,7 +164,7 @@ export default function App() {
       setErrorMessage(err.message || 'Could not analyze this code right now.');
       showToast('Review failed.', 'error');
     }
-  }, []);
+  }, [reviewStyle]);
 
   const handleRunReview = () => {
     executeReview(code, currentFilename);
@@ -251,7 +256,7 @@ export default function App() {
       }
 
       if (currentRoute === 'review') {
-        // Lens navigation: 1 (Overview), 2 (Findings), 3 (Architecture)
+        // Lens navigation: 1-7
         if (e.key === '1' && reviewStatus !== 'IDLE') {
           e.preventDefault();
           setActiveLens('overview');
@@ -260,7 +265,19 @@ export default function App() {
           setActiveLens('findings');
         } else if (e.key === '3' && reviewStatus !== 'IDLE') {
           e.preventDefault();
+          setActiveLens('diff');
+        } else if (e.key === '4' && reviewStatus !== 'IDLE') {
+          e.preventDefault();
+          setActiveLens('triage');
+        } else if (e.key === '5' && reviewStatus !== 'IDLE') {
+          e.preventDefault();
+          setActiveLens('security');
+        } else if (e.key === '6' && reviewStatus !== 'IDLE') {
+          e.preventDefault();
           setActiveLens('architecture');
+        } else if (e.key === '7' && reviewStatus !== 'IDLE') {
+          e.preventDefault();
+          setActiveLens('chat');
         }
 
         // Issue navigation: J (next), K (prev)
@@ -668,6 +685,8 @@ export default function App() {
             reviewStatus={reviewStatus}
             activeLens={activeLens}
             onSelectLens={setActiveLens}
+            reviewStyle={reviewStyle}
+            onChangeReviewStyle={setReviewStyle}
           />
 
           {/* Review Summary Bar - visible in findings mode or when diff is present */}
@@ -728,6 +747,48 @@ export default function App() {
                 language="JavaScript"
                 lineCount={code.split('\n').length}
                 onNavigateFindings={() => setActiveLens('findings')}
+                onNavigateDiff={() => setActiveLens('diff')}
+                onNavigateChat={() => setActiveLens('chat')}
+                onNavigateTriage={() => setActiveLens('triage')}
+                onNavigateSecurity={() => setActiveLens('security')}
+                onSelectIssue={(issueId) => {
+                  setSelectedIssueId(issueId);
+                  setActiveLens('findings');
+                }}
+              />
+            </main>
+          ) : reviewStatus === 'SUCCESS' && activeLens === 'diff' ? (
+            <main className="flex-1 min-h-0 overflow-hidden bg-slate-50 dark:bg-obsidian-950">
+              <DiffView
+                code={code}
+                filename={currentFilename}
+                issues={reviewData?.issues || []}
+                onApplyFix={handleApplyPatch}
+                onSelectIssue={(issueId) => {
+                  setSelectedIssueId(issueId);
+                  setActiveLens('findings');
+                }}
+              />
+            </main>
+          ) : reviewStatus === 'SUCCESS' && activeLens === 'triage' ? (
+            <main className="flex-1 min-h-0 overflow-hidden bg-slate-50 dark:bg-obsidian-950">
+              <TriageBoard
+                issues={reviewData?.issues || []}
+                filename={currentFilename}
+                score={reviewData?.score || 100}
+                onApplyFix={handleApplyPatch}
+                onSelectIssue={(issueId) => {
+                  setSelectedIssueId(issueId);
+                  setActiveLens('findings');
+                }}
+              />
+            </main>
+          ) : reviewStatus === 'SUCCESS' && activeLens === 'security' ? (
+            <main className="flex-1 min-h-0 overflow-hidden bg-slate-50 dark:bg-obsidian-950">
+              <SecurityDashboard
+                issues={reviewData?.issues || []}
+                filename={currentFilename}
+                onApplyFix={handleApplyPatch}
                 onSelectIssue={(issueId) => {
                   setSelectedIssueId(issueId);
                   setActiveLens('findings');
@@ -745,6 +806,15 @@ export default function App() {
                   setActiveLens('findings');
                 }}
                 onNavigateFindings={() => setActiveLens('findings')}
+              />
+            </main>
+          ) : reviewStatus === 'SUCCESS' && activeLens === 'chat' ? (
+            <main className="flex-1 min-h-0 overflow-hidden bg-slate-50 dark:bg-obsidian-950">
+              <ReviewChat
+                code={code}
+                filename={currentFilename}
+                selectedIssue={currentSelectedIssue}
+                reviewData={reviewData}
               />
             </main>
           ) : (

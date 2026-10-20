@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <!-- CodeRabbit-Grade Brand Orange Gradient -->
+    <linearGradient id="crOrangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B1A" />
+      <stop offset="50%" stop-color="#FF570A" />
+      <stop offset="100%" stop-color="#E04600" />
+    </linearGradient>
+
+    <!-- White / Silver Plumage Gradient -->
+    <linearGradient id="eagleWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="60%" stop-color="#F4F4F5" />
+      <stop offset="100%" stop-color="#E4E4E7" />
+    </linearGradient>
+
+    <!-- Golden Beak Accent -->
+    <linearGradient id="beakGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+
+    <!-- Eye Pulse Radial -->
+    <radialGradient id="eyePulse" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#FDE047" />
+      <stop offset="85%" stop-color="#FF570A" />
+      <stop offset="100%" stop-color="#FF570A" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Subtle Luminescence Filter -->
+    <filter id="subtleGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="1.2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Circular Brand Emblem Badge (Exact CodeRabbit Dimension Style) -->
+  <circle cx="32" cy="32" r="30" fill="url(#crOrangeGrad)" stroke="#FFA24D" stroke-width="1.2" stroke-opacity="0.5" />
+
+  <!-- Subtle Inner Specular Rim -->
+  <circle cx="32" cy="32" r="28.8" fill="none" stroke="#FFFFFF" stroke-width="0.8" stroke-opacity="0.25" />
+
+  <!-- Eagle Silhouette Mark (Crisp White / Platinum) -->
+  <g transform="translate(6, 6)">
+    <!-- Swept Crest Plumage -->
+    <path d="M12 24 L22 13 L20 21 L28 13 L26 22 L35 14 L32 24 L38 21 L33 29 L40 27 L32 36 L24 42 L16 37 L14 43 L11 35 Z" 
+          fill="url(#eagleWhite)" 
+          stroke="#FFFFFF" 
+          stroke-width="0.5" 
+          stroke-linejoin="round" />
+
+    <!-- Wing Facet Layer -->
+    <path d="M16 25 L26 17 L24 27 L31 21 L27 33 L19 37 Z" 
+          fill="#E4E4E7" 
+          opacity="0.95" />
+
+    <!-- Front Crown & Brow Structure -->
+    <path d="M25 14 L37 17 L41 23 L36 25 L30 21 Z" 
+          fill="#FFFFFF" />
+
+    <!-- Predatory Hooked Beak (Gold/Amber Accent) -->
+    <path d="M36 23 L47 28 L50 33 C49 36 45 38 41 37 L36 34 L38 30 L36 29 Z" 
+          fill="url(#beakGold)" 
+          stroke="#F59E0B" 
+          stroke-width="0.75" 
+          stroke-linejoin="round" 
+          filter="url(#subtleGlow)" />
+
+    <!-- Lower Jaw / Throat Ridge -->
+    <path d="M36 34 L41 37 C37 40 32 39 29 35 L33 32 Z" 
+          fill="#D97706" 
+          opacity="0.9" />
+
+    <!-- Piercing Predatory Eagle Eye -->
+    <path d="M31 21.5 Q35 19 39 22.5 Q35 24.5 31 21.5 Z" 
+          fill="#18181B" 
+          stroke="#FFA24D" 
+          stroke-width="0.6" />
+
+    <!-- Glowing Iris / Pupil with Animated Breathing Pulse -->
+    <circle cx="35" cy="22" r="1.8" fill="url(#eyePulse)" filter="url(#subtleGlow)">
+      <animate attributeName="r" values="1.6;2.3;1.6" dur="2.8s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.85;1;0.85" dur="2.8s" repeatCount="indefinite" />
+    </circle>
+
+    <!-- Radar Focus Sweep Ring -->
+    <circle cx="35" cy="22" r="3.2" fill="none" stroke="#FFFFFF" stroke-width="0.6" opacity="0.6">
+      <animate attributeName="r" values="2.4;5.2;2.4" dur="2.8s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.75;0;0.75" dur="2.8s" repeatCount="indefinite" />
+    </circle>
+
+    <!-- Sharp Eye Glint Point -->
+    <circle cx="34.3" cy="21.3" r="0.6" fill="#FFFFFF" />
+  </g>
+</svg>

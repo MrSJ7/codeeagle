@@ -14,6 +14,8 @@ import { Navbar } from './Navbar.jsx';
 import { CodeEagleLogo } from './CodeEagleLogo.jsx';
 import { CodeEagleBentoShowcase } from './ui/bento-product-features.tsx';
 import { FeatureCard } from './ui/feature-card.tsx';
+import HeroFeatureCards from './HeroFeatureCards.jsx';
+import ChangeStackPill from './ChangeStackPill.jsx';
 import { useTheme } from '@/context/ThemeContext.jsx';
 
 export function LandingPage({
@@ -58,34 +60,39 @@ export function LandingPage({
       {/* 2. Hero Section: Editorial Developer Entry Point */}
       <section className="pt-12 sm:pt-20 pb-16 px-4 sm:px-8 max-w-7xl mx-auto w-full">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          {/* Kinetic Editorial Headline */}
+          {/* Agentic Change Management Tagline Pill */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-[11px] font-mono font-bold uppercase tracking-wider text-orange-600 dark:text-brand-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+            <span>Agentic Change Management</span>
+          </div>
+
+          {/* Kinetic Editorial Headline (CodeRabbit Signature Paradigm) */}
           <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50 leading-[1.12]">
-            <span>Review your code.</span>
+            <span>The future isn't writing code.</span>
             <br />
             <span className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-slate-900 dark:text-obsidian-50">
-              <span>Catch</span>
+              <span>It's</span>
               <LayoutTextFlip
                 words={[
-                  'SECURITY FLAWS',
-                  'LOGIC BUGS',
-                  'REACT KEY LEAKS',
-                  'ASYNC HAZARDS',
-                  'SECRET LEAKS',
+                  'REVIEWING IT',
+                  'SECURING IT',
+                  'PRIORITIZING IT',
+                  'TRIAGING IT',
+                  'SHIPPING IT',
                 ]}
                 duration={2600}
-                pillClassName="border-blue-300 dark:border-brand-500/40 bg-blue-50 dark:bg-brand-500/10 text-blue-700 dark:text-brand-400"
+                pillClassName="border-orange-300 dark:border-brand-500/40 bg-orange-50 dark:bg-brand-500/10 text-orange-700 dark:text-brand-400"
               />
             </span>
-            <span>before you ship.</span>
           </h1>
 
           {/* Precision Technical Subtitle */}
           <p className="text-base sm:text-lg text-slate-600 dark:text-obsidian-400 leading-relaxed max-w-2xl mx-auto font-normal">
-            Import an entire project or paste code. Get line-by-line findings with fixes you can apply in one click.
+            Fast code. Faster chaos. Coding agents flood pipelines faster than teams can validate or secure them. CodeEagle brings governance, verified patches, and shared intelligence.
           </p>
 
           {/* High-Contrast CTAs */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
             {onOpenProjectImport && (
               <Button
                 size="lg"
@@ -96,6 +103,12 @@ export function LandingPage({
                 Review a Project (ZIP / GitHub)
               </Button>
             )}
+            <ChangeStackPill
+              label="Review Change Stack"
+              onClick={() => onSelectScenarioAndStart('insecure-login')}
+              className="py-2.5 px-4"
+              tone="primary"
+            />
             <Button
               size="lg"
               variant="secondary"
@@ -431,42 +444,21 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* 4. Section 04: Product Storytelling — How a Review Happens */}
+      {/* 4. Section 04: The 4 Core Product Pillars (CodeRabbit Architectural Model) */}
       <section id="how-it-works" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full border-t border-slate-200 dark:border-obsidian-850 scroll-mt-24">
-        <div className="max-w-3xl mb-12">
-          <div className="text-[11px] font-mono text-blue-600 dark:text-brand-500 uppercase tracking-wider font-semibold">
-            How It Works
+        <div className="max-w-3xl mb-8">
+          <div className="text-[11px] font-mono text-orange-600 dark:text-brand-500 uppercase tracking-wider font-semibold">
+            Product Architecture
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-obsidian-50 mt-1">
-            How a review happens
+            Engineered for Agentic Change Management
           </h2>
           <p className="text-sm text-slate-600 dark:text-obsidian-400 mt-2">
-            From paste to fix in four steps.
+            Four specialized pillars to validate, prioritize, explain, and secure every pull request.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <FeatureCard
-            kicker="Step 1"
-            title="Find real problems"
-            description="Your code is parsed into a syntax tree — not searched with regex. No false alarms."
-          />
-          <FeatureCard
-            kicker="Step 2"
-            title="Know exactly what's wrong"
-            description="13 built-in rules catch secrets, injections, and React anti-patterns on the first pass."
-          />
-          <FeatureCard
-            kicker="Step 3"
-            title="Understand why it matters"
-            description="AI reads your logic and explains findings the way a senior engineer would."
-          />
-          <FeatureCard
-            kicker="Step 4"
-            title="Fix it safely"
-            description="Every fix is checksummed before it touches your code. Apply it in one click."
-          />
-        </div>
+        <HeroFeatureCards onExploreFeature={() => onSelectScenarioAndStart('insecure-login')} />
       </section>
 
       {/* 5. Section 05: Why CodeEagle: SEE · UNDERSTAND · FIX · VERIFY */}
