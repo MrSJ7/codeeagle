@@ -102,7 +102,8 @@ console.log('\n--- 2. Security Rules & False-Positive Mitigation Tests ---');
   const issue = res.issues.find(i => i.rule === 'SEC-SECRET');
   assert(issue !== undefined, 'Detects actual hardcoded secret');
   assert(issue?.severity === 'CRITICAL', 'Secret severity is CRITICAL');
-  assert(issue?.fix === null, 'Does not suggest an unsafe credential migration');
+  assert(issue?.fix !== null, 'Suggests loading credential from environment');
+  assert(issue?.fix?.replacement.includes('process.env.JWT_SECRET'), 'Fix replaces secret with process.env lookup');
 }
 
 // 2.2 Negative: Benign labels / config strings must NOT trigger secret rule

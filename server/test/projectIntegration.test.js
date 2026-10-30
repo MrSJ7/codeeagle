@@ -159,14 +159,15 @@ async function runIntegration() {
   assert(fileCtx.getData().file.content.includes("JWT_SECRET"), "File content returned accurately");
 
   // 6. Apply Fix to Project File
-  const secretIssue = authFile.issues.find(i => i.rule === "SEC-SECRET");
-  if (secretIssue) {
+  const dbFile = reviewData.review.files.find(f => f.path.includes("db.js"));
+  const unverifiedIssue = dbFile?.issues.find(i => i.rule === "SEC-EVAL");
+  if (unverifiedIssue) {
     const patchCtx = mockReqRes({
-      params: { projectId, fileId: authFile.id, findingId: secretIssue.id },
+      params: { projectId, fileId: dbFile.id, findingId: unverifiedIssue.id },
       body: { reviewId }
     });
     await projectController.applyPatch(patchCtx.req, patchCtx.res, (err) => { throw err; });
-    assert(patchCtx.getStatus() === 422, "Unverified secret patch is rejected");
+    assert(patchCtx.getStatus() === 422, "Unverified eval patch is rejected");
     assert(patchCtx.getData().error.code === 'INVALID_FIX', "Controller reports why the patch was rejected");
   }
 
@@ -177,7 +178,6 @@ async function runIntegration() {
   assert(histCtx.getData().reviews.length >= 1, "History keeps the initial review after a rejected patch");
 
   // 8. Generate Automated Refactor for Finding
-  const dbFile = reviewData.review.files.find(f => f.path.includes("db.js"));
   const evalIssue = dbFile.issues.find(i => i.rule === "SEC-EVAL");
   if (evalIssue) {
     const refactorCtx = mockReqRes({

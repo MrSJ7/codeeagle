@@ -253,19 +253,19 @@ async function runProjectTests() {
   assert(multiScore.score >= 75, "Multi-file repo with 80 minor quality notices preserves healthy score (" + multiScore.score + "/100)");
 
   console.log("\n--- 6. Safe Patch Application & Automated Re-Review ---");
-  if (secretFinding) {
+  if (dangerousHtmlFinding) {
     let rejected = false;
     try {
       await applyProjectPatch({
         projectId: manifest.id,
         reviewId: reviewRecord.id,
-        fileId: secretFinding.fileId,
-        findingId: secretFinding.id,
+        fileId: dangerousHtmlFinding.fileId,
+        findingId: dangerousHtmlFinding.id,
       });
     } catch (error) {
       rejected = error.code === 'INVALID_FIX';
     }
-    assert(rejected, "Project refuses to auto-apply a secret migration without a verified fix");
+    assert(rejected, "Project refuses to auto-apply when finding lacks a verified fix");
   }
 
   console.log("\n--- 7. Code Quality, Complexity & Maintainability Verification ---");

@@ -167,6 +167,15 @@ export default function App() {
     executeReview(code, currentFilename);
   }, [executeReview, code, currentFilename]);
 
+  // Auto-run review on mount when entering /review directly with no review data
+  const hasAutoRunRef = React.useRef(false);
+  useEffect(() => {
+    if (currentRoute === 'review' && reviewStatus === 'IDLE' && !reviewData && !hasAutoRunRef.current) {
+      hasAutoRunRef.current = true;
+      executeReview(code, currentFilename);
+    }
+  }, [currentRoute, reviewStatus, reviewData, executeReview, code, currentFilename]);
+
   const navigateTo = (route, presetIdToLoad = null, autoRun = false) => {
     let newCodeToRun = null;
     let newFilename = currentFilename;
@@ -302,19 +311,21 @@ export default function App() {
     const preset = PRESETS.find((p) => p.id === presetId);
     if (!preset) return;
 
+    const filename =
+      preset.id === 'insecure-login'
+        ? 'auth.js'
+        : preset.id === 'buggy-react'
+        ? 'ActivityFeed.jsx'
+        : preset.id === 'complex-function'
+        ? 'shippingFee.js'
+        : 'source.js';
+
     setSelectedPresetId(presetId);
     setCode(preset.code);
-    setReviewStatus('IDLE');
-    setReviewData(null);
-    setSelectedIssueId(null);
-    setCurrentReviewId(null);
-    setIsHistoricalView(false);
-    setHistoricalCreatedAt(null);
-    setErrorMessage(null);
     setPatchDiff(null);
     setPreviewAiIssue(null);
     setAiPreviewData(null);
-    showToast(`Loaded ${preset.name}. Click Run Review to analyze.`);
+    executeReview(preset.code, filename);
   };
 
   // 2. Manual code edit invalidates existing review
@@ -757,11 +768,12 @@ export default function App() {
           ) : (
             /* Findings Lens / Code Workspace (Three-Column Layout) */
             <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-obsidian-950">
-              {reviewData && <nav aria-label="Review workspace panels" className="lg:hidden flex shrink-0 p-1 gap-1 bg-[#161613] border-b border-[#33312b]">
+              <nav aria-label="Review workspace panels" className="lg:hidden flex shrink-0 p-1 gap-1 bg-[#161613] border-b border-[#33312b]">
                 {['findings', 'code', 'details'].map((pane) => <button key={pane} type="button" onClick={() => setMobileReviewPane(pane)} aria-pressed={mobileReviewPane === pane} className={`flex-1 py-2.5 rounded-md capitalize text-sm font-semibold focus-visible:outline-2 focus-visible:outline-orange-500 ${mobileReviewPane === pane ? 'bg-orange-500 text-[#18130c]' : 'text-[#aaa49a]'}`}>{pane}</button>)}
-              </nav>}
+              </nav>
+
               {/* Left Column: Review findings / Findings Queue */}
-              {reviewData && <IssuePanel
+              <IssuePanel
                 issues={reviewData?.issues || []}
                 selectedIssueId={selectedIssueId}
                 onSelectIssue={(issueId) => { setSelectedIssueId(issueId); setMobileReviewPane('details'); }}
@@ -772,10 +784,10 @@ export default function App() {
                 externalCategoryFilter={activeCategoryFilter}
                 onClearCategoryFilter={() => setActiveCategoryFilter(null)}
                 className={`order-1 w-full lg:w-80 xl:w-[350px] shrink-0 h-full border-r border-slate-200 dark:border-[#33312b] ${mobileReviewPane === 'findings' ? '' : 'hidden lg:flex'}`}
-              />}
+              />
 
               {/* Center Column: Code Editor */}
-              <section className={`order-2 flex-1 h-full min-h-0 flex flex-col overflow-hidden min-w-0 ${reviewData && mobileReviewPane !== 'code' ? 'hidden lg:flex' : ''}`}>
+              <section className={`order-2 flex-1 h-full min-h-0 flex flex-col overflow-hidden min-w-0 ${mobileReviewPane !== 'code' ? 'hidden lg:flex' : ''}`}>
                 <CodeEditor
                   code={code}
                   onChange={handleCodeChange}
@@ -793,7 +805,7 @@ export default function App() {
               </section>
 
               {/* Right Column: Selected Finding Details / Remediation */}
-              {currentSelectedIssue && <IssueDetails
+              <IssueDetails
                 issue={currentSelectedIssue}
                 onApplyPatch={handleApplyPatch}
                 onApplyFix={handleApplyPatch}
@@ -809,7 +821,7 @@ export default function App() {
                 filename={currentFilename}
                 code={code}
                 className={`order-3 w-full lg:w-80 xl:w-[380px] shrink-0 h-full border-l border-slate-200 dark:border-[#33312b] ${mobileReviewPane === 'details' ? '' : 'hidden lg:flex'}`}
-              />}
+              />
             </main>
           )}
         </>

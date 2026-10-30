@@ -233,9 +233,33 @@ export function analyzeSecurity(ast, code = '') {
           val.length >= 8 &&
           !COMMON_BENIGN_VALUES.has(lowerVal)
         ) {
-          const line = path.node.loc?.start.line || 1;
-          const endLine = path.node.loc?.end.line || line;
+          const isSingleDeclaration = path.parentPath?.isVariableDeclaration?.() && path.parent?.declarations?.length === 1;
+          const targetNode = isSingleDeclaration ? path.parent : path.node;
+          const line = targetNode.loc?.start.line || path.node.loc?.start.line || 1;
+          const endLine = targetNode.loc?.end.line || path.node.loc?.end.line || line;
           const meta = RULE_REGISTRY['SEC-SECRET'];
+
+          let fix = null;
+          if (isSingleDeclaration) {
+            const rawDecl = getNodeSource(code, path.parent);
+            if (rawDecl) {
+              const kind = path.parent.kind || 'const';
+              const hasSemi = rawDecl.trimEnd().endsWith(';');
+              fix = {
+                original: rawDecl,
+                replacement: `${kind} ${idName} = process.env.${idName}${hasSemi ? ';' : ''}`,
+              };
+            }
+          } else {
+            const rawDeclarator = getNodeSource(code, path.node);
+            if (rawDeclarator) {
+              fix = {
+                original: rawDeclarator,
+                replacement: `${idName} = process.env.${idName}`,
+              };
+            }
+          }
+
           addIssue({
             id: `SEC-SECRET-${line}`,
             rule: meta.rule,
@@ -250,7 +274,7 @@ export function analyzeSecurity(ast, code = '') {
             recommendation: `Remove '${idName}' from source and rotate the exposed credential. Load the replacement from a server-side secret store; do not bundle it into client code.`,
             confidence: meta.confidence ?? 0.98,
             impactWeight: meta.impactWeight ?? 1.0,
-            fix: null,
+            fix,
           });
         }
       }
